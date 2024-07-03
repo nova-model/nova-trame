@@ -1,0 +1,72 @@
+{
+    "defaults": {
+        "VAppBar": {
+            "color": "primary"
+        },
+        "VCard": {
+            "class": "pa-4",
+            "VCardSubtitle": {
+                "opacity": 0.8,
+                "style": {
+                    "white-space": "normal"
+                }
+            },
+            "VCardTitle": {
+                "style": {
+                    "white-space": "normal"
+                }
+            }
+        },
+        "VList": {
+            "VListItemSubtitle": {
+                "opacity": 0.8
+            },
+            "VListItemAction": {
+                "VBtn": {
+                    "class": "ml-2"
+                },
+                "VProgressCircular": {
+                    "class": "ml-2"
+                }
+            }
+        },
+        "VProgressCircular": {
+            "color": "secondary",
+            "indeterminate": true
+        }
+    },
+    "theme": {
+        "defaultTheme": "NeutronsTheme",
+        "themes": {
+            "NeutronsTheme": {
+                "colors": {
+                    "background": "#f0f0f0",
+                    "primary": "#007833",
+                    "secondary": "#f48e5c",
+                    "accent": "#488dc8"
+                }
+            },
+            "HFIRTheme": {
+                "colors": {
+                    "background": "#f0f0f0",
+                    "primary": "#4cdbc8",
+                    "secondary": "#db5f4d",
+                    "accent": "#db914d"
+                }
+            },
+            "SNSTheme": {
+                "colors": {
+                    "background": "#f0f0f0",
+                    "primary": "#6065dc",
+                    "secondary": "#dbb560",
+                    "accent": "#dbd260"
+                }
+            }
+        },
+        "variations": {
+            "colors": ["primary", "secondary", "accent"],
+            "darken": 5,
+            "lighten": 5
+        }
+    }
+}

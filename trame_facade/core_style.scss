@@ -1,0 +1,24 @@
+html {
+    overflow-y: auto;
+}
+
+main {
+	background-color: RGB(var(--v-theme-background));
+}
+
+.v-list.with-color .v-list-item {
+    background-color: rgba(var(--v-theme-primary), 0.1);
+    border: thin solid RGB(var(--v-theme-primary));
+}
+
+.v-list.with-color .v-list-item:not(:last-child) {
+    border-bottom: none;
+}
+
+.v-list.striped .v-list-item:nth-child(even) {
+    background-color: rgba(var(--v-theme-primary), 0.1);
+}
+
+.v-list.striped .v-list-item:nth-child(odd) {
+    background-color: rgba(var(--v-theme-secondary), 0.1);
+}
