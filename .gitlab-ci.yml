@@ -1,0 +1,33 @@
+stages:
+  - package
+
+variables:
+  GIT_STRATEGY: clone
+
+# This import is for the func_rse_docker_* functions
+before_script:
+  - curl https://code.ornl.gov/rse-deployment/rse-sharables/raw/master/rse-bash-modules.sh -O
+  - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  - source rse-bash-modules.sh
+  - func_rse_docker_cleanup
+
+after_script:
+  - curl https://code.ornl.gov/rse-deployment/rse-sharables/raw/master/rse-bash-modules.sh -O
+  - source rse-bash-modules.sh
+  - func_rse_docker_cleanup
+  - sudo chown -R gitlab-runner .
+
+package-build:
+  stage: package
+  script:
+    - >
+      docker run
+      -v `pwd`:/src      
+      code.ornl.gov:4567/rse/images/python:3.10-slim
+      bash -c "cd /src && pip install poetry && poetry build && 
+      poetry config repositories.gitlab_repo ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/pypi && 
+      poetry publish -u gitlab-ci-token -p ${CI_JOB_TOKEN} -r gitlab_repo
+      "
+  when: manual
+  tags:
+    - rse-multi-builder
