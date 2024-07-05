@@ -472,6 +472,20 @@ more-itertools = "*"
 wslink = ">=2,<3"
 
 [[package]]
+name = "trame-vuetify"
+version = "2.6.1"
+description = "Vuetify widgets for trame"
+optional = false
+python-versions = "*"
+files = [
+    {file = "trame-vuetify-2.6.1.tar.gz", hash = "sha256:1f1f421a9a7b5185d3542cfba96db44addcbe42e18becfe21dd86051a4037c6d"},
+    {file = "trame_vuetify-2.6.1-py3-none-any.whl", hash = "sha256:761901fe57f94a5806f66ee5e6275f7d23eaf4cf2dd4e070758c0aa2965ca596"},
+]
+
+[package.dependencies]
+trame-client = "*"
+
+[[package]]
 name = "wslink"
 version = "2.1.1"
 description = "Python/JavaScript library for communicating over WebSocket"
@@ -592,10 +606,7 @@ files = [
 idna = ">=2.0"
 multidict = ">=4.0"
 
-[extras]
-trame = ["trame"]
-
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "a8552c3965903aa57855f69e46f9dbc2dbf1264845814c49047c8f3a4f7a3f2c"
+content-hash = "a559c3b3e72e05ef7aa72b5c95690fb90132575a685729c2a6e3614d2470c2eb"
