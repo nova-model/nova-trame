@@ -5,6 +5,7 @@ from pathlib import Path
 import sass
 
 from trame.app import get_server
+from trame.assets.local import LocalFileManager
 from trame.ui.vuetify3 import VAppLayout
 from trame.widgets import client, vuetify3 as vuetify
 from trame_client.widgets import html
@@ -36,8 +37,16 @@ class ThemedApp:
             logger.warning("Could not load vuetify config.")
             logger.error(e)
 
+    @property
+    def state(self):
+        return self.server.state
+
     def create_ui(self):
         with VAppLayout(self.server, vuetify_config=self.vuetify_config) as layout:
+            self.state.trame__favicon = LocalFileManager(__file__).url(
+                "favicon", "./assets/favicon.png"
+            )
+
             client.Style(self.css)
 
             with vuetify.VThemeProvider() as theme:
