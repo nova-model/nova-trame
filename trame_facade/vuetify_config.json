@@ -1,26 +1,64 @@
 {
     "defaults": {
+        "VAlert": {
+            "color": "secondary"
+        },
         "VAppBar": {
+            "color": "primary",
+            "VBtn": {
+                "color": false
+            }
+        },
+        "VBadge": {
+            "color": "secondary"
+        },
+        "VBtn": {
             "color": "primary"
         },
+        "VBtnToggle": {
+            "color": "primary",
+            "VBtn": {
+                "class": "border-primary border-sm"
+            }
+        },
         "VCard": {
-            "class": "pa-4",
             "VCardSubtitle": {
-                "opacity": 0.8,
                 "style": {
                     "white-space": "normal"
                 }
             },
             "VCardTitle": {
+                "class": "mb-2",
                 "style": {
+                    "line-height": 1.2,
                     "white-space": "normal"
                 }
             }
         },
+        "VCardSubtitle": {
+            "opacity": 0.8
+        },
+        "VCheckbox": {
+            "color": "primary"
+        },
+        "VChip": {
+            "color": "primary"
+        },
+        "VDivider": {
+            "color": "primary"
+        },
+        "VExpansionPanels": {
+            "color": "primary"
+        },
+        "VFileInput": {
+            "color": "primary"
+        },
+        "VLabel": {
+            "style": {
+                "opacity": 1.0
+            }
+        },
         "VList": {
-            "VListItemSubtitle": {
-                "opacity": 0.8
-            },
             "VListItemAction": {
                 "VBtn": {
                     "class": "ml-2"
@@ -30,37 +68,150 @@
                 }
             }
         },
+        "VListItem": {
+            "VBtn": {
+                "color": "secondary"
+            }
+        },
+        "VListItemSubtitle": {
+            "opacity": 0.8
+        },
         "VProgressCircular": {
-            "color": "secondary",
-            "indeterminate": true
+            "color": "secondary"
+        },
+        "VProgressLinear": {
+            "color": "secondary"
+        },
+        "VRadioGroup": {
+            "color": "primary"
+        },
+        "VSelect": {
+            "color": "primary"
+        },
+        "VSlider": {
+            "color": "primary"
+        },
+        "VSnackbar": {
+            "color": "primary",
+            "VBtn": {
+                "color": false
+            }
+        },
+        "VSwitch": {
+            "color": "primary"
+        },
+        "VTextarea": {
+            "color": "primary"
+        },
+        "VTextField": {
+            "color": "primary"
         }
     },
     "theme": {
-        "defaultTheme": "NeutronsTheme",
+        "defaultTheme": "ModernTheme",
         "themes": {
-            "NeutronsTheme": {
+            "ModernTheme": {
                 "colors": {
                     "background": "#f0f0f0",
                     "primary": "#007833",
-                    "secondary": "#f48e5c",
-                    "accent": "#488dc8"
-                }
+                    "secondary": "#f48e5c"
+                },
+                "defaults": {
+                    "VCard": {
+                        "class": "pa-4",
+                        "VListItem": {
+                            "class": "border-primary border-sm",
+                            "style": {
+                                "background-color": "rgba(var(--v-theme-primary), 0.1)"
+                            }
+                        }
+                    },
+                    "VCol": {
+                        "VCard": {
+                            "class": "border-primary border-sm pa-4",
+                            "style": {
+                                "background-color": "rgba(var(--v-theme-primary), 0.1)"
+                            }
+                        }
+                    }
+                },
+                "title": "Modern",
+                "value": "ModernTheme"
             },
-            "HFIRTheme": {
+            "TechnicalTheme": {
                 "colors": {
                     "background": "#f0f0f0",
-                    "primary": "#4cdbc8",
-                    "secondary": "#db5f4d",
-                    "accent": "#db914d"
-                }
-            },
-            "SNSTheme": {
-                "colors": {
-                    "background": "#f0f0f0",
-                    "primary": "#6065dc",
-                    "secondary": "#dbb560",
-                    "accent": "#dbd260"
-                }
+                    "primary": "#359cdb",
+                    "secondary": "#cdcdcd",
+                    "accent": "#f0f0f0",
+                    "black": "#000000"
+                },
+                "defaults": {
+                    "VAlert": {
+                        "color": "primary"
+                    },
+                    "VAppBar": {
+                        "color": "background",
+                        "elevation": 1
+                    },
+                    "VBadge": {
+                        "color": "primary"
+                    },
+                    "VBtn": {
+                        "class": "bg-accent",
+                        "style": {
+                            "background": "linear-gradient(rgba(var(--v-theme-accent), 0.5), rgba(var(--v-theme-primary), 0.1))",
+                            "border": "2px solid rgb(var(--v-theme-primary))"
+                        }
+                    },
+                    "VBtnToggle": {
+                        "VBtn": {
+                            "style": false
+                        }
+                    },
+                    "VCard": {
+                        "class": "bg-secondary border-black border-md pa-4",
+                        "elevation": 1,
+                        "rounded": false,
+                        "VList": {
+                            "class": "bg-secondary",
+                            "VListItem": {
+                                "class": "bg-white border-black border-sm"
+                            }
+                        }
+                    },
+                    "VChip": {
+                        "color": false
+                    },
+                    "VCol": {
+                        "VCard": {
+                            "class": "bg-accent pa-4",
+                            "style": {
+                                "background": "linear-gradient(rgb(var(--v-theme-accent)), rgba(var(--v-theme-primary), 0.15))",
+                                "border": "2px solid rgb(var(--v-theme-primary))"
+                            }
+                        }
+                    },
+                    "VExpansionPanels": {
+                        "color": "white"
+                    },
+                    "VProgressCircular": {
+                        "color": "primary"
+                    },
+                    "VProgressLinear": {
+                        "color": "primary"
+                    },
+                    "VSnackbar": {
+                        "color": "secondary"
+                    },
+                    "VTabs": {
+                        "VBtn": {
+                            "style": false
+                        }
+                    }
+                },
+                "title": "Technical",
+                "value": "TechnicalTheme"
             }
         },
         "variations": {
