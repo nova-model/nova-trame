@@ -20,9 +20,12 @@ class App(ThemedApp):
         return self.server.state
 
     def create_ui(self):
+        self.state.facade__menu = True
+        self.state.snackbar = True
         self.state.trame__title = "Widget Gallery"
 
         with super().create_ui() as layout:
+            # self.set_theme("TechnicalTheme")  # sets the default theme, must not call before layout exists
             layout.toolbar_title.set_text("Widget Gallery")
 
             with layout.actions:
@@ -73,9 +76,10 @@ class App(ThemedApp):
                                 vuetify.VListItem(
                                     subtitle="Lorem Ipsum", title="List Item 2"
                                 )
-                                vuetify.VListItem(
+                                with vuetify.VListItem(
                                     subtitle="Lorem Ipsum", title="List Item 3"
-                                )
+                                ):
+                                    vuetify.VBtn("Button", classes="mt-2")
                             with vuetify.VMenu():
                                 with vuetify.Template(v_slot_activator="{ props }"):
                                     vuetify.VBtn("Open Menu", v_bind="props")

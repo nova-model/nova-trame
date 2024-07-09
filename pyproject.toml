@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "trame-facade"
-version = "0.0.2"
+version = "0.1.0"
 description = "A Python Package for injecting curated themes into Trame applications"
 authors = ["Duggan, John <dugganjw@ornl.gov>"]
 license = "MIT"
