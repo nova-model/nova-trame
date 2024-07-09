@@ -1,5 +1,24 @@
+# Overview
+`trame-facade` is a Python package for styling Trame applications used in the [NDIP](https://code.ornl.gov/ndip) project.
+
+# Requirements
+* [Python 3.10](https://www.python.org/)
+* [Trame](https://kitware.github.io/trame/)
+
 # Installation
-TODO
+You can install this package directly with
+
+    pip install --index-url https://code.ornl.gov/api/v4/projects/16294/packages/pypi/simple trame-facade
+
+or with [Poetry](https://python-poetry.org/) by placing the following in your `pyproject.toml` (you can version lock with typical [Semantic Versioning](https://semver.org/) syntax)
+
+    [tool.poetry.dependencies]
+    trame-facade = "*"
+
+    [[tool.poetry.source]]
+    name = "trame-facade"
+    url = "https://code.ornl.gov/api/v4/projects/16294/packages/pypi/simple"
+    priority = "primary"
 
 # Usage
 The following code snippet is the bare minimum to import and use this package.
@@ -20,8 +39,27 @@ This will default to using our ModernTheme.
             with super().create_ui() as layout:
                 # Add your content here
 
-### Using convenience components
-TODO
+# Convenience Components
+
+### Grids
+To help with generating even-width [Vuetify Grids](https://vuetifyjs.com/en/components/grids/#usage), we provide a convenience component
+that can be used as follows (example creates a 3-column grid):
+
+    from trame_facade.components import EasyGrid
+
+
+    # Rest of your code to create a Trame layout
+
+    with layout.content:
+        with EasyGrid(cols_per_row=3):
+            vuetify.VBtn("Button 1")
+            vuetify.VBtn("Button 2")
+            vuetify.VBtn("Button 3")
+
+`cols_per_row` will determine the "width" of the grid, so `cols_per_row=2` will create a 2-column grid. Please note that
+Vuetify grids are 12-point grids. This means that you cannot create a grid with more than 12 columns, and you generally
+shouldn't create an n-grid column where 12 isn't divisible by n. If you need to do this, you will need to build your
+VRow/VCol components manually.
 
 # Themes
 The following themes are currently available:
