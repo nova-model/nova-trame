@@ -28,7 +28,6 @@
                 }
             },
             "VCardTitle": {
-                "class": "mb-2",
                 "style": {
                     "line-height": 1.2,
                     "white-space": "normal"
@@ -105,6 +104,10 @@
         },
         "VTextField": {
             "color": "primary"
+        },
+        "VWindowItem": {
+            "reverseTransition": false,
+            "transition": false
         }
     },
     "theme": {

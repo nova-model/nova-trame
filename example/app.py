@@ -42,6 +42,16 @@ class App(ThemedApp):
                         width=800,
                     ):
                         with EasyGrid(cols_per_row=3):
+                            # Grid
+                            with html.Div():
+                                html.Span("Grid", classes="text-center")
+                                with EasyGrid(cols_per_row=2):
+                                    vuetify.VBtn(
+                                        "{{ item }} - {{ index }}",
+                                        v_for="(item, index) in ['a', 'b', 'c']",
+                                    )
+                                    vuetify.VBtn("d - 3")
+
                             # Containment
                             vuetify.VBtn(
                                 "Elevated Button",

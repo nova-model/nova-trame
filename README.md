@@ -61,6 +61,9 @@ Vuetify grids are 12-point grids. This means that you cannot create a grid with 
 shouldn't create an n-grid column where 12 isn't divisible by n. If you need to do this, you will need to build your
 VRow/VCol components manually.
 
+If you need to manually specify the column width of a child, you can do so by applying the typical Vuetify column width
+fields on it (cols, lg, md, sm, etc.).
+
 # Themes
 The following themes are currently available:
 1. ModernTheme - The recommended theme for most applications. Leverages ORNL brand colors and a typical Vuetify appearance.
