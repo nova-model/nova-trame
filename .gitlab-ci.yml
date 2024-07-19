@@ -22,10 +22,10 @@ package-build:
   script:
     - >
       docker run
-      -v `pwd`:/src      
+      -v `pwd`:/src
       code.ornl.gov:4567/rse/images/python:3.10-slim
-      bash -c "cd /src && pip install poetry && poetry build && 
-      poetry config repositories.gitlab_repo ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/pypi && 
+      bash -c "cd /src && pip install poetry && poetry build &&
+      poetry config repositories.gitlab_repo ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/pypi &&
       poetry publish -u gitlab-ci-token -p ${CI_JOB_TOKEN} -r gitlab_repo
       "
   when: manual

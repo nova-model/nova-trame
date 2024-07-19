@@ -91,3 +91,17 @@ You can run it via:
 
     poetry install
     poetry run start [--server]
+
+# Development
+Please use [Black](https://github.com/psf/black) to format code being worked on in this repository.
+
+### PyPI
+If you are making a change to this repository, then please use the following process:
+
+1. Make your changes.
+2. Update the package version in pyproject.toml using [Semantic Versioning](https://semver.org/) and your best judgement.
+3. Append "-dev.X" to the version number in pyproject.toml, where X is the build version you want to test.
+4. Open a merge request and run the package-build pipeline to send your build to PyPI.
+5. Use the PyPI build to test your changes.
+6. Once your changes are approved, remove "-dev.X" from pyproject.toml.
+7. Merge your changes and run the package-build pipeline to send a production build to PyPI.
