@@ -106,8 +106,8 @@
             "color": "primary"
         },
         "VWindowItem": {
-            "reverseTransition": false,
-            "transition": false
+            "reverseTransition": "fade-transition",
+            "transition": "fade-transition"
         }
     },
     "theme": {
