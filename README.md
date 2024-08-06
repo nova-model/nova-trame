@@ -84,6 +84,25 @@ you can add a theme selection menu to the top right of your page with the follow
 Note that if you are using [py-mvvm](https://code.ornl.gov/ndip/public-packages/py-mvvm) then you may want
 to use that library to set this state variable for consistency.
 
+# Customization
+If you want more control than selecting one of the pre-built themes, then you can provide your own
+[Vuetify Configuration](https://vuetifyjs.com/en/features/global-configuration/) where you can define your
+own themes or override the component defaults this package provides. You can pass a Python dictionary via
+`ThemedApp.__init__(vuetify_config_overrides=YOUR_CONFIG)`. This config can be defined in a JSON file and
+loaded with `json.load` or you can just define it directly in code.
+
+### Color shortcuts
+If you just want to set your color palette without providing a full Vuetify configuration, then there are three
+shortcut keys you can put in your Vuetify configuration to set the color palette used by our `ModernTheme`:
+
+```json
+{
+    "primary": "#f00",
+    "secondary": "#0f0",
+    "accent": "#00f",
+}
+```
+
 # Example Application
 This package includes an example Trame application that shows commonly used Vuetify components for visual testing of our themes.
 

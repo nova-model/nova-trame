@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "trame-facade"
-version = "0.2.2"
+version = "0.2.3-dev.1"
 description = "A Python Package for injecting curated themes into Trame applications"
 authors = ["Duggan, John <dugganjw@ornl.gov>"]
 license = "MIT"
@@ -9,6 +9,7 @@ packages = [{include = "trame_facade"}]
 
 [tool.poetry.dependencies]
 libsass = "^0.23.0"
+mergedeep = "^1.3.4"
 python = "^3.10"
 trame = "^3.6.3"
 trame-vuetify = "^2.6.1"

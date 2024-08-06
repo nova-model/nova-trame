@@ -1,0 +1,10 @@
+{
+    "primary": "#ff0000",
+    "secondary": "#00ff00",
+    "accent": "#0000ff",
+    "defaults": {
+        "VBtn": {
+            "color": "accent"
+        }
+    }
+}

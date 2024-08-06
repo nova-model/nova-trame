@@ -1,3 +1,7 @@
+import json
+import logging
+from pathlib import Path
+
 from trame.app import get_server
 from trame.decorators import TrameApp
 from trame.widgets import html, vuetify3 as vuetify
@@ -5,11 +9,22 @@ from trame.widgets import html, vuetify3 as vuetify
 from trame_facade import ThemedApp
 from trame_facade.components import EasyGrid
 
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
 
 @TrameApp()
 class App(ThemedApp):
     def __init__(self, server=None):
-        super().__init__(server=server)
+        try:
+            with open(Path(__file__).parent / "vuetify_config.json", "r") as _file:
+                vuetify_config = json.load(_file)
+                logger.warning(
+                    "WARN: Gallery loaded a local Vuetify config. This is only provided as an example and should not be used in production."
+                )
+        except (FileNotFoundError, ValueError):
+            vuetify_config = {}
+        super().__init__(server=server, vuetify_config_overrides=vuetify_config)
 
         self.server = get_server(server, client_type="vue3")
 
