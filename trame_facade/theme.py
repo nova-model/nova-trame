@@ -1,7 +1,9 @@
 import json
 import logging
+import os
 from pathlib import Path
 
+from mergedeep import merge, Strategy
 import sass
 
 from trame.app import get_server
@@ -20,10 +22,11 @@ logger.setLevel(logging.INFO)
 class ThemedApp:
     """Parent class for Trame applications that injects theming into the application."""
 
-    def __init__(self, server=None):
+    def __init__(self, server=None, vuetify_config_overrides={}):
         self.server = get_server(server, client_type="vue3")
         self.layout = None
         self.local_storage = None
+
         self.css = None
         try:
             with open(THEME_PATH / "core_style.scss", "r") as scss_file:
@@ -31,13 +34,25 @@ class ThemedApp:
         except Exception as e:
             logger.warning("Could not load base scss stylesheet.")
             logger.error(e)
-        self.vuetify_config = None
+
+        theme_path = THEME_PATH / "vuetify_config.json"
         try:
-            with open(THEME_PATH / "vuetify_config.json", "r") as vuetify_config:
+            with open(theme_path, "r") as vuetify_config:
                 self.vuetify_config = json.load(vuetify_config)
+
+                merge(
+                    self.vuetify_config,
+                    vuetify_config_overrides,
+                    strategy=Strategy.REPLACE,
+                )
         except Exception as e:
-            logger.warning("Could not load vuetify config.")
+            logger.warning(f"Could not load vuetify config from {theme_path}.")
             logger.error(e)
+        for shortcut in ["primary", "secondary", "accent"]:
+            if shortcut in self.vuetify_config:
+                self.vuetify_config["theme"]["themes"]["ModernTheme"]["colors"][
+                    shortcut
+                ] = self.vuetify_config[shortcut]
 
         # Since this is only intended for theming Trame apps, I don't think we need to invoke the MVVM framework here,
         # and working directly with the Trame state makes this easier for me to manage.
