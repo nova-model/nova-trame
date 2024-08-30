@@ -7,7 +7,7 @@ from trame.decorators import TrameApp
 from trame.widgets import html, vuetify3 as vuetify
 
 from trame_facade import ThemedApp
-from trame_facade.components import EasyGrid
+from trame_facade.components import EasyGrid, InputField
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -34,8 +34,24 @@ class App(ThemedApp):
     def state(self):
         return self.server.state
 
+    def test_callable_update(self, *args, **kwargs):
+        assert args == ()
+        assert kwargs == {}
+
+    def test_callable_args_update(self, value, value2, **kwargs):
+        assert value == "a"
+        assert value2 == "b"
+        assert kwargs == {}
+
+    def test_callable_kwargs_update(self, value, value2, **kwargs):
+        assert value == "a"
+        assert value2 == "b"
+        assert kwargs == {"test": "test"}
+
     def create_ui(self):
         self.state.facade__menu = True
+        self.state.select1 = []
+        self.state.select2 = []
         self.state.snackbar = True
         self.state.trame__title = "Widget Gallery"
 
@@ -56,18 +72,16 @@ class App(ThemedApp):
                         title="Widget Gallery",
                         width=800,
                     ):
-                        with EasyGrid(cols_per_row=3):
-                            # Grid
-                            with html.Div():
-                                html.Span("Grid", classes="text-center")
-                                with EasyGrid(cols_per_row=2):
-                                    vuetify.VBtn(
-                                        "{{ item }} - {{ index }}",
-                                        v_for="(item, index) in ['a', 'b', 'c']",
-                                    )
-                                    vuetify.VBtn("d - 3")
+                        vuetify.VCardTitle("Grid")
+                        with EasyGrid(cols_per_row=2):
+                            vuetify.VBtn(
+                                "{{ item }} - {{ index }}",
+                                v_for="(item, index) in ['a', 'b', 'c']",
+                            )
+                            vuetify.VBtn("d - 3")
 
-                            # Containment
+                        vuetify.VCardTitle("Containment Components")
+                        with EasyGrid(cols_per_row=3):
                             vuetify.VBtn(
                                 "Elevated Button",
                             )
@@ -114,27 +128,76 @@ class App(ThemedApp):
                                 with vuetify.Template(v_slot_activator="{ props }"):
                                     vuetify.VBtn("Tooltip", v_bind="props")
 
-                            # Navigation
+                        vuetify.VCardTitle("Navigation Components")
+                        with EasyGrid(cols_per_row=1):
                             with vuetify.VTabs():
                                 vuetify.VTab("Tab 1")
                                 vuetify.VTab("Tab 2")
                                 vuetify.VTab("Tab 3")
 
-                            # Form Inputs & Controls
-                            vuetify.VCheckbox(label="Checkbox")
-                            vuetify.VFileInput(label="File Upload")
-                            with vuetify.VRadioGroup():
+                        vuetify.VCardTitle("Form Inputs & Controls")
+                        with EasyGrid(cols_per_row=3):
+                            InputField(type="checkbox", label="Checkbox")
+                            InputField(type="file", label="File Upload")
+                            with InputField(type="radio"):
                                 vuetify.VRadio(label="Radio 1", value="radio1")
                                 vuetify.VRadio(label="Radio 2", value="radio2")
-                            vuetify.VSelect(
-                                items=("['Option 1', 'Option 2']",), label="Select"
+                            InputField(
+                                type="select",
+                                items="['Option 1', 'Option 2']",
+                                label="Select",
                             )
-                            vuetify.VSlider(label="Slider")
-                            vuetify.VSwitch(label="Switch")
-                            vuetify.VTextField(label="Text Field")
-                            vuetify.VTextarea(label="Text Area")
+                            InputField(type="slider", label="Slider")
+                            InputField(type="switch", label="Switch")
+                            InputField(type="textarea", label="Text Area")
+                            InputField(label="Text Field")
 
-                            # Feedback
+                        vuetify.VCardTitle("Validation")
+                        with vuetify.VForm():
+                            with EasyGrid(cols_per_row=3):
+                                InputField(label="Required Field", required=True)
+                                InputField(
+                                    label="Optional Field",
+                                    update_modelValue=self.test_callable_update,
+                                )
+                                InputField(
+                                    label="Text Only Optional Field",
+                                    rules=(
+                                        "[(value) => /[0-9]/.test(value) ? 'Field must not contain numbers' : true]",
+                                    ),
+                                    update_modelValue=(
+                                        self.test_callable_args_update,
+                                        "['a', 'b']",
+                                    ),
+                                )
+                                InputField(
+                                    ref="gallery_select",
+                                    v_model="select1",
+                                    type="select",
+                                    items="['Option 1', 'Option 2']",
+                                    label="Required Select",
+                                    multiple=True,
+                                    required=True,
+                                    update_modelValue=(
+                                        self.test_callable_kwargs_update,
+                                        "['a', 'b']",
+                                        "{ test: 'test' }",
+                                    ),
+                                )
+                                InputField(
+                                    v_model="select2",
+                                    type="select",
+                                    items="['Option 1', 'Option 2']",
+                                    label="Cross-validated Select",
+                                    multiple=True,
+                                    required=True,
+                                    rules=(
+                                        "[(value) => value?.length === select1.length || 'Must have the same number of selections as the previous select']",
+                                    ),
+                                )
+
+                        vuetify.VCardTitle("Feedback Components")
+                        with EasyGrid(cols_per_row=3):
                             vuetify.VAlert("Alert")
                             with vuetify.VBadge():
                                 vuetify.VIcon("mdi-ab-testing")

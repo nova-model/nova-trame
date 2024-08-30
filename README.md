@@ -64,6 +64,24 @@ VRow/VCol components manually.
 If you need to manually specify the column width of a child, you can do so by applying the typical Vuetify column width
 fields on it (cols, lg, md, sm, etc.).
 
+### Inputs
+To help with generating inputs for [Vuetify Forms](https://vuetifyjs.com/en/components/forms/#usage), we provide a convenience component
+that can be used as follows (example creates a VSelect input):
+
+    from trame_facade.components import InputField
+
+
+    with layout.content:
+        InputField(items=("['Option 1', 'Option 2']",), required=True, type="select")
+
+The following types are available: `autocomplete`, `checkbox`, `combobox`, `file`, `input`, `otp`, `radio`, `range-slider`, `select`,
+`slider`, `switch`, and `textarea`. Any other provided type will produce a VTextField and type will be passed as an
+[HTML input type](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#input_types).
+
+`InputField` will automatically update an input's label and rules list if marked as required.
+
+`InputField` also automatically supports cross-field validation.
+
 # Themes
 The following themes are currently available:
 1. ModernTheme - The recommended theme for most applications. Leverages ORNL brand colors and a typical Vuetify appearance.
