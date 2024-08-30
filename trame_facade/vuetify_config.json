@@ -1,5 +1,10 @@
 {
     "defaults": {
+        "global": {
+            "hideDetails": "auto",
+            "hideSpinButtons": true,
+            "persistentPlaceholder": true
+        },
         "VAlert": {
             "color": "secondary"
         },
@@ -50,7 +55,8 @@
             "color": "primary"
         },
         "VFileInput": {
-            "color": "primary"
+            "color": "primary",
+            "prependIcon": false
         },
         "VLabel": {
             "style": {
