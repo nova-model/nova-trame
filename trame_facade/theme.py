@@ -153,8 +153,17 @@ class ThemedApp:
                                             v_if="facade__theme === 'TechnicalTheme'",
                                         )
 
-                    with vuetify.VMain() as content:
-                        layout.content = content
+                    with vuetify.VMain(
+                        classes="align-stretch d-flex flex-column h-screen"
+                    ):
+                        layout.pre_content = vuetify.VSheet(classes="bg-background")
+                        with vuetify.VContainer(
+                            classes="overflow-hidden pb-1 pt-0", fluid=True
+                        ):
+                            layout.content = vuetify.VSheet(
+                                classes="elevation-1 h-100 overflow-y-auto"
+                            )
+                        layout.post_content = vuetify.VSheet(classes="bg-background")
 
                     with vuetify.VFooter(
                         app=True,
