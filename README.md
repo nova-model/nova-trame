@@ -37,7 +37,14 @@ This will default to using our ModernTheme.
 
         def create_ui(self):
             with super().create_ui() as layout:
-                # Add your content here
+                with layout.pre_content:
+                    # Add sticky-positioned elements before v-main
+
+                with layout.content:
+                    # Add contents to the v-main block
+
+                with layout.post_content:
+                    # Add sticky-positioned elements after v-main
 
 # Convenience Components
 
