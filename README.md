@@ -89,6 +89,26 @@ The following types are available: `autocomplete`, `checkbox`, `combobox`, `file
 
 `InputField` also automatically supports cross-field validation.
 
+### Remote File Selector
+`RemoteFileInput` can be used to select files from HFIR/SNS as follows:
+
+    from trame_components import RemoteFileInput
+
+
+    with layout.content:
+        RemoteFileInput(
+            v_model="state_name",
+            allow_files=True,
+            allow_nonexistent_path=False,
+            base_paths=["/HFIR", "/SNS"],
+            extensions=[".txt"],
+            label="File Selector",
+        )
+
+Additionally, you can pass dictionaries to `dialog_props` and `input_props` to set Vuetify attributes directly on the dialog (eg setting a width) and the text field, respectively.
+
+Note that all directories and files (if `allow_files` is True) in the provided `base_paths` will be visible to the user. Please use this carefully.
+
 # Themes
 The following themes are currently available:
 1. ModernTheme - The recommended theme for most applications. Leverages ORNL brand colors and a typical Vuetify appearance.

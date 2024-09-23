@@ -96,6 +96,11 @@ yarl = ">=1.0,<2.0"
 [package.extras]
 speedups = ["Brotli", "aiodns", "brotlicffi"]
 
+[package.source]
+type = "legacy"
+url = "https://code.ornl.gov/api/v4/projects/15758/packages/pypi/simple"
+reference = "py-mvvm"
+
 [[package]]
 name = "aiosignal"
 version = "1.3.1"
@@ -110,6 +115,11 @@ files = [
 [package.dependencies]
 frozenlist = ">=1.1.0"
 
+[package.source]
+type = "legacy"
+url = "https://code.ornl.gov/api/v4/projects/15758/packages/pypi/simple"
+reference = "py-mvvm"
+
 [[package]]
 name = "async-timeout"
 version = "4.0.3"
@@ -120,6 +130,11 @@ files = [
     {file = "async-timeout-4.0.3.tar.gz", hash = "sha256:4640d96be84d82d02ed59ea2b7105a0f7b33abe8703703cd0ab0bf87c427522f"},
     {file = "async_timeout-4.0.3-py3-none-any.whl", hash = "sha256:7405140ff1230c310e51dc27b3145b9092d659ce68ff733fb0cefe3ee42be028"},
 ]
+
+[package.source]
+type = "legacy"
+url = "https://code.ornl.gov/api/v4/projects/15758/packages/pypi/simple"
+reference = "py-mvvm"
 
 [[package]]
 name = "attrs"
@@ -139,6 +154,11 @@ docs = ["furo", "myst-parser", "sphinx", "sphinx-notfound-page", "sphinxcontrib-
 tests = ["attrs[tests-no-zope]", "zope-interface"]
 tests-mypy = ["mypy (>=1.6)", "pytest-mypy-plugins"]
 tests-no-zope = ["attrs[tests-mypy]", "cloudpickle", "hypothesis", "pympler", "pytest (>=4.3.0)", "pytest-xdist[psutil]"]
+
+[package.source]
+type = "legacy"
+url = "https://code.ornl.gov/api/v4/projects/15758/packages/pypi/simple"
+reference = "py-mvvm"
 
 [[package]]
 name = "frozenlist"
@@ -226,6 +246,11 @@ files = [
     {file = "frozenlist-1.4.1.tar.gz", hash = "sha256:c037a86e8513059a2613aaba4d817bb90b9d9b6b69aace3ce9c877e8c8ed402b"},
 ]
 
+[package.source]
+type = "legacy"
+url = "https://code.ornl.gov/api/v4/projects/15758/packages/pypi/simple"
+reference = "py-mvvm"
+
 [[package]]
 name = "idna"
 version = "3.7"
@@ -236,6 +261,11 @@ files = [
     {file = "idna-3.7-py3-none-any.whl", hash = "sha256:82fee1fc78add43492d3a1898bfa6d8a904cc97d8427f683ed8e798d07761aa0"},
     {file = "idna-3.7.tar.gz", hash = "sha256:028ff3aadf0609c1fd278d8ea3089299412a7a8b9bd005dd08b9f8285bcb5cfc"},
 ]
+
+[package.source]
+type = "legacy"
+url = "https://code.ornl.gov/api/v4/projects/15758/packages/pypi/simple"
+reference = "py-mvvm"
 
 [[package]]
 name = "libsass"
@@ -252,6 +282,11 @@ files = [
     {file = "libsass-0.23.0.tar.gz", hash = "sha256:6f209955ede26684e76912caf329f4ccb57e4a043fd77fe0e7348dd9574f1880"},
 ]
 
+[package.source]
+type = "legacy"
+url = "https://code.ornl.gov/api/v4/projects/15758/packages/pypi/simple"
+reference = "py-mvvm"
+
 [[package]]
 name = "mergedeep"
 version = "1.3.4"
@@ -263,6 +298,11 @@ files = [
     {file = "mergedeep-1.3.4.tar.gz", hash = "sha256:0096d52e9dad9939c3d975a774666af186eda617e6ca84df4c94dec30004f2a8"},
 ]
 
+[package.source]
+type = "legacy"
+url = "https://code.ornl.gov/api/v4/projects/15758/packages/pypi/simple"
+reference = "py-mvvm"
+
 [[package]]
 name = "more-itertools"
 version = "10.3.0"
@@ -273,6 +313,11 @@ files = [
     {file = "more-itertools-10.3.0.tar.gz", hash = "sha256:e5d93ef411224fbcef366a6e8ddc4c5781bc6359d43412a65dd5964e46111463"},
     {file = "more_itertools-10.3.0-py3-none-any.whl", hash = "sha256:ea6a02e24a9161e51faad17a8782b92a0df82c12c1c8886fec7f0c3fa1a1b320"},
 ]
+
+[package.source]
+type = "legacy"
+url = "https://code.ornl.gov/api/v4/projects/15758/packages/pypi/simple"
+reference = "py-mvvm"
 
 [[package]]
 name = "msgpack"
@@ -338,6 +383,11 @@ files = [
     {file = "msgpack-1.0.8-cp39-cp39-win_amd64.whl", hash = "sha256:ed59dd52075f8fc91da6053b12e8c89e37aa043f8986efd89e61fae69dc1b011"},
     {file = "msgpack-1.0.8.tar.gz", hash = "sha256:95c02b0e27e706e48d0e5426d1710ca78e0f0628d6e89d5b5a5b91a5f12274f3"},
 ]
+
+[package.source]
+type = "legacy"
+url = "https://code.ornl.gov/api/v4/projects/15758/packages/pypi/simple"
+reference = "py-mvvm"
 
 [[package]]
 name = "multidict"
@@ -438,6 +488,34 @@ files = [
     {file = "multidict-6.0.5.tar.gz", hash = "sha256:f7e301075edaf50500f0b341543c41194d8df3ae5caf4702f2095f3ca73dd8da"},
 ]
 
+[package.source]
+type = "legacy"
+url = "https://code.ornl.gov/api/v4/projects/15758/packages/pypi/simple"
+reference = "py-mvvm"
+
+[[package]]
+name = "py-mvvm"
+version = "0.2.0"
+description = "A Python Package for Model-View-ViewModel pattern"
+optional = false
+python-versions = ">=3.10,<4.0"
+files = [
+    {file = "py_mvvm-0.2.0-py3-none-any.whl", hash = "sha256:2a60c873e0fb021a6b4b67770f52c874e63b26f4b9a7a303ec428603fb05a8f4"},
+    {file = "py_mvvm-0.2.0.tar.gz", hash = "sha256:9ae56b74235d171223b45e7ab8f99d6659772ecac3a63c22f653bdfab403ef5e"},
+]
+
+[package.dependencies]
+trame = {version = ">=3.5.1,<4.0.0", optional = true, markers = "extra == \"trame\""}
+
+[package.extras]
+pyqt6 = ["pyqt6 (>=6.7.0,<7.0.0)"]
+trame = ["trame (>=3.5.1,<4.0.0)"]
+
+[package.source]
+type = "legacy"
+url = "https://code.ornl.gov/api/v4/projects/15758/packages/pypi/simple"
+reference = "py-mvvm"
+
 [[package]]
 name = "trame"
 version = "3.6.3"
@@ -453,6 +531,11 @@ files = [
 trame-client = ">=3,<4"
 trame-server = ">=3,<4"
 
+[package.source]
+type = "legacy"
+url = "https://code.ornl.gov/api/v4/projects/15758/packages/pypi/simple"
+reference = "py-mvvm"
+
 [[package]]
 name = "trame-client"
 version = "3.2.1"
@@ -466,6 +549,11 @@ files = [
 
 [package.extras]
 test = ["Pillow", "pixelmatch", "pytest", "pytest-xprocess", "seleniumbase"]
+
+[package.source]
+type = "legacy"
+url = "https://code.ornl.gov/api/v4/projects/15758/packages/pypi/simple"
+reference = "py-mvvm"
 
 [[package]]
 name = "trame-server"
@@ -482,6 +570,11 @@ files = [
 more-itertools = "*"
 wslink = ">=2,<3"
 
+[package.source]
+type = "legacy"
+url = "https://code.ornl.gov/api/v4/projects/15758/packages/pypi/simple"
+reference = "py-mvvm"
+
 [[package]]
 name = "trame-vuetify"
 version = "2.6.1"
@@ -495,6 +588,11 @@ files = [
 
 [package.dependencies]
 trame-client = "*"
+
+[package.source]
+type = "legacy"
+url = "https://code.ornl.gov/api/v4/projects/15758/packages/pypi/simple"
+reference = "py-mvvm"
 
 [[package]]
 name = "wslink"
@@ -513,6 +611,11 @@ msgpack = ">=1,<2"
 
 [package.extras]
 ssl = ["cryptography"]
+
+[package.source]
+type = "legacy"
+url = "https://code.ornl.gov/api/v4/projects/15758/packages/pypi/simple"
+reference = "py-mvvm"
 
 [[package]]
 name = "yarl"
@@ -617,7 +720,12 @@ files = [
 idna = ">=2.0"
 multidict = ">=4.0"
 
+[package.source]
+type = "legacy"
+url = "https://code.ornl.gov/api/v4/projects/15758/packages/pypi/simple"
+reference = "py-mvvm"
+
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "b6e6b80c6620b802dd8d7e5505ebab09fd07cd7ae60b169406f28fd0fe65f522"
+content-hash = "a534f60535d4e7e5b912525b555ab87dae98184dacd7c3eb88c0fedf652679e6"
