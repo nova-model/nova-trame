@@ -7,7 +7,7 @@ from trame.decorators import TrameApp
 from trame.widgets import html, vuetify3 as vuetify
 
 from trame_facade import ThemedApp
-from trame_facade.components import EasyGrid, InputField
+from trame_facade.components import EasyGrid, InputField, RemoteFileInput
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -28,6 +28,7 @@ class App(ThemedApp):
 
         self.server = get_server(server, client_type="vue3")
 
+        self.create_state()
         self.create_ui()
 
     @property
@@ -48,13 +49,19 @@ class App(ThemedApp):
         assert value2 == "b"
         assert kwargs == {"test": "test"}
 
-    def create_ui(self):
+    def create_state(self):
         self.state.facade__menu = True
+        self.state.nested = {
+            "selected_file": "",
+        }
         self.state.select1 = []
         self.state.select2 = []
+        self.state.selected_file = ""
+        self.state.selected_folder = ""
         self.state.snackbar = True
         self.state.trame__title = "Widget Gallery"
 
+    def create_ui(self):
         with super().create_ui() as layout:
             # self.set_theme("TechnicalTheme")  # sets the default theme, must not call before layout exists
             layout.toolbar_title.set_text("Widget Gallery")
@@ -183,32 +190,87 @@ class App(ThemedApp):
                                     "{ test: 'test' }",
                                 ),
                             )
-                            InputField(
-                                v_model="select2",
-                                type="select",
-                                items="['Option 1', 'Option 2']",
-                                label="Cross-validated Select",
-                                multiple=True,
-                                required=True,
-                                rules=(
-                                    "[(value) => value?.length === select1.length || 'Must have the same number of selections as the previous select']",
-                                ),
+                            InputField(type="slider", label="Slider")
+                            InputField(type="switch", label="Switch")
+                            InputField(type="textarea", label="Text Area")
+                            InputField(label="Text Field")
+                            RemoteFileInput(
+                                v_model="selected_file",
+                                base_paths=["/run"],
+                                extensions=[".pid", ".lock"],
+                                label="File Selector",
+                            )
+                            RemoteFileInput(
+                                v_model="selected_folder",
+                                allow_files=False,
+                                allow_folders=True,
+                                base_paths=["/usr"],
+                                label="Folder Selector",
+                            )
+                            RemoteFileInput(
+                                v_model="nested.selected_file",
+                                base_paths=["/run"],
+                                label="Nested v_model File Selector",
                             )
 
-                    vuetify.VCardTitle("Feedback Components")
-                    with EasyGrid(cols_per_row=3):
-                        vuetify.VAlert("Alert")
-                        with vuetify.VBadge():
-                            vuetify.VIcon("mdi-ab-testing")
-                        vuetify.VProgressCircular(indeterminate=True)
-                        vuetify.VProgressLinear(indeterminate=True)
-                        with vuetify.VSnackbar(
-                            "Snackbar",
-                            v_model="snackbar",
-                            timeout=-1,
-                        ):
-                            with vuetify.Template(v_slot_actions=True):
-                                vuetify.VBtn("Close", click="snackbar = false")
+                        vuetify.VCardTitle("Validation")
+                        with vuetify.VForm():
+                            with EasyGrid(cols_per_row=3):
+                                InputField(label="Required Field", required=True)
+                                InputField(
+                                    label="Optional Field",
+                                    update_modelValue=self.test_callable_update,
+                                )
+                                InputField(
+                                    label="Text Only Optional Field",
+                                    rules=(
+                                        "[(value) => /[0-9]/.test(value) ? 'Field must not contain numbers' : true]",
+                                    ),
+                                    update_modelValue=(
+                                        self.test_callable_args_update,
+                                        "['a', 'b']",
+                                    ),
+                                )
+                                InputField(
+                                    ref="gallery_select",
+                                    v_model="select1",
+                                    type="select",
+                                    items="['Option 1', 'Option 2']",
+                                    label="Required Select",
+                                    multiple=True,
+                                    required=True,
+                                    update_modelValue=(
+                                        self.test_callable_kwargs_update,
+                                        "['a', 'b']",
+                                        "{ test: 'test' }",
+                                    ),
+                                )
+                                InputField(
+                                    v_model="select2",
+                                    type="select",
+                                    items="['Option 1', 'Option 2']",
+                                    label="Cross-validated Select",
+                                    multiple=True,
+                                    required=True,
+                                    rules=(
+                                        "[(value) => value?.length === select1.length || 'Must have the same number of selections as the previous select']",
+                                    ),
+                                )
+
+                        vuetify.VCardTitle("Feedback Components")
+                        with EasyGrid(cols_per_row=3):
+                            vuetify.VAlert("Alert")
+                            with vuetify.VBadge():
+                                vuetify.VIcon("mdi-ab-testing")
+                            vuetify.VProgressCircular(indeterminate=True)
+                            vuetify.VProgressLinear(indeterminate=True)
+                            with vuetify.VSnackbar(
+                                "Snackbar",
+                                v_model="snackbar",
+                                timeout=-1,
+                            ):
+                                with vuetify.Template(v_slot_actions=True):
+                                    vuetify.VBtn("Close", click="snackbar = false")
 
             with layout.post_content:
                 html.Div("Sticky Bottom Content", classes="text-center w-100")

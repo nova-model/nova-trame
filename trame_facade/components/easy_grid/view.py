@@ -1,4 +1,4 @@
-from trame.widgets import vuetify3 as vuetify
+from trame.widgets import client, vuetify3 as vuetify
 
 
 VUETIFY_COLS = 12  # Max number of columns in a Vuetify grid
@@ -26,6 +26,11 @@ class EasyGrid(vuetify.VContainer):
         self.last_row = None
 
     def add_child(self, child):
+        # Don't create rows and columns for JSEval elements which are only used to inject JS.
+        if isinstance(child, client.JSEval):
+            super().add_child(child)
+            return
+
         if self.skip_child:
             self.skip_child = False
             return
