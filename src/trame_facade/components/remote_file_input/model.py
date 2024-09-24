@@ -1,23 +1,27 @@
+"""Model state for RemoteFileInput."""
+
 import os
+from typing import Any, Union
 
 
 class RemoteFileInputModel:
-    def __init__(self, allow_files, allow_folders, base_paths, extensions):
+    """Manages interactions between RemoteFileInput and the file system."""
+
+    def __init__(self, allow_files: bool, allow_folders: bool, base_paths: list[str], extensions: list[str]) -> None:
+        """Creates a new RemoteFileInputModel."""
         self.allow_files = allow_files
         self.allow_folders = allow_folders
         self.base_paths = base_paths
         self.extensions = extensions
 
-    def get_base_paths(self):
+    def get_base_paths(self) -> list[dict[str, Any]]:
         return [{"path": base_path, "directory": True} for base_path in self.base_paths]
 
-    def scan_current_path(self, current_path, showing_all_files):
+    def scan_current_path(self, current_path: str, showing_all_files: bool) -> tuple[list[dict[str, Any]], bool]:
         failed = False
 
         try:
-            if current_path and (
-                not self.valid_subpath(current_path) or not os.path.exists(current_path)
-            ):
+            if current_path and (not self.valid_subpath(current_path) or not os.path.exists(current_path)):
                 raise FileNotFoundError
 
             files = [{"path": "..", "directory": True}]
@@ -34,13 +38,13 @@ class RemoteFileInputModel:
             files = self.get_base_paths()
             failed = True
 
-        sorted_files = sorted(files, key=lambda entry: entry["path"].lower())
+        sorted_files = sorted(files, key=lambda entry: str(entry["path"]).lower())
 
         return (sorted_files, failed)
 
-    def select_file(self, file, old_path, showing_base_paths):
+    def select_file(self, file: Union[dict[str, str], str], old_path: str, showing_base_paths: bool) -> str:
         if file == "":
-            return file
+            return ""
 
         if isinstance(file, dict):
             file = file["path"]
@@ -59,20 +63,16 @@ class RemoteFileInputModel:
         else:
             return file
 
-    def valid_entry(self, entry, showing_all_files):
+    def valid_entry(self, entry: os.DirEntry, showing_all_files: bool) -> bool:
         if entry.is_dir():
             return True
 
         if not self.allow_files:
             return False
 
-        return (
-            showing_all_files
-            or not self.extensions
-            or any([entry.name.endswith(ext) for ext in self.extensions])
-        )
+        return showing_all_files or not self.extensions or any(entry.name.endswith(ext) for ext in self.extensions)
 
-    def valid_selection(self, selection):
+    def valid_selection(self, selection: str) -> bool:
         if self.valid_subpath(selection):
             if os.path.isdir(selection) and self.allow_folders:
                 return True
@@ -82,7 +82,7 @@ class RemoteFileInputModel:
 
         return False
 
-    def valid_subpath(self, subpath):
+    def valid_subpath(self, subpath: str) -> bool:
         if subpath == "":
             return False
 

@@ -1,10 +1,17 @@
+"""Creates the UI for the widget gallery."""
+
 import json
 import logging
 from pathlib import Path
+from typing import cast
 
 from trame.app import get_server
 from trame.decorators import TrameApp
-from trame.widgets import html, vuetify3 as vuetify
+from trame.widgets import html
+from trame.widgets import vuetify3 as vuetify
+from trame_client.widgets.core import AbstractElement
+from trame_server.core import Server
+from trame_server.state import State
 
 from trame_facade import ThemedApp
 from trame_facade.components import EasyGrid, InputField, RemoteFileInput
@@ -15,12 +22,16 @@ logger.setLevel(logging.INFO)
 
 @TrameApp()
 class App(ThemedApp):
-    def __init__(self, server=None):
+    """Root Trame class for defining the UI."""
+
+    def __init__(self, server: Server = None) -> None:
+        """Constructor for the App class."""
         try:
             with open(Path(__file__).parent / "vuetify_config.json", "r") as _file:
                 vuetify_config = json.load(_file)
                 logger.warning(
-                    "WARN: Gallery loaded a local Vuetify config. This is only provided as an example and should not be used in production."
+                    "WARN: Gallery loaded a local Vuetify config. This is only provided as an example and should not "
+                    "be used in production."
                 )
         except (FileNotFoundError, ValueError):
             vuetify_config = {}
@@ -32,24 +43,10 @@ class App(ThemedApp):
         self.create_ui()
 
     @property
-    def state(self):
+    def state(self) -> State:
         return self.server.state
 
-    def test_callable_update(self, *args, **kwargs):
-        assert args == ()
-        assert kwargs == {}
-
-    def test_callable_args_update(self, value, value2, **kwargs):
-        assert value == "a"
-        assert value2 == "b"
-        assert kwargs == {}
-
-    def test_callable_kwargs_update(self, value, value2, **kwargs):
-        assert value == "a"
-        assert value2 == "b"
-        assert kwargs == {"test": "test"}
-
-    def create_state(self):
+    def create_state(self) -> None:
         self.state.facade__menu = True
         self.state.nested = {
             "selected_file": "",
@@ -61,7 +58,7 @@ class App(ThemedApp):
         self.state.snackbar = True
         self.state.trame__title = "Widget Gallery"
 
-    def create_ui(self):
+    def create_ui(self) -> None:
         with super().create_ui() as layout:
             # self.set_theme("TechnicalTheme")  # sets the default theme, must not call before layout exists
             layout.toolbar_title.set_text("Widget Gallery")
@@ -111,19 +108,11 @@ class App(ThemedApp):
                             html.Span("Divider")
                             vuetify.VDivider()
                         with vuetify.VExpansionPanels():
-                            vuetify.VExpansionPanel(
-                                text="Lorem Ipsum", title="Expansion Panel"
-                            )
+                            vuetify.VExpansionPanel(text="Lorem Ipsum", title="Expansion Panel")
                         with vuetify.VList():
-                            vuetify.VListItem(
-                                subtitle="Lorem Ipsum", title="List Item 1"
-                            )
-                            vuetify.VListItem(
-                                subtitle="Lorem Ipsum", title="List Item 2"
-                            )
-                            with vuetify.VListItem(
-                                subtitle="Lorem Ipsum", title="List Item 3"
-                            ):
+                            vuetify.VListItem(subtitle="Lorem Ipsum", title="List Item 1")
+                            vuetify.VListItem(subtitle="Lorem Ipsum", title="List Item 2")
+                            with vuetify.VListItem(subtitle="Lorem Ipsum", title="List Item 3"):
                                 vuetify.VBtn("Button", classes="mt-2")
                         with vuetify.VMenu():
                             with vuetify.Template(v_slot_activator="{ props }"):
@@ -145,7 +134,7 @@ class App(ThemedApp):
                     with EasyGrid(cols_per_row=3):
                         InputField(type="checkbox", label="Checkbox")
                         InputField(type="file", label="File Upload")
-                        with InputField(type="radio"):
+                        with cast(AbstractElement, InputField(type="radio")):
                             vuetify.VRadio(label="Radio 1", value="radio1")
                             vuetify.VRadio(label="Radio 2", value="radio2")
                         InputField(
@@ -162,19 +151,10 @@ class App(ThemedApp):
                     with vuetify.VForm():
                         with EasyGrid(cols_per_row=3):
                             InputField(label="Required Field", required=True)
-                            InputField(
-                                label="Optional Field",
-                                update_modelValue=self.test_callable_update,
-                            )
+                            InputField(label="Optional Field")
                             InputField(
                                 label="Text Only Optional Field",
-                                rules=(
-                                    "[(value) => /[0-9]/.test(value) ? 'Field must not contain numbers' : true]",
-                                ),
-                                update_modelValue=(
-                                    self.test_callable_args_update,
-                                    "['a', 'b']",
-                                ),
+                                rules=("[(value) => /[0-9]/.test(value) ? 'Field must not contain numbers' : true]",),
                             )
                             InputField(
                                 ref="gallery_select",
@@ -184,11 +164,6 @@ class App(ThemedApp):
                                 label="Required Select",
                                 multiple=True,
                                 required=True,
-                                update_modelValue=(
-                                    self.test_callable_kwargs_update,
-                                    "['a', 'b']",
-                                    "{ test: 'test' }",
-                                ),
                             )
                             InputField(type="slider", label="Slider")
                             InputField(type="switch", label="Switch")
@@ -217,18 +192,11 @@ class App(ThemedApp):
                         with vuetify.VForm():
                             with EasyGrid(cols_per_row=3):
                                 InputField(label="Required Field", required=True)
-                                InputField(
-                                    label="Optional Field",
-                                    update_modelValue=self.test_callable_update,
-                                )
+                                InputField(label="Optional Field")
                                 InputField(
                                     label="Text Only Optional Field",
                                     rules=(
                                         "[(value) => /[0-9]/.test(value) ? 'Field must not contain numbers' : true]",
-                                    ),
-                                    update_modelValue=(
-                                        self.test_callable_args_update,
-                                        "['a', 'b']",
                                     ),
                                 )
                                 InputField(
@@ -239,11 +207,6 @@ class App(ThemedApp):
                                     label="Required Select",
                                     multiple=True,
                                     required=True,
-                                    update_modelValue=(
-                                        self.test_callable_kwargs_update,
-                                        "['a', 'b']",
-                                        "{ test: 'test' }",
-                                    ),
                                 )
                                 InputField(
                                     v_model="select2",
@@ -253,7 +216,10 @@ class App(ThemedApp):
                                     multiple=True,
                                     required=True,
                                     rules=(
-                                        "[(value) => value?.length === select1.length || 'Must have the same number of selections as the previous select']",
+                                        (
+                                            "[(value) => value?.length === select1.length || 'Must have the same "
+                                            "number of selections as the previous select']"
+                                        ),
                                     ),
                                 )
 
