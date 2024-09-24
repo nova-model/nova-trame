@@ -1,25 +1,29 @@
-"""
-Factory class for generating Vuetify input components.
+"""Factory class for generating Vuetify input components.
 
 These inputs have automatic visual marking of required fields and cross-field validation.
 """
 
+from typing import Any
+
 from trame.app import get_server
 from trame.widgets import vuetify3 as vuetify
+from trame_client.widgets.core import AbstractElement
+from trame_server.controller import Controller
 
 
 class InputField:
+    """Factory class for generating Vuetify input components."""
 
-    def __new__(cls, required: bool = False, type: str = "text", **kwargs):
-        """
-        Creates a Vuetify input of the specified type, marks it as required if necessary,
-        and passes all other provided properties to the new input.
-        """
+    def __new__(cls, required: bool = False, type: str = "text", **kwargs: Any) -> AbstractElement:
+        """Creates a Vuetify input.
 
+        The input will have the specified type and will be visually marked as required if necessary.
+        All other provided properties to the new input.
+        """
         if "__events" not in kwargs or kwargs["__events"] is None:
             kwargs["__events"] = []
 
-        if "change" not in kwargs["__events"]:
+        if isinstance(kwargs["__events"], list) and "change" not in kwargs["__events"]:
             kwargs["__events"].append(
                 "change"
             )  # This must be present before each input is created or change events won't be triggered.
@@ -69,57 +73,61 @@ class InputField:
 
         return input
 
-    def _check_rules(input):
-        if (
-            "rules" in input._py_attr
-            and input.rules
-            and not isinstance(input.rules, tuple)
-        ):
+    @staticmethod
+    def _check_rules(input: AbstractElement) -> None:
+        if "rules" in input._py_attr and input.rules and not isinstance(input.rules, tuple):
             raise ValueError(f"Rules for '{input.label}' must be a tuple")
 
-    def _setup_help(_input, **kwargs):
+    @staticmethod
+    def _setup_help(_input: AbstractElement, **kwargs: Any) -> None:
         help = kwargs.get("help", None)
-        if help:
+        if help and isinstance(help, dict):
             _input.hint = help.get("hint", None)
             _input.placeholder = help.get("placeholder", None)
 
-    def _setup_required_label(input):
+    @staticmethod
+    def _setup_required_label(input: AbstractElement) -> None:
         if input.label:
             input.label = f"{input.label}*"
         else:
             input.label = "*"
 
-    def _setup_ref(input):
+    @staticmethod
+    def _setup_ref(input: AbstractElement) -> None:
         if "ref" not in input._py_attr or input.ref is None:
             input.ref = f"facade__{input._id}"
 
-    def _setup_required_rule(input):
+    @staticmethod
+    def _setup_required_rule(input: AbstractElement) -> None:
         required_rule = "(value) => value?.length > 0 || 'Field is required'"
         if "rules" in input._py_attr and input.rules:
             # Existing rules will be in format ("[rule1, rule2]",) and we need to append to this list
             rule_end_index = input.rules[0].rindex("]")
-            input.rules = (
-                f"{input.rules[0][:rule_end_index]}, {required_rule}{input.rules[0][rule_end_index:]}",
-            )
+            input.rules = (f"{input.rules[0][:rule_end_index]}, {required_rule}{input.rules[0][rule_end_index:]}",)
         else:
             input.rules = (f"[{required_rule}]",)
 
-    def _setup_change_listener(ctrl, input):
+    @staticmethod
+    def _setup_change_listener(ctrl: Controller, input: AbstractElement) -> None:
         base_handler = None
         if "change" in input._py_attr and input.change is not None:
             base_handler = input.change
 
         # Iterate over all saved refs and perform validation if there is a value that can be validated.
-        change_handler = "Object.values(window.trame.refs).map((ref) => typeof ref.validate === 'function' && ref.value ? ref.validate() : null);"
+        change_handler = (
+            "Object.values(window.trame.refs).map("
+            "  (ref) => typeof ref.validate === 'function' && ref.value ? ref.validate() : null"
+            ");"
+        )
 
-        # We need to coerce the developer's change handler, which could be a string, callable, or tuple containing a callable,
-        # to a single string to be compatible with our change handler
+        # We need to coerce the developer's change handler, which could be a string, callable, or tuple containing a
+        # callable, to a single string to be compatible with our change handler.
         if callable(base_handler):
             base_handler = (base_handler,)
         if isinstance(base_handler, tuple):
 
             @ctrl.trigger(f"{input.ref}__trigger")
-            def _(*args, **kwargs):
+            def _(*args: str, **kwargs: Any) -> None:
                 base_handler[0](*args, **kwargs)
 
             change_handler = (
@@ -130,6 +138,7 @@ class InputField:
                 f"); {change_handler}"
             )  # Call the developer's provided change method via a trigger, then call ours.
         elif isinstance(base_handler, str):
-            change_handler = f"{base_handler}; {change_handler}"  # Call the developer's provided change JS expression, then call ours.
+            # Call the developer's provided change JS expression, then call ours.
+            change_handler = f"{base_handler}; {change_handler}"
 
         input.change = change_handler

@@ -1,11 +1,12 @@
 [tool.poetry]
 name = "trame-facade"
 version = "0.4.2"
-description = "A Python Package for injecting curated themes into Trame applications"
+description = "A Python Package for injecting curated themes and custom components into Trame applications"
 authors = ["Duggan, John <dugganjw@ornl.gov>"]
-license = "MIT"
 readme = "README.md"
-packages = [{include = "trame_facade"}]
+license = "MIT"
+keywords = ["NDIP", "Python", "Trame", "Vuetify"]
+packages = [{include = "trame_facade", from = "src"}]
 
 [tool.poetry.dependencies]
 libsass = "^0.23.0"
@@ -24,5 +25,67 @@ priority = "primary"
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
+[tool.pytest.ini_options]
+pythonpath = [
+  ".", "src"
+]
+testpaths = ["tests"]
+python_files = ["test*.py"]
+norecursedirs = [".git", "tmp*", "_tmp*", "__pycache__"]
+
+[tool.ruff]
+line-length = 120
+
+[tool.ruff.lint]
+select = [
+    "E",  # pycodestyle errors
+    "W",  # pycodestyle warnings
+    "F",  # pyflakes
+    "I",  # isort
+    "B",  # flake8-bugbear
+    "C4",  # flake8-comprehensions
+    "N",  # PEP8 naming convetions
+    "D"  # pydocstyle
+]
+ignore = [
+    "C901",  # too complex
+    "D102", # Missing docstring in public function
+    "D103", # Missing docstring in public method
+    "D401"  # imperative mood
+
+]
+
+[tool.ruff.lint.extend-per-file-ignores]
+'__init__.py' = ['D104'] # Missing docstring in public package
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.mypy]
+ignore_missing_imports = false
+check_untyped_defs = true
+disallow_untyped_defs = true
+ignore_errors = false
+disable_error_code = ["import-untyped"]
+# You can exclude files with the following (ONLY WHEN NECESSARY)
+# exclude = ["path/to/file"]
+
+[tool.coverage.report]
+omit = [
+    '*__init__*', # __init__ files should just re-export other classes and functions
+]
+
+[tool.coverage.run]
+command_line = "-m pytest --junit-xml=reports/junit.xml"
+data_file = "reports/.coverage"
+
+[tool.poetry.dev-dependencies]
+mypy = "^1.10.0"
+pre-commit = "^2.20.0"
+coverage = "^6.4.3"
+pytest = "*"
+ruff = "^0.6.2"
+selenium = "*"
+
 [tool.poetry.scripts]
-start = "example:main"
+start = "tests.gallery:main"

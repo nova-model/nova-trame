@@ -1,17 +1,20 @@
+"""Defines the ThemedApp class for injecting our components and themes into Trame applications."""
+
 import json
 import logging
-import os
 from pathlib import Path
+from typing import Optional
 
-from mergedeep import merge, Strategy
 import sass
-
+from mergedeep import Strategy, merge
 from trame.app import get_server
 from trame.assets.local import LocalFileManager
 from trame.ui.vuetify3 import VAppLayout
-from trame.widgets import client, vuetify3 as vuetify
+from trame.widgets import client
+from trame.widgets import vuetify3 as vuetify
 from trame_client.widgets import html
-
+from trame_server.core import Server
+from trame_server.state import State
 
 THEME_PATH = Path(__file__).parent
 
@@ -20,12 +23,15 @@ logger.setLevel(logging.INFO)
 
 
 class ThemedApp:
-    """Parent class for Trame applications that injects theming into the application."""
+    """Parent class for Trame applications that injects components and themes into the application."""
 
-    def __init__(self, server=None, vuetify_config_overrides={}):
+    def __init__(self, server: Server = None, vuetify_config_overrides: Optional[dict] = None) -> None:
+        """Constructor for the ThemedApp class."""
         self.server = get_server(server, client_type="vue3")
         self.layout = None
         self.local_storage = None
+        if vuetify_config_overrides is None:
+            vuetify_config_overrides = {}
 
         self.css = None
         try:
@@ -50,42 +56,34 @@ class ThemedApp:
             logger.error(e)
         for shortcut in ["primary", "secondary", "accent"]:
             if shortcut in self.vuetify_config:
-                self.vuetify_config["theme"]["themes"]["ModernTheme"]["colors"][
+                self.vuetify_config["theme"]["themes"]["ModernTheme"]["colors"][shortcut] = self.vuetify_config[
                     shortcut
-                ] = self.vuetify_config[shortcut]
+                ]
 
         # Since this is only intended for theming Trame apps, I don't think we need to invoke the MVVM framework here,
         # and working directly with the Trame state makes this easier for me to manage.
         self.state.facade__menu = False
-        self.state.facade__defaults = self.vuetify_config["theme"]["themes"][
-            "ModernTheme"
-        ].get("defaults", {})
+        self.state.facade__defaults = self.vuetify_config["theme"]["themes"]["ModernTheme"].get("defaults", {})
         self.state.facade__theme = "ModernTheme"
-        self.state.trame__favicon = LocalFileManager(__file__).url(
-            "favicon", "./assets/favicon.png"
-        )
+        self.state.trame__favicon = LocalFileManager(__file__).url("favicon", "./assets/favicon.png")
 
     @property
-    def state(self):
+    def state(self) -> State:
         return self.server.state
 
-    def set_theme(self, theme, force=True):
+    def set_theme(self, theme: str, force: bool = True) -> None:
         # I set force to True by default as I want the user to be able to say self.set_theme('MyTheme')
         # while still blocking theme.py calls to set_theme if the selection menu is disabled.
         if self.state.facade__menu or force:
             with self.state:
-                self.state.facade__defaults = (
-                    self.vuetify_config["theme"]["themes"]
-                    .get(theme, {})
-                    .get("defaults", {})
-                )
+                self.state.facade__defaults = self.vuetify_config["theme"]["themes"].get(theme, {}).get("defaults", {})
                 self.state.facade__theme = theme
 
         # We only want to sync to localStorage if the user is selecting and we want to preserve the selection.
-        if self.state.facade__menu:
+        if self.state.facade__menu and self.local_storage:
             self.local_storage({"key": "facade__theme", "value": theme})
 
-    def create_ui(self):
+    def create_ui(self) -> VAppLayout:
         with VAppLayout(self.server, vuetify_config=self.vuetify_config) as layout:
             client.ClientTriggers(
                 mounted=(
@@ -95,9 +93,7 @@ class ThemedApp:
             )
 
             self.layout = layout
-            self.local_storage = client.JSEval(
-                exec="window.localStorage.setItem($event.key, $event.value);"
-            ).exec
+            self.local_storage = client.JSEval(exec="window.localStorage.setItem($event.key, $event.value);").exec
 
             client.Style(self.css)
 
@@ -133,9 +129,7 @@ class ThemedApp:
                                 with vuetify.VList(width=200):
                                     vuetify.VListSubheader("Select Theme")
                                     vuetify.VDivider()
-                                    with vuetify.VListItem(
-                                        click=(self.set_theme, ["ModernTheme"])
-                                    ):
+                                    with vuetify.VListItem(click=(self.set_theme, ["ModernTheme"])):
                                         vuetify.VListItemTitle("Modern")
                                         vuetify.VListItemSubtitle(
                                             "Selected",
@@ -153,16 +147,10 @@ class ThemedApp:
                                             v_if="facade__theme === 'TechnicalTheme'",
                                         )
 
-                    with vuetify.VMain(
-                        classes="align-stretch d-flex flex-column h-screen"
-                    ):
+                    with vuetify.VMain(classes="align-stretch d-flex flex-column h-screen"):
                         layout.pre_content = vuetify.VSheet(classes="bg-background")
-                        with vuetify.VContainer(
-                            classes="overflow-hidden pb-1 pt-0", fluid=True
-                        ):
-                            layout.content = vuetify.VSheet(
-                                classes="elevation-1 h-100 overflow-y-auto"
-                            )
+                        with vuetify.VContainer(classes="overflow-hidden pb-1 pt-0", fluid=True):
+                            layout.content = vuetify.VSheet(classes="elevation-1 h-100 overflow-y-auto")
                         layout.post_content = vuetify.VSheet(classes="bg-background")
 
                     with vuetify.VFooter(
@@ -187,7 +175,8 @@ class ThemedApp:
                         )
                         vuetify.VSpacer()
                         footer.add_child(
-                            '<a href="https://www.ornl.gov/" class="text-grey-lighten-1 text-caption text-decoration-none" '
+                            '<a href="https://www.ornl.gov/" '
+                            'class="text-grey-lighten-1 text-caption text-decoration-none" '
                             'target="_blank">© 2024 ORNL</a>'
                         )
 

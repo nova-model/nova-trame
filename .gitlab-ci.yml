@@ -1,13 +1,14 @@
 stages:
+  - lint
+  - test
   - package
 
 variables:
   GIT_STRATEGY: clone
+  IMAGE_NAME: ${NDIP_DOCKER_REPOSITORY}/${CI_PROJECT_PATH}
 
-# This import is for the func_rse_docker_* functions
 before_script:
   - curl https://code.ornl.gov/rse-deployment/rse-sharables/raw/master/rse-bash-modules.sh -O
-  - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
   - source rse-bash-modules.sh
   - func_rse_docker_cleanup
 
@@ -15,16 +16,47 @@ after_script:
   - curl https://code.ornl.gov/rse-deployment/rse-sharables/raw/master/rse-bash-modules.sh -O
   - source rse-bash-modules.sh
   - func_rse_docker_cleanup
-  - sudo chown -R gitlab-runner .
+
+lint-check:
+  stage: lint
+  script:
+    - docker build -f dockerfiles/Dockerfile --target source -t image .
+    - docker run -u `id -u`:`id -g` image poetry run ruff check
+    - docker run -u `id -u`:`id -g` image poetry run ruff format --check
+    - docker run -u `id -u`:`id -g` image poetry run mypy .
+    - docker tag image ${IMAGE_NAME}:src-${CI_COMMIT_SHA}
+    - docker push ${IMAGE_NAME}:src-${CI_COMMIT_SHA}
+  tags:
+    - rse-multi-builder
+
+unit-tests:
+  stage: test
+  script:
+    - mkdir reports
+    - docker run -u `id -u`:`id -g` -v `pwd`/reports:/src/reports ${IMAGE_NAME}:src-${CI_COMMIT_SHA} poetry run coverage run
+    - docker run -u `id -u`:`id -g` -v `pwd`/reports:/src/reports ${IMAGE_NAME}:src-${CI_COMMIT_SHA} poetry run coverage report
+    - docker run -u `id -u`:`id -g` -v `pwd`/reports:/src/reports ${IMAGE_NAME}:src-${CI_COMMIT_SHA} poetry run coverage xml -o reports/coverage.xml
+    - sed -i "s:<source>/src:<source>${CI_BUILDS_DIR}/${CI_PROJECT_PATH}:" reports/coverage.xml
+
+  coverage: '/TOTAL.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
+  artifacts:
+    when: always
+    reports:
+      junit: reports/junit.xml
+      coverage_report:
+        coverage_format: cobertura
+        path: reports/coverage.xml
+  tags:
+    - rse-multi-builder
 
 package-build:
   stage: package
   script:
     - >
       docker run
-      -v `pwd`:/src
-      code.ornl.gov:4567/rse/images/python:3.10-slim
-      bash -c "cd /src && pip install poetry && poetry build &&
+      -u `id -u`:`id -g`
+      ${IMAGE_NAME}:src-${CI_COMMIT_SHA}
+      bash -c "
       poetry config repositories.gitlab_repo ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/pypi &&
       poetry publish -u gitlab-ci-token -p ${CI_JOB_TOKEN} -r gitlab_repo
       "
