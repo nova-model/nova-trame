@@ -146,6 +146,24 @@ class App(ThemedApp):
                         InputField(type="switch", label="Switch")
                         InputField(type="textarea", label="Text Area")
                         InputField(label="Text Field")
+                        RemoteFileInput(
+                            v_model="selected_file",
+                            base_paths=["/run"],
+                            extensions=[".pid", ".lock"],
+                            label="File Selector",
+                        )
+                        RemoteFileInput(
+                            v_model="selected_folder",
+                            allow_files=False,
+                            allow_folders=True,
+                            base_paths=["/usr"],
+                            label="Folder Selector",
+                        )
+                        RemoteFileInput(
+                            v_model="nested.selected_file",
+                            base_paths=["/run"],
+                            label="Nested v_model File Selector",
+                        )
 
                     vuetify.VCardTitle("Validation")
                     with vuetify.VForm():
@@ -165,78 +183,35 @@ class App(ThemedApp):
                                 multiple=True,
                                 required=True,
                             )
-                            InputField(type="slider", label="Slider")
-                            InputField(type="switch", label="Switch")
-                            InputField(type="textarea", label="Text Area")
-                            InputField(label="Text Field")
-                            RemoteFileInput(
-                                v_model="selected_file",
-                                base_paths=["/run"],
-                                extensions=[".pid", ".lock"],
-                                label="File Selector",
-                            )
-                            RemoteFileInput(
-                                v_model="selected_folder",
-                                allow_files=False,
-                                allow_folders=True,
-                                base_paths=["/usr"],
-                                label="Folder Selector",
-                            )
-                            RemoteFileInput(
-                                v_model="nested.selected_file",
-                                base_paths=["/run"],
-                                label="Nested v_model File Selector",
+                            InputField(
+                                v_model="select2",
+                                type="select",
+                                items="['Option 1', 'Option 2']",
+                                label="Cross-validated Select",
+                                multiple=True,
+                                required=True,
+                                rules=(
+                                    (
+                                        "[(value) => value?.length === select1.length || 'Must have the same "
+                                        "number of selections as the previous select']"
+                                    ),
+                                ),
                             )
 
-                        vuetify.VCardTitle("Validation")
-                        with vuetify.VForm():
-                            with EasyGrid(cols_per_row=3):
-                                InputField(label="Required Field", required=True)
-                                InputField(label="Optional Field")
-                                InputField(
-                                    label="Text Only Optional Field",
-                                    rules=(
-                                        "[(value) => /[0-9]/.test(value) ? 'Field must not contain numbers' : true]",
-                                    ),
-                                )
-                                InputField(
-                                    ref="gallery_select",
-                                    v_model="select1",
-                                    type="select",
-                                    items="['Option 1', 'Option 2']",
-                                    label="Required Select",
-                                    multiple=True,
-                                    required=True,
-                                )
-                                InputField(
-                                    v_model="select2",
-                                    type="select",
-                                    items="['Option 1', 'Option 2']",
-                                    label="Cross-validated Select",
-                                    multiple=True,
-                                    required=True,
-                                    rules=(
-                                        (
-                                            "[(value) => value?.length === select1.length || 'Must have the same "
-                                            "number of selections as the previous select']"
-                                        ),
-                                    ),
-                                )
-
-                        vuetify.VCardTitle("Feedback Components")
-                        with EasyGrid(cols_per_row=3):
-                            vuetify.VAlert("Alert")
-                            with vuetify.VBadge():
-                                vuetify.VIcon("mdi-ab-testing")
-                            vuetify.VProgressCircular(indeterminate=True)
-                            vuetify.VProgressLinear(indeterminate=True)
-                            with vuetify.VSnackbar(
-                                "Snackbar",
-                                v_model="snackbar",
-                                timeout=-1,
-                            ):
-                                with vuetify.Template(v_slot_actions=True):
-                                    vuetify.VBtn("Close", click="snackbar = false")
+                    vuetify.VCardTitle("Feedback Components")
+                    with EasyGrid(cols_per_row=3):
+                        vuetify.VAlert("Alert")
+                        with vuetify.VBadge():
+                            vuetify.VIcon("mdi-ab-testing")
+                        vuetify.VProgressCircular(indeterminate=True)
+                        vuetify.VProgressLinear(indeterminate=True)
+                        with vuetify.VSnackbar(
+                            "Snackbar",
+                            v_model="snackbar",
+                            timeout=-1,
+                        ):
+                            with vuetify.Template(v_slot_actions=True):
+                                vuetify.VBtn("Close", click="snackbar = false")
 
             with layout.post_content:
                 html.Div("Sticky Bottom Content", classes="text-center w-100")
