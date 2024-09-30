@@ -1,0 +1,55 @@
+"""Contains LocalStorageManager class implementation."""
+
+from asyncio import sleep
+from typing import Any, Optional
+
+from trame.widgets import client
+from trame_server.core import Controller
+
+
+class LocalStorageManager:
+    """Manages interactions between Trame and window.localStorage."""
+
+    def __init__(self, ctrl: Controller) -> None:
+        """Constructor for the LocalStorageManager class."""
+        self.js_get = client.JSEval(
+            exec=(
+                "window.trame.trigger("
+                "  'facade__local_storage_trigger', "
+                "  [$event.key, window.localStorage.getItem($event.key)]"
+                ");"
+            )
+        ).exec
+        self.js_remove = client.JSEval(exec="window.localStorage.removeItem($event.key);").exec
+        self.js_set = client.JSEval(exec="window.localStorage.setItem($event.key, $event.value);").exec
+
+        self._ready: dict[str, bool] = {}
+        self._values: dict[str, str] = {}
+
+        @ctrl.trigger("facade__local_storage_trigger")
+        def _(key: str, value: str) -> None:
+            self._ready[key] = True
+            self._values[key] = value
+
+    async def get(self, key: str) -> Optional[str]:
+        """Gets the value of a key from window.localStorage.
+
+        You cannot call this from the main Trame coroutine because this waits on a response from the browser that must
+        be processed by the main coroutine. Instead, you should call this from another thread or coroutine, typically
+        with `asyncio.create_task`.
+        """
+        self._ready[key] = False
+        self.js_get({"key": key})
+
+        while not self._ready[key]:
+            await sleep(0.1)
+
+        return self._values[key]
+
+    def remove(self, key: str) -> None:
+        """Removes a key from window.localStorage."""
+        self.js_remove({"key": key})
+
+    def set(self, key: str, value: Any) -> None:
+        """Sets the value of a key in window.localStorage."""
+        self.js_set({"key": key, "value": value})
