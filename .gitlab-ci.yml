@@ -11,6 +11,7 @@ before_script:
   - curl https://code.ornl.gov/rse-deployment/rse-sharables/raw/master/rse-bash-modules.sh -O
   - source rse-bash-modules.sh
   - func_rse_docker_cleanup
+  - docker login -u $NDIP_DOCKER_USER -p $NDIP_DOCKER_PASSWORD $NDIP_DOCKER_REPOSITORY
 
 after_script:
   - curl https://code.ornl.gov/rse-deployment/rse-sharables/raw/master/rse-bash-modules.sh -O
