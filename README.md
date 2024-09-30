@@ -115,6 +115,24 @@ Additionally, you can pass dictionaries to `dialog_props` and `input_props` to s
 
 Note that all directories and files (if `allow_files` is True) in the provided `base_paths` will be visible to the user. Please use this carefully.
 
+## Visualization
+
+### Interactive 2D Plotting
+Trame provides two primary mechanisms for composing 2D plots: [Plotly](https://github.com/Kitware/trame-plotly) and [Vega-Lite](https://github.com/Kitware/trame-vega)/[Altair](https://altair-viz.github.io/index.html). If you only need static plots or basic browser event handling, then please use these libraries directly.
+
+If you need to capture complex front-end interactions, then you can use our provided `Interactive2DPlot` widget that is based on Vega-Lite. This uses the same API as Trame's `vega.Figure`, except that it will automatically sync Vega's signal states as the user interacts with the plot.
+
+The following allows the user to select a region of the plot, and then prints that region out in the Trame application:
+
+```python
+selector = altair.selection_interval(name="selector")
+my_plot = Interactive2DPlot(
+    figure=altair.Chart(my_data, title="My Interactive Chart").add_params(selector)
+)
+
+my_plot.get_signal_state("selector")  # Will show the currently selected region of the plot
+```
+
 ## Themes
 The following themes are currently available:
 1. ModernTheme - The recommended theme for most applications. Leverages ORNL brand colors and a typical Vuetify appearance.

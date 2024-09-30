@@ -27,7 +27,7 @@ class EasyGrid(vuetify.VContainer):
 
     def add_child(self, child: AbstractElement) -> None:
         # Don't create rows and columns for JSEval elements which are only used to inject JS.
-        if isinstance(child, client.JSEval):
+        if isinstance(child, client.JSEval) or isinstance(child, client.ClientTriggers):
             super().add_child(child)
             return
 

@@ -5,6 +5,7 @@ import logging
 from pathlib import Path
 from typing import cast
 
+from altair import Chart, X, Y, selection_interval
 from trame.app import get_server
 from trame.decorators import TrameApp
 from trame.widgets import html
@@ -12,9 +13,11 @@ from trame.widgets import vuetify3 as vuetify
 from trame_client.widgets.core import AbstractElement
 from trame_server.core import Server
 from trame_server.state import State
+from vega_datasets import data
 
 from trame_facade import ThemedApp
 from trame_facade.components import EasyGrid, InputField, RemoteFileInput
+from trame_facade.components.visualization import Interactive2DPlot
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -213,7 +216,34 @@ class App(ThemedApp):
                             with vuetify.Template(v_slot_actions=True):
                                 vuetify.VBtn("Close", click="snackbar = false")
 
+                    vuetify.VCardTitle("Visualization Components")
+                    self.plot = Interactive2DPlot(
+                        figure=self.create_test_2d_plot(),
+                        id="interactive-plot",
+                        __events=["pointerup"],
+                        pointerup=self.read_plot_signal,
+                    )
+                    html.P(f"Selected interval: {{{{ {self.plot.ref}['interval'] }}}}")
+
             with layout.post_content:
                 html.Div("Sticky Bottom Content", classes="text-center w-100")
 
             return layout
+
+    def create_test_2d_plot(self) -> Chart:
+        brush = selection_interval(encodings=["x"], name="interval", zoom=False)
+
+        return (
+            Chart(data.cars(), title="Interactive 2D Plot")
+            .mark_circle()
+            .encode(
+                X("Horsepower", type="quantitative"),
+                Y("Miles_per_Gallon", type="quantitative"),
+                color="Origin:N",
+            )
+            .properties(height=400, width=1000)
+            .add_params(brush)
+        )
+
+    def read_plot_signal(self) -> None:
+        logger.info(f"Interval signal state: {self.plot.get_signal_state('interval')}")
