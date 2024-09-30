@@ -2,6 +2,8 @@
 
 import json
 import logging
+from asyncio import create_task
+from functools import partial
 from pathlib import Path
 from typing import Optional
 
@@ -16,6 +18,8 @@ from trame_client.widgets import html
 from trame_server.core import Server
 from trame_server.state import State
 
+from trame_facade.local_storage import LocalStorageManager
+
 THEME_PATH = Path(__file__).parent
 
 logger = logging.getLogger(__name__)
@@ -28,8 +32,7 @@ class ThemedApp:
     def __init__(self, server: Server = None, vuetify_config_overrides: Optional[dict] = None) -> None:
         """Constructor for the ThemedApp class."""
         self.server = get_server(server, client_type="vue3")
-        self.layout = None
-        self.local_storage = None
+        self.local_storage: Optional[LocalStorageManager] = None
         if vuetify_config_overrides is None:
             vuetify_config_overrides = {}
 
@@ -71,7 +74,18 @@ class ThemedApp:
     def state(self) -> State:
         return self.server.state
 
-    def set_theme(self, theme: str, force: bool = True) -> None:
+    async def _init_theme(self) -> None:
+        if self.local_storage:
+            theme = await self.local_storage.get("facade__theme")
+            self.set_theme(theme, False)
+
+    async def init_theme(self) -> None:
+        create_task(self._init_theme())
+
+    def set_theme(self, theme: Optional[str], force: bool = True) -> None:
+        if theme not in self.vuetify_config["theme"]["themes"]:
+            theme = "ModernTheme"
+
         # I set force to True by default as I want the user to be able to say self.set_theme('MyTheme')
         # while still blocking theme.py calls to set_theme if the selection menu is disabled.
         if self.state.facade__menu or force:
@@ -81,20 +95,13 @@ class ThemedApp:
 
         # We only want to sync to localStorage if the user is selecting and we want to preserve the selection.
         if self.state.facade__menu and self.local_storage:
-            self.local_storage({"key": "facade__theme", "value": theme})
+            self.local_storage.set("facade__theme", theme)
 
     def create_ui(self) -> VAppLayout:
         with VAppLayout(self.server, vuetify_config=self.vuetify_config) as layout:
-            client.ClientTriggers(
-                mounted=(
-                    self.set_theme,
-                    "[window.localStorage.getItem('facade__theme'), false]",
-                )
-            )
+            self.local_storage = LocalStorageManager(self.server.controller)
 
-            self.layout = layout
-            self.local_storage = client.JSEval(exec="window.localStorage.setItem($event.key, $event.value);").exec
-
+            client.ClientTriggers(mounted=self.init_theme)
             client.Style(self.css)
 
             with vuetify.VDefaultsProvider(defaults=("facade__defaults",)) as defaults:
@@ -129,18 +136,13 @@ class ThemedApp:
                                 with vuetify.VList(width=200):
                                     vuetify.VListSubheader("Select Theme")
                                     vuetify.VDivider()
-                                    with vuetify.VListItem(click=(self.set_theme, ["ModernTheme"])):
+                                    with vuetify.VListItem(click=partial(self.set_theme, "ModernTheme")):
                                         vuetify.VListItemTitle("Modern")
                                         vuetify.VListItemSubtitle(
                                             "Selected",
                                             v_if="facade__theme === 'ModernTheme'",
                                         )
-                                    with vuetify.VListItem(
-                                        click=(
-                                            self.set_theme,
-                                            ["TechnicalTheme"],
-                                        )
-                                    ):
+                                    with vuetify.VListItem(click=partial(self.set_theme, "TechnicalTheme")):
                                         vuetify.VListItemTitle("Technical")
                                         vuetify.VListItemSubtitle(
                                             "Selected",

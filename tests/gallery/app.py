@@ -2,13 +2,14 @@
 
 import json
 import logging
+from asyncio import create_task
 from pathlib import Path
 from typing import cast
 
 from altair import Chart, X, Y, selection_interval
 from trame.app import get_server
 from trame.decorators import TrameApp
-from trame.widgets import html
+from trame.widgets import client, html
 from trame.widgets import vuetify3 as vuetify
 from trame_client.widgets.core import AbstractElement
 from trame_server.core import Server
@@ -51,6 +52,7 @@ class App(ThemedApp):
 
     def create_state(self) -> None:
         self.state.facade__menu = True
+        self.state.local_storage_test = ""
         self.state.nested = {
             "selected_file": "",
         }
@@ -63,6 +65,8 @@ class App(ThemedApp):
 
     def create_ui(self) -> None:
         with super().create_ui() as layout:
+            client.ClientTriggers(mounted=self.read_local_storage)
+
             # self.set_theme("TechnicalTheme")  # sets the default theme, must not call before layout exists
             layout.toolbar_title.set_text("Widget Gallery")
 
@@ -225,6 +229,20 @@ class App(ThemedApp):
                     )
                     html.P(f"Selected interval: {{{{ {self.plot.ref}['interval'] }}}}")
 
+                    vuetify.VCardTitle("Local Storage")
+                    with html.Div():
+                        vuetify.VTextField(
+                            v_model="local_storage_test",
+                            classes="mb-2 mt-0 mx-auto",
+                            id="local-storage-input",
+                            label="Local Storage Test",
+                            width=400,
+                        )
+                        vuetify.VBtn(
+                            "Save to LocalStorage", classes="mr-2", id="local-storage-set", click=self.set_local_storage
+                        )
+                        vuetify.VBtn("Clear LocalStorage", id="local-storage-remove", click=self.remove_local_storage)
+
             with layout.post_content:
                 html.Div("Sticky Bottom Content", classes="text-center w-100")
 
@@ -247,3 +265,19 @@ class App(ThemedApp):
 
     def read_plot_signal(self) -> None:
         logger.info(f"Interval signal state: {self.plot.get_signal_state('interval')}")
+
+    async def _read_local_storage(self) -> None:
+        if self.local_storage:
+            with self.state:
+                self.state.local_storage_test = await self.local_storage.get("local_storage_test")
+
+    def read_local_storage(self) -> None:
+        create_task(self._read_local_storage())
+
+    def remove_local_storage(self) -> None:
+        if self.local_storage:
+            self.local_storage.remove("local_storage_test")
+
+    def set_local_storage(self) -> None:
+        if self.local_storage:
+            self.local_storage.set("local_storage_test", self.state.local_storage_test)

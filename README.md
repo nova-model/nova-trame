@@ -176,6 +176,37 @@ shortcut keys you can put in your Vuetify configuration to set the color palette
 }
 ```
 
+## Utilities
+This package also provides some general utilities for developing Trame applications.
+
+### Local Storage
+If you need to manipulate `window.localStorage` to track state across user sessions, then you can do so with the following methods:
+
+```python
+from asyncio import create_task
+
+from trame_facade import ThemedApp
+
+
+class MyApp(ThemedApp):
+    # The rest of your application definition here
+
+    def remove_local_storage(self):
+        self.local_storage.remove("test")
+
+    def set_local_storage(self):
+        self.local_storage.set("test", "value")
+
+    async def _get_local_storage(self):
+        result = await self.local_storage.get("test")
+        # Do something with result
+
+    def get_local_storage(self):
+        create_task(_get_local_storage())
+```
+
+Interactions with `window.localStorage` are asynchronous because the server must transmit your request to the browser which then executes it asynchronously. `local_storage.remove` and `local_storage.set` don't return a value, so no special consideration is needed. `local_storage.get` does return a value, however, so you'll need to use `await` to get the return value. When the browser is done reading `window.localStorage`, the response it gives to Trame is processed by the main Trame coroutine. This means that you cannot call await in the main Trame coroutine, as that would result in deadlock. This is handled in the above example with `asyncio.create_task`.
+
 ## Example Application
 This package includes an example Trame application that shows commonly used Vuetify components for visual testing of our themes.
 
