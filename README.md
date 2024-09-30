@@ -1,11 +1,20 @@
-# Introduction
+# trame-facade
+
+**Version:** 0.5.1
+**Author:** John Duggan (<dugganjw@ornl.gov>)
+**Organization:** Oak Ridge National Laboratory (ORNL)
+**License:** MIT License
+
+---
+
+## Overview
 `trame-facade` is a Python package for styling Trame applications used in the [NDIP](https://code.ornl.gov/ndip) project.
 
 ## Installation
 You can install this package directly with
 
 ```commandline
-pip install --index-url https://code.ornl.gov/api/v4/projects/16294/packages/pypi/simple trame-facade
+pip install trame-facade
 ```
 
 or with [Poetry](https://python-poetry.org/) by placing the following in your `pyproject.toml` (you can version lock with typical [Semantic Versioning](https://semver.org/) syntax)
@@ -13,11 +22,6 @@ or with [Poetry](https://python-poetry.org/) by placing the following in your `p
 ```
 [tool.poetry.dependencies]
 trame-facade = "*"
-
-[[tool.poetry.source]]
-name = "trame-facade"
-url = "https://code.ornl.gov/api/v4/projects/16294/packages/pypi/simple"
-priority = "primary"
 ```
 
 ## Usage
