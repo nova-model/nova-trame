@@ -1,0 +1,36 @@
+"""Unit tests for Interactive2DPlot."""
+
+from altair import Chart
+from selenium.webdriver import ActionChains, Firefox
+from selenium.webdriver.common.by import By
+from vega_datasets import data
+
+from trame_facade.components.visualization import Interactive2DPlot
+
+
+def test_interactive_2d_plot() -> None:
+    chart = Chart(data.cars()).mark_circle().encode(x="Horsepower:Q", y="Miles_per_Gallon:Q", color="Origin:N")
+    plot = Interactive2DPlot(figure=chart)
+    assert plot._figure == chart
+
+
+def test_missing_figure() -> None:
+    plot = Interactive2DPlot()
+    assert plot._figure is None
+
+
+def test_state_synchronization(driver: Firefox) -> None:
+    plot = driver.find_element(By.ID, "interactive-plot")
+    ActionChains(driver).drag_and_drop_by_offset(plot, 10, 5).perform()
+
+    # Look for the interval in the state. I want to avoid using the exact ref since it's pseudo-random
+    # (e.g. facade__vega_203) here.
+    trame_state = driver.execute_script("return window.trame.state.state")
+    for key, value in trame_state.items():
+        if isinstance(value, dict):
+            for sub_key in value:
+                if sub_key == "interval" and key.startswith("facade__vega"):
+                    interval = value[sub_key]
+
+    # We could check exact values, but that seems more sensitive to changes in the gallery.
+    assert "Horsepower" in interval and isinstance(interval["Horsepower"], list)
