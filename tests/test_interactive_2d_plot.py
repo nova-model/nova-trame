@@ -1,16 +1,27 @@
 """Unit tests for Interactive2DPlot."""
 
-from altair import Chart
 from selenium.webdriver import ActionChains, Firefox
 from selenium.webdriver.common.by import By
-from vega_datasets import data
 
 from trame_facade.components.visualization import Interactive2DPlot
 
 
 def test_interactive_2d_plot() -> None:
-    chart = Chart(data.cars()).mark_circle().encode(x="Horsepower:Q", y="Miles_per_Gallon:Q", color="Origin:N")
+    # [setup 2d plot]
+    from altair import Chart, selection_interval
+    from vega_datasets import data
+
+    from trame_facade.components.visualization import Interactive2DPlot
+
+    brush = selection_interval(name="brush")
+    chart = (
+        Chart(data.cars())
+        .mark_circle()
+        .encode(x="Horsepower:Q", y="Miles_per_Gallon:Q", color="Origin:N")
+        .add_params(brush)
+    )
     plot = Interactive2DPlot(figure=chart)
+    # [setup 2d plot complete]
     assert plot._figure == chart
 
 

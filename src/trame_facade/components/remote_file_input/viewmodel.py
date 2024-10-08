@@ -2,7 +2,7 @@
 
 from typing import Any, Union
 
-from py_mvvm.interface import BindingInterface
+from mvvm_lib.interface import BindingInterface
 
 from trame_facade.components.remote_file_input.model import RemoteFileInputModel
 

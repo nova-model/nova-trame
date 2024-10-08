@@ -1,9 +1,9 @@
-"""Generates a file selection dialog for picking files off of the server."""
+"""View implementation for RemoteFileInput."""
 
 from functools import partial
 from typing import Any, Optional, cast
 
-from py_mvvm.trame_binding import TrameBinding
+from mvvm_lib.trame_binding import TrameBinding
 from trame.app import get_server
 from trame.widgets import client, html
 from trame.widgets import vuetify3 as vuetify
@@ -17,8 +17,7 @@ from trame_facade.components.remote_file_input.viewmodel import RemoteFileInputV
 class RemoteFileInput:
     """Generates a file selection dialog for picking files off of the server.
 
-    This intentionally doesn't allow the developer to use Trame's with syntax, since I want to control all children of
-    VDialog.
+    You cannot use typical Trame :code:`with` syntax to add children to this.
     """
 
     def __init__(
@@ -33,20 +32,37 @@ class RemoteFileInput:
         input_props: Optional[dict[str, Any]] = None,
         label: str = "",
     ) -> None:
-        """Creates a file selection dialog that shows all files under base_paths.
+        """Constructor for RemoteFileInput.
 
-        :param v_model: The v-model for the input field.
-        :param allow_files: If true, the user can save a file selection.
-        :param allow_folders: If true, the user can select a folder selection.
-        :param allow_nonexistent_path: If false, the user will be warned when they've selected a non-existent path on
-                                       the filesystem.
-        :param base_paths: Only files under these paths will be shown.
-        :param dialog_props: Props to be passed to VDialog.
-        :param extensions: Only files with these extensions will be shown by default. The user can still choose to view
-                           all files.
-        :param input_props: Props to be passed to InputField. Must not include label prop, use the top-level label
-                            parameter instead.
-        :param label: Label shown in the input field and the dialog title.
+        Parameters
+        ----------
+        v_model : str
+            The v-model for the input field.
+        allow_files : bool
+            If true, the user can save a file selection.
+        allow_folders : bool
+            If true, the user can save a folder selection.
+        allow_nonexistent_path : bool
+            If false, the user will be warned when they've selected a non-existent path on the filesystem.
+        base_paths : list[str], optional
+            Only files under these paths will be shown.
+        dialog_props : dict[str, typing.Any], optional
+            Props to be passed to VDialog.
+        extensions : list[str], optional
+            Only files with these extensions will be shown by default. The user can still choose to view all files.
+        input_props : dict[str, typing.Any], optional
+            Props to be passed to InputField. Must not include label prop, use the top-level label parameter instead.
+        label : str
+            Label shown in the input field and the dialog title.
+
+        Raises
+        ------
+        ValueError
+            If v_model is None.
+
+        Returns
+        -------
+        None
         """
         if v_model is None:
             raise ValueError("RemoteFileInput must have a v_model attribute.")

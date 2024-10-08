@@ -1,4 +1,4 @@
-"""Defines the ThemedApp class for injecting our components and themes into Trame applications."""
+"""Implementation of ThemedApp."""
 
 import json
 import logging
@@ -27,10 +27,44 @@ logger.setLevel(logging.INFO)
 
 
 class ThemedApp:
-    """Parent class for Trame applications that injects components and themes into the application."""
+    """Automatically injects theming into your Trame application.
+
+    You should always inherit from this class when you define your Trame application.
+
+    Currently, it supports two themes:
+
+    1. ModernTheme - The recommended theme for most applications. Leverages ORNL brand colors and a typical Vuetify \
+    appearance.
+    2. TechnicalTheme - This loosely mimics an older QT Fusion theme. Use at your own peril.
+    """
 
     def __init__(self, server: Server = None, vuetify_config_overrides: Optional[dict] = None) -> None:
-        """Constructor for the ThemedApp class."""
+        """Constructor for the ThemedApp class.
+
+        Parameters
+        ----------
+        server : `trame_server.core.Server \
+            <https://trame.readthedocs.io/en/latest/core.server.html#trame_server.core.Server>`_, optional
+            The Trame server to use. If not provided, a new server will be created.
+        vuetify_config_overrides : dict, optional
+            `Vuetify Configuration <https://vuetifyjs.com/en/features/global-configuration/>`__
+            that will override anything set in our default configuration. You should only use this if you don't want to
+            use one of our predefined themes. If you just want to set your color palette without providing a full
+            Vuetify configuration, then you can set use the following to only set the color palette used by our
+            :code:`ModernTheme`:
+
+            .. code-block:: json
+
+                {
+                    "primary": "#f00",
+                    "secondary": "#0f0",
+                    "accent": "#00f",
+                }
+
+        Returns
+        -------
+        None
+        """
         self.server = get_server(server, client_type="vue3")
         self.local_storage: Optional[LocalStorageManager] = None
         if vuetify_config_overrides is None:
@@ -83,6 +117,19 @@ class ThemedApp:
         create_task(self._init_theme())
 
     def set_theme(self, theme: Optional[str], force: bool = True) -> None:
+        """Sets the theme of the application.
+
+        Parameters
+        ----------
+        theme : str, optional
+            The new theme to use. If the theme is not found, the default theme will be used.
+        force : bool, optional
+            If True, the theme will be set even if the theme selection menu is disabled.
+
+        Returns
+        -------
+        None
+        """
         if theme not in self.vuetify_config["theme"]["themes"]:
             theme = "ModernTheme"
 
@@ -98,6 +145,14 @@ class ThemedApp:
             self.local_storage.set("facade__theme", theme)
 
     def create_ui(self) -> VAppLayout:
+        """Creates the base UI into which you will inject your content.
+
+        You should always call this method from your application class that inherits from :code:`ThemedApp`.
+
+        Returns
+        -------
+        `trame.ui.vuetify3.VAppLayout <https://trame.readthedocs.io/en/latest/trame.ui.vuetify3.html#trame.ui.vuetify3.VAppLayout>`_
+        """
         with VAppLayout(self.server, vuetify_config=self.vuetify_config) as layout:
             self.local_storage = LocalStorageManager(self.server.controller)
 
@@ -150,7 +205,9 @@ class ThemedApp:
                                         )
 
                     with vuetify.VMain(classes="align-stretch d-flex flex-column h-screen"):
+                        # [slot override example]
                         layout.pre_content = vuetify.VSheet(classes="bg-background")
+                        # [slot override example complete]
                         with vuetify.VContainer(classes="overflow-hidden pb-1 pt-0", fluid=True):
                             layout.content = vuetify.VSheet(classes="elevation-1 h-100 overflow-y-auto")
                         layout.post_content = vuetify.VSheet(classes="bg-background")

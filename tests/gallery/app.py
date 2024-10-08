@@ -70,8 +70,10 @@ class App(ThemedApp):
             # self.set_theme("TechnicalTheme")  # sets the default theme, must not call before layout exists
             layout.toolbar_title.set_text("Widget Gallery")
 
+            # [slot child example]
             with layout.actions:
                 vuetify.VBtn("Text Button")
+            # [slot child example complete]
 
             with layout.pre_content:
                 html.Div("Sticky Top Content", classes="text-center w-100")
