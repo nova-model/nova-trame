@@ -1,5 +1,7 @@
 """Unit tests for LocalStorageManager."""
 
+from time import sleep
+
 from selenium.webdriver import Firefox
 from selenium.webdriver.common.by import By
 
@@ -12,6 +14,7 @@ def test_local_storage(driver: Firefox) -> None:
     text_field.click()
     text_field.send_keys("1234567890")
     driver.execute_script("window.document.getElementById('local-storage-set').click();")
+    sleep(1)  # Wait for the browser to process the localStorage change
     assert driver.execute_script("return window.localStorage.getItem('local_storage_test');") == "1234567890"
 
     driver.execute_script("window.document.getElementById('local-storage-remove').click();")
