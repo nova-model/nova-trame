@@ -1,4 +1,4 @@
-"""Helper class for generating Vuetify grid layouts."""
+"""View Implementation for EasyGrid."""
 
 from typing import Any
 
@@ -10,10 +10,45 @@ VUETIFY_COLS = 12  # Max number of columns in a Vuetify grid
 
 
 class EasyGrid(vuetify.VContainer):
-    """Helper class for generating Vuetify grid layouts."""
+    """Helper class for generating Vuetify grid layouts.
+
+    Defining a 3-column grid in Trame looks like this normally:
+
+    .. code-block:: python
+
+        with vuetify.VContainer():
+            with vuetify.VRow():
+                with vuetify.VCol(cols="4"):
+                    # Column 1 content
+                with vuetify.VCol(cols="4"):
+                    # Column 2 content
+                with vuetify.VCol(cols="4"):
+                    # Column 3 content
+
+    With EasyGrid, you can define the same layout like this:
+
+    .. literalinclude:: ../tests/test_easy_grid.py
+        :start-after: EasyGrid example
+        :end-before: EasyGrid example complete
+        :dedent:
+    """
 
     def __init__(self, cols_per_row: int = 1, dense: bool = False, **kwargs: Any) -> None:
-        """Constructor for EasyGrid."""
+        """Constructor for EasyGrid.
+
+        Parameters
+        ----------
+        cols_per_row : int
+            The number of columns to display per row. Must be a positive integer between 1 and 12.
+        dense : bool
+            If true, the dense property will be passed to all Vuetify rows.
+        kwargs
+            Additional arguments to pass to the VContainer constructor.
+
+        Returns
+        -------
+        None
+        """
         if not isinstance(cols_per_row, int) or cols_per_row < 1 or cols_per_row > VUETIFY_COLS:
             raise ValueError(f"cols_per_row must be a positive integer between 1 and {VUETIFY_COLS}")
 

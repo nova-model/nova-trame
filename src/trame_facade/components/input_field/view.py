@@ -1,7 +1,4 @@
-"""Factory class for generating Vuetify input components.
-
-These inputs have automatic visual marking of required fields and cross-field validation.
-"""
+"""View Implementation for InputField."""
 
 from typing import Any
 
@@ -15,10 +12,35 @@ class InputField:
     """Factory class for generating Vuetify input components."""
 
     def __new__(cls, required: bool = False, type: str = "text", **kwargs: Any) -> AbstractElement:
-        """Creates a Vuetify input.
+        """Constructor for InputField.
 
-        The input will have the specified type and will be visually marked as required if necessary.
-        All other provided properties to the new input.
+        Parameters
+        ----------
+        required : bool
+            If true, the input will be visually marked as required and a required rule will be added to the end of the
+            rules list.
+        type : str
+            The type of input to create. This can be any of the following:
+
+            - autocomplete
+            - checkbox
+            - combobox
+            - file
+            - input
+            - otp
+            - radio
+            - range-slider
+            - select
+            - slider
+            - switch
+            - textarea
+
+            Any other value will produce a text field with your type used as an HTML input type attribute.
+
+        Returns
+        -------
+        `trame_client.widgets.core.AbstractElement <https://trame.readthedocs.io/en/latest/core.widget.html#trame_client.widgets.core.AbstractElement>`_
+            The Vuetify input component.
         """
         if "__events" not in kwargs or kwargs["__events"] is None:
             kwargs["__events"] = []

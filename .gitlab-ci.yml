@@ -1,11 +1,21 @@
 stages:
   - lint
   - test
+  - docs-test
+  - docs-build
+  - tag
   - package
+
+workflow:
+  rules:
+    - if: $CI_COMMIT_BRANCH
+      when: always
+    - when: never
 
 variables:
   GIT_STRATEGY: clone
   IMAGE_NAME: ${NDIP_DOCKER_REPOSITORY}/${CI_PROJECT_PATH}
+
 
 before_script:
   - curl https://code.ornl.gov/rse-deployment/rse-sharables/raw/master/rse-bash-modules.sh -O
@@ -50,8 +60,49 @@ unit-tests:
   tags:
     - rse-multi-builder
 
+docs-test:
+  stage: docs-test
+  script:
+    - docker run -u `id -u`:`id -g` ${IMAGE_NAME}:src-${CI_COMMIT_SHA} poetry run sphinx-build -M html docs sphinx
+  tags:
+    - rse-multi-builder
+
+docs-build:
+  stage: docs-build
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      when: always
+    - when: manual
+  script:
+    - curl -X POST -d "branches=latest" -d "token=${READTHEDOCS_WEBHOOK_SECRET}" -d "default_branch=${CI_COMMIT_BRANCH}" ${READTHEDOCS_WEBHOOK_URL}
+  tags:
+    - rse-multi-builder
+
+tag-release:
+  stage: tag
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      when: always
+    - when: manual
+  script:
+    - git config user.email "$GITLAB_USER_EMAIL"
+    - git config user.name "$GITLAB_USER_NAME"
+    - VERSION=$(cat pyproject.toml | grep "version =" | awk '{ print $3 }' | tr -d '"')
+    - >
+      if [ -z $(git ls-remote --tags origin "$VERSION") ]; then
+        git remote add gitlab https://oauth2:${TAG_PUSH_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git
+        git tag ${VERSION}
+        git push gitlab ${VERSION}
+      fi
+  tags:
+  - rse-multi-builder
+
 package-build:
   stage: package
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      when: always
+    - when: manual
   script:
     - >
       docker run
@@ -62,6 +113,5 @@ package-build:
       poetry publish -u gitlab-ci-token -p ${CI_JOB_TOKEN} -r gitlab_repo &&
       poetry publish -u __token__ -p ${PYPI_API_TOKEN}
       "
-  when: manual
   tags:
     - rse-multi-builder

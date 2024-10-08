@@ -9,6 +9,7 @@ from tests.gallery import App
 
 
 def main(server: Server = None, **kwargs: Any) -> None:
+    # [run app]
     app = App(server)
     for arg in sys.argv[1:]:
         try:
@@ -17,3 +18,4 @@ def main(server: Server = None, **kwargs: Any) -> None:
         except Exception:
             pass
     app.server.start(**kwargs)
+    # [run app complete]

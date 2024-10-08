@@ -1,5 +1,9 @@
 {
     "[python]": {
         "editor.defaultFormatter": "charliermarsh.ruff"
+    },
+    "[restructuredtext]": {
+        "editor.wordWrap": "wordWrapColumn",
+        "editor.wordWrapColumn": 120
     }
 }
