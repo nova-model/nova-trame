@@ -35,14 +35,19 @@ class ThemedApp:
 
     1. ModernTheme - The recommended theme for most applications. Leverages ORNL brand colors and a typical Vuetify \
     appearance.
-    2. TechnicalTheme - This loosely mimics an older QT Fusion theme. Use at your own peril.
+    2. CompactTheme - Similar to ModernTheme but with a smaller global font size and reduced margins and paddings on \
+    all components.
     """
 
-    def __init__(self, server: Server = None, vuetify_config_overrides: Optional[dict] = None) -> None:
+    def __init__(
+        self, layout: str = "default", server: Server = None, vuetify_config_overrides: Optional[dict] = None
+    ) -> None:
         """Constructor for the ThemedApp class.
 
         Parameters
         ----------
+        layout : str
+            The layout to use. Current options are: :code:`default` and :code:`two-column`
         server : `trame_server.core.Server \
             <https://trame.readthedocs.io/en/latest/core.server.html#trame_server.core.Server>`_, optional
             The Trame server to use. If not provided, a new server will be created.
@@ -108,6 +113,13 @@ class ThemedApp:
     def state(self) -> State:
         return self.server.state
 
+    def init_mantid(self) -> None:
+        """Initializes MantidManager.
+
+        This doesn't happen by default because Mantid is a large dependency.
+        """
+        pass
+
     async def _init_theme(self) -> None:
         if self.local_storage:
             theme = await self.local_storage.get("facade__theme")
@@ -151,7 +163,7 @@ class ThemedApp:
 
         Returns
         -------
-        `trame.ui.vuetify3.VAppLayout <https://trame.readthedocs.io/en/latest/trame.ui.vuetify3.html#trame.ui.vuetify3.VAppLayout>`_
+        `trame_client.ui.core.AbstractLayout <https://trame.readthedocs.io/en/latest/core.ui.html#trame_client.ui.core.AbstractLayout>`_
         """
         with VAppLayout(self.server, vuetify_config=self.vuetify_config) as layout:
             self.local_storage = LocalStorageManager(self.server.controller)

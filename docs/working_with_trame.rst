@@ -40,7 +40,6 @@ If you want to customize a slot, you can either completely replace it or add chi
     :end-before: slot override example complete
     :dedent:
 
-
 If you want to add children to a slot, you can do the following:
 
 .. literalinclude:: ../tests/gallery/app.py
@@ -48,18 +47,30 @@ If you want to add children to a slot, you can do the following:
     :end-before: slot child example complete
     :dedent:
 
-Below is an image of all of the usable slots that are available in the layout created by :code:`trame-facade`:
+Finally, if you want to remove a slot:
 
-.. image:: assets/layout.png
+.. code-block python
+
+    with super().create_ui() as layout:
+        layout.toolbar = None  # Hide the toolbar
+        layout.footer = None  # Hide the footer
+
+The default slots that are available in our layout are shown in the image below.
+
+* :code:`default`
+
+  .. image:: assets/layout.png
     :width: 800
-    :alt: Diagram of the available slots in the layout. The slots are: toolbar: the app bar at the top of the page, toolbar_title: the title of the app bar, actions: The right side of the app bar, pre_content: sticky content above the main content, content: the main content area, post_content: sticky content below the main content, footer: the app footer at the bottom of the page.
+    :alt: Diagram of the available slots in the default layout. The slots are: toolbar: the app bar at the top of the page, toolbar_title: the title of the app bar, actions: The right side of the app bar, pre_content: sticky content above the main content, content: the main content area, post_content: sticky content below the main content, footer: the app footer at the bottom of the page.
 
-Note that the :code:`layout.toolbar`, :code:`layout.toolbar_title`, or :code:`layout.footer` slots only be completely replaced if you wish to customize them. Appending child content will likely break your page.
+If within the :code:`layout.content` slot you want to build your own reusable layouts, we provide a few layout components based upon `Qt <https://doc.qt.io/qt-6/layout.html>`_ that you can use. These are described in the :ref:`API <api_layouts>`.
+
+Note that the :code:`layout.toolbar` and :code:`layout.footer` slots should only be completely replaced if you wish to customize them. Appending child content will likely break your page.
 
 +++++++
 Theming
 +++++++
 
-In order to give applications a consistent look and feel, all applications built with :code:`trame-facade` are based on the `Vuetify <https://vuetifyjs.com/en/>`_ framework. One of the most important features that Vuetify provides is the ability to theme your application. This allows you to easily change the colors, fonts, and other visual elements of your application. We provide a default theme that we recommend you use, but you can modify it or completely replace it if needed.
+In order to give applications a consistent look and feel, all applications built with :code:`trame-facade` are based on the `Vuetify <https://vuetifyjs.com/en/>`_ framework. One of the most important features that Vuetify provides is the ability to theme your application. This allows you to easily change the colors, fonts, and other visual elements of your application. We provide two themes that we recommend you choose between depending on your needs, but you can modify or completely replace them if needed.
 
 For details on manipulating the theming, see the :ref:`API <api_theme>`.

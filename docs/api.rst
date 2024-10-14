@@ -2,11 +2,25 @@
 trame-facade API
 ================
 
-.. _api_theme:
+---------------
+View Components
+---------------
 
--------
-Theming
--------
+.. _api_layouts:
+
+.. autoclass:: trame_facade.view.layouts.grid.trame.GridLayout
+    :members:
+    :special-members: __init__
+
+.. autoclass:: trame_facade.view.layouts.hbox.trame.HBoxLayout
+    :members:
+    :special-members: __init__
+
+.. autoclass:: trame_facade.view.layouts.vbox.trame.VBoxLayout
+    :members:
+    :special-members: __init__
+
+.. _api_theme:
 
 .. autoclass:: trame_facade.theme.ThemedApp
     :members:
@@ -14,22 +28,38 @@ Theming
 
 .. _api_components:
 
-----------
-Components
-----------
-
-.. automodule:: trame_facade.components
-    :members:
-    :special-members: __init__, __new__
-
-.. automodule:: trame_facade.components.visualization
+.. autoclass:: trame_facade.components.EasyGrid
     :members:
     :special-members: __init__
 
----------
-Utilities
----------
+Future: EasyGrid will be replaced by GridLayout.
+
+.. autoclass:: trame_facade.components.InputField
+    :members:
+    :special-members: __new__
+
+.. autoclass:: trame_facade.components.RemoteFileInput
+    :members:
+    :special-members: __init__
+
+.. autoclass:: trame_facade.components.visualization.Interactive2DPlot
+    :members:
+    :special-members: __init__
+
+Future: 2D plotting class that takes 2D data and plots it. Replaces Interactive2DPlot which forces the user to build the full plot in altair.
+
+Future: 3D plotting class that takes 3D data and plots it.
+
+Future: Validation class that allows one to add front-end validation rules via Python.
 
 .. autoclass:: trame_facade.local_storage.LocalStorageManager
     :members:
     :special-members: __init__
+
+-------
+Models
+-------
+
+Future: Class that allows loading and saving of Mantid workspaces.
+
+Future: Validation class that allows one to manage back-end validation rules via Python.
