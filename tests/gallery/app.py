@@ -51,6 +51,7 @@ class App(ThemedApp):
         return self.server.state
 
     def create_state(self) -> None:
+        self.state.autoscroll = ""
         self.state.facade__menu = True
         self.state.local_storage_test = ""
         self.state.nested = {
@@ -141,6 +142,17 @@ class App(ThemedApp):
 
                     vuetify.VCardTitle("Form Inputs & Controls")
                     with EasyGrid(cols_per_row=3):
+                        with html.Div():
+                            InputField(
+                                v_model="autoscroll",
+                                auto_grow=True,
+                                classes="mb-2",
+                                label="Autoscroll Text Area",
+                                max_rows=5,
+                                rows=1,
+                                type="autoscroll",
+                            )
+                            vuetify.VBtn("Add Line to Autoscroller", click=self.append_to_autoscroll)
                         InputField(type="checkbox", label="Checkbox")
                         InputField(type="file", label="File Upload")
                         with cast(AbstractElement, InputField(type="radio")):
@@ -153,7 +165,7 @@ class App(ThemedApp):
                         )
                         InputField(type="slider", label="Slider")
                         InputField(type="switch", label="Switch")
-                        InputField(type="textarea", label="Text Area")
+                        InputField(type="textarea", auto_grow=True, label="Text Area")
                         InputField(label="Text Field")
                         RemoteFileInput(
                             v_model="selected_file",
@@ -283,3 +295,6 @@ class App(ThemedApp):
     def set_local_storage(self) -> None:
         if self.local_storage:
             self.local_storage.set("local_storage_test", self.state.local_storage_test)
+
+    def append_to_autoscroll(self) -> None:
+        self.state.autoscroll += "Line added by button\n"
