@@ -3,9 +3,11 @@
 from typing import Any
 
 from trame.app import get_server
+from trame.widgets import client
 from trame.widgets import vuetify3 as vuetify
 from trame_client.widgets.core import AbstractElement
 from trame_server.controller import Controller
+from trame_server.state import State
 
 
 class InputField:
@@ -23,6 +25,7 @@ class InputField:
             The type of input to create. This can be any of the following:
 
             - autocomplete
+            - autoscroll (produces a textarea that automatically scrolls to the bottom as new content is added)
             - checkbox
             - combobox
             - file
@@ -42,17 +45,24 @@ class InputField:
         `trame_client.widgets.core.AbstractElement <https://trame.readthedocs.io/en/latest/core.widget.html#trame_client.widgets.core.AbstractElement>`_
             The Vuetify input component.
         """
+        server = get_server(None, client_type="vue3")
+
         if "__events" not in kwargs or kwargs["__events"] is None:
             kwargs["__events"] = []
 
-        if isinstance(kwargs["__events"], list) and "change" not in kwargs["__events"]:
-            kwargs["__events"].append(
-                "change"
-            )  # This must be present before each input is created or change events won't be triggered.
+        # This must be present before each input is created or change events won't be triggered.
+        if isinstance(kwargs["__events"], list):
+            if "change" not in kwargs["__events"]:
+                kwargs["__events"].append("change")
+            if "scroll" not in kwargs["__events"]:
+                kwargs["__events"].append("scroll")
 
         match type:
             case "autocomplete":
                 input = vuetify.VAutocomplete(**kwargs)
+            case "autoscroll":
+                input = vuetify.VTextarea(**kwargs)
+                cls._setup_autoscroll(server.state, input)
             case "checkbox":
                 input = vuetify.VCheckbox(**kwargs)
             case "combobox":
@@ -90,7 +100,6 @@ class InputField:
             cls._setup_required_rule(input)
 
         cls._setup_ref(input)
-        server = get_server(None, client_type="vue3")
         cls._setup_change_listener(server.controller, input)
 
         return input
@@ -99,6 +108,51 @@ class InputField:
     def _check_rules(input: AbstractElement) -> None:
         if "rules" in input._py_attr and input.rules and not isinstance(input.rules, tuple):
             raise ValueError(f"Rules for '{input.label}' must be a tuple")
+
+    @staticmethod
+    def _setup_autoscroll(state: State, input: AbstractElement) -> None:
+        if input.v_model:
+            if "id" not in input._py_attr or input.id is None:
+                input.id = f"facade__{input._id}"
+                input.scroll = f"window.facade__autoscroll('{input.id}');"
+
+            with state:
+                if state["facade_scroll_position"] is None:
+                    state["facade_scroll_position"] = {}
+                state.facade_scroll_position[input.id] = 0
+
+            autoscroll = client.JSEval(
+                exec=(
+                    "if (window.facade__autoscroll !== undefined) {"
+                    # If the autoscroll function already exists, call it.
+                    "  window.facade__autoscroll($event);"
+                    "} else {"
+                    # Save the JS so it can be called from outside of this script (ie during a scroll event).
+                    "  window.facade__autoscroll = function(id) {"
+                    # Get the element in the browser by ID
+                    "    const element = window.document.querySelector(`#${id}`);"
+                    # If the user is at the bottom of the textarea, then we should autoscroll.
+                    "    if (element.scrollTop === window.trame.state.state.facade_scroll_position[id]) {"
+                    # Scroll to the bottom
+                    "      element.scrollTop = element.scrollHeight;"
+                    # Save the new scroll position
+                    "      window.trame.state.state.facade_scroll_position[id] = element.scrollTop;"
+                    "      flushState('facade_scroll_position');"
+                    # If the user has scrolled back to the bottom, then we should reenable scrolling.
+                    "    } else if (element.scrollTop === element.scrollHeight - element.clientHeight) {"
+                    # Save the new scroll position
+                    "      window.trame.state.state.facade_scroll_position[id] = element.scrollTop;"
+                    "      flushState('facade_scroll_position');"
+                    "    }"
+                    "  };"
+                    "  window.facade__autoscroll($event);"
+                    "}"
+                )
+            ).exec
+
+            @state.change(input.v_model)
+            def _autoscroll(**kwargs: Any) -> None:
+                autoscroll(input.id)
 
     @staticmethod
     def _setup_help(_input: AbstractElement, **kwargs: Any) -> None:
