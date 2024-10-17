@@ -203,18 +203,14 @@ class ThemedApp:
                                 with vuetify.VList(width=200):
                                     vuetify.VListSubheader("Select Theme")
                                     vuetify.VDivider()
-                                    with vuetify.VListItem(click=partial(self.set_theme, "ModernTheme")):
-                                        vuetify.VListItemTitle("Modern")
-                                        vuetify.VListItemSubtitle(
-                                            "Selected",
-                                            v_if="facade__theme === 'ModernTheme'",
-                                        )
-                                    with vuetify.VListItem(click=partial(self.set_theme, "TechnicalTheme")):
-                                        vuetify.VListItemTitle("Technical")
-                                        vuetify.VListItemSubtitle(
-                                            "Selected",
-                                            v_if="facade__theme === 'TechnicalTheme'",
-                                        )
+
+                                    for theme in self.vuetify_config.get("theme", {}).get("themes", {}).values():
+                                        with vuetify.VListItem(click=partial(self.set_theme, theme["value"])):
+                                            vuetify.VListItemTitle(theme["title"])
+                                            vuetify.VListItemSubtitle(
+                                                "Selected",
+                                                v_if=f"facade__theme === '{theme['value']}'",
+                                            )
 
                     with vuetify.VMain(classes="align-stretch d-flex flex-column h-screen"):
                         # [slot override example]
