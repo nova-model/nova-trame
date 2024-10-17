@@ -4,7 +4,7 @@ from typing import cast
 
 from trame.widgets import vuetify3 as vuetify
 
-from trame_facade.components import InputField
+from trame_facade.view.components import InputField
 
 
 def test_input_field() -> None:

@@ -18,7 +18,7 @@ from trame_client.widgets import html
 from trame_server.core import Server
 from trame_server.state import State
 
-from trame_facade.local_storage import LocalStorageManager
+from trame_facade.view.utilities.local_storage import LocalStorageManager
 
 THEME_PATH = Path(__file__).parent
 
@@ -77,13 +77,13 @@ class ThemedApp:
 
         self.css = None
         try:
-            with open(THEME_PATH / "core_style.scss", "r") as scss_file:
+            with open(THEME_PATH / "assets" / "core_style.scss", "r") as scss_file:
                 self.css = sass.compile(string=scss_file.read())
         except Exception as e:
             logger.warning("Could not load base scss stylesheet.")
             logger.error(e)
 
-        theme_path = THEME_PATH / "vuetify_config.json"
+        theme_path = THEME_PATH / "assets" / "vuetify_config.json"
         try:
             with open(theme_path, "r") as vuetify_config:
                 self.vuetify_config = json.load(vuetify_config)

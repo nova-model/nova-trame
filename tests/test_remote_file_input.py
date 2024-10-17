@@ -1,6 +1,6 @@
 """Unit tests for InputField."""
 
-from trame_facade.components import RemoteFileInput
+from trame_facade.view.components import RemoteFileInput
 
 
 def test_remote_file_input() -> None:

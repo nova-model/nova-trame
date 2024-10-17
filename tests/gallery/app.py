@@ -17,8 +17,8 @@ from trame_server.state import State
 from vega_datasets import data
 
 from trame_facade import ThemedApp
-from trame_facade.components import EasyGrid, InputField, RemoteFileInput
-from trame_facade.components.visualization import Interactive2DPlot
+from trame_facade.view.components import EasyGrid, InputField, RemoteFileInput
+from trame_facade.view.components.visualization import Interactive2DPlot
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)

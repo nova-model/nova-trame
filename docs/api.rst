@@ -22,27 +22,27 @@ View Components
 
 .. _api_theme:
 
-.. autoclass:: trame_facade.theme.ThemedApp
+.. autoclass:: trame_facade.ThemedApp
     :members:
     :special-members: __init__
 
 .. _api_components:
 
-.. autoclass:: trame_facade.components.EasyGrid
+.. autoclass:: trame_facade.view.components.EasyGrid
     :members:
     :special-members: __init__
 
 Future: EasyGrid will be replaced by GridLayout.
 
-.. autoclass:: trame_facade.components.InputField
+.. autoclass:: trame_facade.view.components.InputField
     :members:
     :special-members: __new__
 
-.. autoclass:: trame_facade.components.RemoteFileInput
+.. autoclass:: trame_facade.view.components.RemoteFileInput
     :members:
     :special-members: __init__
 
-.. autoclass:: trame_facade.components.visualization.Interactive2DPlot
+.. autoclass:: trame_facade.view.components.visualization.Interactive2DPlot
     :members:
     :special-members: __init__
 
@@ -52,7 +52,7 @@ Future: 3D plotting class that takes 3D data and plots it.
 
 Future: Validation class that allows one to add front-end validation rules via Python.
 
-.. autoclass:: trame_facade.local_storage.LocalStorageManager
+.. autoclass:: trame_facade.view.utilities.local_storage.LocalStorageManager
     :members:
     :special-members: __init__
 

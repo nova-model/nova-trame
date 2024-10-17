@@ -63,7 +63,7 @@ unit-tests:
 docs-test:
   stage: docs-test
   script:
-    - docker run -u `id -u`:`id -g` ${IMAGE_NAME}:src-${CI_COMMIT_SHA} poetry run sphinx-build -M html docs sphinx
+    - docker run -u `id -u`:`id -g` ${IMAGE_NAME}:src-${CI_COMMIT_SHA} poetry run sphinx-build -M html docs sphinx -W
   tags:
     - rse-multi-builder
 
