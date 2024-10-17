@@ -5,7 +5,7 @@ from trame.widgets import html
 from trame.widgets import vuetify3 as vuetify
 from trame_server.core import Server
 
-from trame_facade.components.easy_grid import EasyGrid
+from trame_facade.view.components.easy_grid import EasyGrid
 
 
 def test_easy_grid() -> None:

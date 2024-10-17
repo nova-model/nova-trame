@@ -3,15 +3,13 @@
 from selenium.webdriver import ActionChains, Firefox
 from selenium.webdriver.common.by import By
 
-from trame_facade.components.visualization import Interactive2DPlot
+from trame_facade.view.components.visualization import Interactive2DPlot
 
 
 def test_interactive_2d_plot() -> None:
     # [setup 2d plot]
     from altair import Chart, selection_interval
     from vega_datasets import data
-
-    from trame_facade.components.visualization import Interactive2DPlot
 
     brush = selection_interval(name="brush")
     chart = (

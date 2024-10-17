@@ -4,7 +4,7 @@ from typing import Any, Union
 
 from mvvm_lib.interface import BindingInterface
 
-from trame_facade.components.remote_file_input.model import RemoteFileInputModel
+from trame_facade.model.remote_file_input import RemoteFileInputModel
 
 
 class RemoteFileInputViewModel:

@@ -35,7 +35,7 @@ common structure for applications and defines sections of the page into which yo
 
 If you want to customize a slot, you can either completely replace it or add child content to it. To replace it completely, you can do the following:
 
-.. literalinclude:: ../src/trame_facade/theme.py
+.. literalinclude:: ../src/trame_facade/view/theme/theme.py
     :start-after: slot override example
     :end-before: slot override example complete
     :dedent:
