@@ -8,15 +8,15 @@ View Components
 
 .. _api_layouts:
 
-.. autoclass:: trame_facade.view.layouts.grid.trame.GridLayout
+.. autoclass:: trame_facade.view.layouts.GridLayout
     :members:
     :special-members: __init__
 
-.. autoclass:: trame_facade.view.layouts.hbox.trame.HBoxLayout
+.. autoclass:: trame_facade.view.layouts.HBoxLayout
     :members:
     :special-members: __init__
 
-.. autoclass:: trame_facade.view.layouts.vbox.trame.VBoxLayout
+.. autoclass:: trame_facade.view.layouts.VBoxLayout
     :members:
     :special-members: __init__
 
@@ -27,12 +27,6 @@ View Components
     :special-members: __init__
 
 .. _api_components:
-
-.. autoclass:: trame_facade.view.components.EasyGrid
-    :members:
-    :special-members: __init__
-
-Future: EasyGrid will be replaced by GridLayout.
 
 .. autoclass:: trame_facade.view.components.InputField
     :members:

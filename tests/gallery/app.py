@@ -17,8 +17,9 @@ from trame_server.state import State
 from vega_datasets import data
 
 from trame_facade import ThemedApp
-from trame_facade.view.components import EasyGrid, InputField, RemoteFileInput
+from trame_facade.view.components import InputField, RemoteFileInput
 from trame_facade.view.components.visualization import Interactive2DPlot
+from trame_facade.view.layouts import GridLayout, HBoxLayout, VBoxLayout
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -85,16 +86,36 @@ class App(ThemedApp):
                     subtitle="This page is for visual testing of this theming package.",
                     title="Widget Gallery",
                 ):
-                    vuetify.VCardTitle("Grid")
-                    with EasyGrid(cols_per_row=2):
+                    vuetify.VCardTitle("Layouts")
+                    html.P("GridLayout")
+                    # [ setup grid ]
+                    with GridLayout(
+                        classes="mb-4", rows=4, columns=2, height=200, width=400, halign="center", valign="center"
+                    ) as grid:
                         vuetify.VBtn(
                             "{{ item }} - {{ index }}",
                             v_for="(item, index) in ['a', 'b', 'c']",
                         )
-                        vuetify.VBtn("d - 3")
+                        grid.add_child(vuetify.VBtn("e - 4"), row=2, column=0, row_span=2, column_span=2)
+                        grid.add_child(vuetify.VBtn("d - 3"), row=1, column=1)
+                    # [ setup grid complete ]
+                    html.P("HBoxLayout")
+                    # [ setup hbox ]
+                    with HBoxLayout(classes="mb-4", width=400, align="center"):
+                        vuetify.VBtn("Button 1")
+                        vuetify.VBtn("Button 2")
+                        vuetify.VBtn("Button 3")
+                    # [ setup hbox complete ]
+                    html.P("VBoxLayout")
+                    # [ setup vbox ]
+                    with VBoxLayout(classes="mb-4", height=200, align="center"):
+                        vuetify.VBtn("Button 1")
+                        vuetify.VBtn("Button 2")
+                        vuetify.VBtn("Button 3")
+                    # [ setup vbox complete ]
 
                     vuetify.VCardTitle("Containment Components")
-                    with EasyGrid(cols_per_row=3):
+                    with GridLayout(rows=4, columns=3, width=800, halign="center", valign="center"):
                         vuetify.VBtn(
                             "Elevated Button",
                         )
@@ -134,14 +155,14 @@ class App(ThemedApp):
                                 vuetify.VBtn("Tooltip", v_bind="props")
 
                     vuetify.VCardTitle("Navigation Components")
-                    with EasyGrid(cols_per_row=1):
+                    with GridLayout(classes="mb-4", rows=1, columns=1, halign="center", valign="center"):
                         with vuetify.VTabs():
                             vuetify.VTab("Tab 1")
                             vuetify.VTab("Tab 2")
                             vuetify.VTab("Tab 3")
 
                     vuetify.VCardTitle("Form Inputs & Controls")
-                    with EasyGrid(cols_per_row=3):
+                    with GridLayout(rows=4, columns=3, width=800, valign="center"):
                         with html.Div():
                             InputField(
                                 v_model="autoscroll",
@@ -188,7 +209,7 @@ class App(ThemedApp):
 
                     vuetify.VCardTitle("Validation")
                     with vuetify.VForm():
-                        with EasyGrid(cols_per_row=3):
+                        with GridLayout(classes="mb-4", rows=2, columns=3, width=800, valign="center"):
                             InputField(label="Required Field", required=True)
                             InputField(label="Optional Field")
                             InputField(
@@ -220,7 +241,7 @@ class App(ThemedApp):
                             )
 
                     vuetify.VCardTitle("Feedback Components")
-                    with EasyGrid(cols_per_row=3):
+                    with GridLayout(rows=2, columns=3, width=800, halign="center", valign="center"):
                         vuetify.VAlert("Alert")
                         with vuetify.VBadge():
                             vuetify.VIcon("mdi-ab-testing")
