@@ -89,7 +89,7 @@ class App(ThemedApp):
                     html.P("GridLayout")
                     # [ setup grid ]
                     with GridLayout(
-                        classes="mb-4", rows=4, columns=2, height=200, width=400, halign="center", valign="center"
+                        classes="mb-4", rows=4, columns=2, height=150, width=350, halign="center", valign="center"
                     ) as grid:
                         vuetify.VBtn(
                             "{{ item }} - {{ index }}",
@@ -100,14 +100,14 @@ class App(ThemedApp):
                     # [ setup grid complete ]
                     html.P("HBoxLayout")
                     # [ setup hbox ]
-                    with HBoxLayout(classes="mb-4", width=400, align="center"):
+                    with HBoxLayout(classes="mb-4", width=350, align="center"):
                         vuetify.VBtn("Button 1")
                         vuetify.VBtn("Button 2")
                         vuetify.VBtn("Button 3")
                     # [ setup hbox complete ]
                     html.P("VBoxLayout")
                     # [ setup vbox ]
-                    with VBoxLayout(classes="mb-4", height=200, align="center"):
+                    with VBoxLayout(classes="mb-4", height=150, align="center"):
                         vuetify.VBtn("Button 1")
                         vuetify.VBtn("Button 2")
                         vuetify.VBtn("Button 3")

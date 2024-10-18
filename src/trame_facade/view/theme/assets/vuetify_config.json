@@ -156,6 +156,14 @@
                 "defaults": {
                     "global": {
                         "density": "compact"
+                    },
+                    "VBadge": {
+                        "dot": true
+                    },
+                    "VTextField": {
+                        "VBtn": {
+                            "size": "small"
+                        }
                     }
                 },
                 "title": "Compact",

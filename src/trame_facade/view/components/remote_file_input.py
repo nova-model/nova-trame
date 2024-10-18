@@ -101,7 +101,7 @@ class RemoteFileInput:
             self.vm.init_view()
 
             with vuetify.Template(v_slot_append=True):
-                with vuetify.VBtn(icon=True, size="x-small", click=self.vm.open_dialog):
+                with vuetify.VBtn(icon=True, size="small", click=self.vm.open_dialog):
                     vuetify.VIcon("mdi-folder-open")
 
                     with vuetify.VDialog(
