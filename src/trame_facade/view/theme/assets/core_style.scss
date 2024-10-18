@@ -1,3 +1,15 @@
 html {
     overflow-y: auto;
 }
+
+.d-box {
+    display: flex;
+    justify-content: space-around;
+    margin: 0 auto;
+}
+
+.d-grid {
+    display: grid;
+    gap: 0.25em;
+    margin: 0 auto;
+}
