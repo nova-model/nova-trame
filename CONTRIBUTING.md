@@ -1,6 +1,6 @@
-# Contributing to [Project Name]
+# Contributing to trame-facade
 
-Thank you for considering contributing to this project!
+Thank you for considering contributing to trame-facade!
 This document provides guidelines to help you contribute effectively and ensure a smooth process for everyone involved.
 
 ## Getting Started
