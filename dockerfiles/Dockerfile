@@ -20,5 +20,5 @@ RUN mkdir -p /.cache /.mozilla && chmod 777 /.cache /.mozilla
 RUN poetry install
 RUN poetry build --format=wheel
 
-RUN chmod og+rwX /poetry
-RUN chmod og+rwX /src
+RUN chmod og+rwX -R /poetry
+RUN chmod og+rwX -R /src

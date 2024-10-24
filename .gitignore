@@ -164,6 +164,3 @@ cython_debug/
 
 
 junit.xml
-
-# Sphinx build
-sphinx
