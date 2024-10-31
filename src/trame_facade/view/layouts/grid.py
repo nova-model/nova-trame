@@ -11,10 +11,9 @@ class GridLayout(html.Div):
 
     def __init__(
         self,
-        rows: int = 1,
         columns: int = 1,
-        height: Union[int, str] = "100%",
-        width: Union[int, str] = "100%",
+        height: Optional[Union[int, str]] = None,
+        width: Optional[Union[int, str]] = None,
         halign: Optional[str] = None,
         valign: Optional[str] = None,
         **kwargs: Any,
@@ -23,20 +22,20 @@ class GridLayout(html.Div):
 
         Parameters
         ----------
-        rows : int
-            The number of rows in the grid.
         columns : int
             The number of columns in the grid.
-        height : int | str
+        height : optional[int | str]
             The height of this grid. If an integer is provided, it is interpreted as pixels. If a string is provided,
             the string is treated as a CSS value.
-        width : int | str
+        width : optional[int | str]
             The width of this grid. If an integer is provided, it is interpreted as pixels. If a string is provided,
             the string is treated as a CSS value.
         halign : optional[str]
-            The horizontal alignment of items in the grid. Options are :code:`start`, :code:`center`, and :code:`end`.
+            The horizontal alignment of items in the grid. See `MDN
+            <https://developer.mozilla.org/en-US/docs/Web/CSS/justify-items>`__ for available options.
         valign : optional[str]
-            The vertical alignment of items in the grid. Options are :code:`start`, :code:`center`, and :code:`end`.
+            The vertical alignment of items in the grid. See `MDN
+            <https://developer.mozilla.org/en-US/docs/Web/CSS/align-items>`__ for available options.
         kwargs : Any
             Additional keyword arguments to pass to html.Div.
 
@@ -65,16 +64,15 @@ class GridLayout(html.Div):
             classes = " ".join(classes)
         classes += " d-grid"
 
-        style = self.get_root_styles(rows, columns, height, width, halign, valign) | kwargs.pop("style", {})
+        style = self.get_root_styles(columns, height, width, halign, valign) | kwargs.pop("style", {})
 
         super().__init__(classes=classes, style=style, **kwargs)
 
     def get_root_styles(
         self,
-        rows: int,
         columns: int,
-        height: Union[int, str],
-        width: Union[int, str],
+        height: Optional[Union[int, str]],
+        width: Optional[Union[int, str]],
         halign: Optional[str],
         valign: Optional[str],
     ) -> dict[str, str]:
@@ -82,82 +80,69 @@ class GridLayout(html.Div):
         width = f"{width}px" if isinstance(width, int) else width
 
         styles = {
-            "grid-template-rows": f"repeat({rows}, 1fr)",
             "grid-template-columns": f"repeat({columns}, 1fr)",
-            "height": height,
-            "width": width,
         }
 
+        if height:
+            styles["height"] = height
+        if width:
+            styles["width"] = width
         if halign:
             styles["justify-items"] = halign
-
         if valign:
             styles["align-items"] = valign
 
         return styles
 
-    def get_row_style(self, row: int, row_span: int) -> str:
-        if row >= 0:
-            return f"grid-row: {row + 1} / span {row_span};"
-        return ""
+    def get_row_style(self, row_span: int) -> str:
+        return f"grid-row-end: span {row_span};"
 
-    def get_column_style(self, column: int, column_span: int) -> str:
-        if column >= 0:
-            return f"grid-column: {column + 1} / span {column_span};"
-        return ""
+    def get_column_style(self, column_span: int) -> str:
+        return f"grid-column-end: span {column_span};"
 
-    def validate_position(self, row: int, column: int, row_span: int, column_span: int) -> None:
-        if row < 0 and row_span > 1:
-            raise ValueError("You must set row explicitly in order to set row_span.")
-        if column < 0 and column_span > 1:
-            raise ValueError("You must set column explicitly in order to set column_span.")
-        if row < 0 and column >= 0:
-            raise ValueError("You must set row explicitly in order to set column explicitly.")
-        if column < 0 and row >= 0:
-            raise ValueError("You must set column explicitly in order to set row explicitly.")
+    def add_child(self, child: Union[AbstractElement, str]) -> AbstractElement:
+        """Add a child to the grid.
 
-    def add_child(
-        self,
-        child: Union[AbstractElement, str],
-        row: int = -1,
-        column: int = -1,
-        row_span: int = 1,
-        column_span: int = 1,
-    ) -> AbstractElement:
-        """Add a child element to the grid.
+        Do not call this directly. Instead, use Trame's `with` syntax, which will call this method internally. This
+        method is documented here as a reference for the span parameters.
 
         Parameters
         ----------
-        child : `AbstractElement <https://trame.readthedocs.io/en/latest/core.widget.html#trame_client.widgets.core.AbstractElement>`_
-            The child element to add to the grid.
-        row : int
-            The row index to place the child in.
-        column : int
-            The column index to place the child in.
+        child : `AbstractElement \
+            <https://trame.readthedocs.io/en/latest/core.widget.html#trame_client.widgets.core.AbstractElement>`_ | str
+            The child to add to the grid.
         row_span : int
-            The number of rows the child should span.
+            The number of rows this child should span.
         column_span : int
-            The number of columns the child should span.
+            The number of columns this child should span.
 
         Returns
         -------
-        `AbstractElement <https://trame.readthedocs.io/en/latest/core.widget.html#trame_client.widgets.core.AbstractElement>`_
-            The child element that was added to the grid.
+        None
 
         Example
         -------
-        .. literalinclude:: ../tests/test_layouts.py
-            :start-after: setup GridLayout.add_child example
-            :end-before: setup GridLayout.add_child example complete
+        .. literalinclude:: ../tests/gallery/app.py
+            :start-after: grid row and column span example
+            :end-before: grid row and column span example end
             :dedent:
         """
-        self.validate_position(row, column, row_span, column_span)
-
         if isinstance(child, str):
             child = html.Div(child)
 
-        child.style = f"{self.get_row_style(row, row_span)} {self.get_column_style(column, column_span)}"
+        row_span = 1
+        column_span = 1
+        if "row_span" in child._py_attr:
+            row_span = child._py_attr["row_span"]
+        if "column_span" in child._py_attr:
+            column_span = child._py_attr["column_span"]
+
+        if "style" not in child._py_attr or child.style is None:
+            child.style = ""
+        child.style += f"; {self.get_row_style(row_span)} {self.get_column_style(column_span)}"
+
+        if "classes" not in child._py_attr or child.classes is None:
+            child.classes = ""
+        child.classes += " d-grid-item"
 
         super().add_child(child)
-
-        return child

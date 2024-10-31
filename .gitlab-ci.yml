@@ -88,7 +88,7 @@ package-build:
       bash -c "
       poetry config repositories.gitlab_repo ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/pypi &&
       poetry publish -u gitlab-ci-token -p ${CI_JOB_TOKEN} -r gitlab_repo
-      poetry publish -u __token__ -p ${PYPI_API_TOKEN}
+      && poetry publish -u __token__ -p ${PYPI_API_TOKEN}
       "
   when: manual
   tags:
