@@ -57,13 +57,11 @@ Finally, if you want to remove a slot:
 
 The default slots that are available in our layout are shown in the image below.
 
-* :code:`default`
-
-  .. image:: assets/layout.png
+.. image:: assets/layout.png
     :width: 800
     :alt: Diagram of the available slots in the default layout. The slots are: toolbar: the app bar at the top of the page, toolbar_title: the title of the app bar, actions: The right side of the app bar, pre_content: sticky content above the main content, content: the main content area, post_content: sticky content below the main content, footer: the app footer at the bottom of the page.
 
-If within the :code:`layout.content` slot you want to build your own reusable layouts, we provide a few layout components based upon `Qt <https://doc.qt.io/qt-6/layout.html>`_ that you can use. These are described in the :ref:`API <api_layouts>`.
+If within the :code:`layout.content` slot you want to build your own reusable layouts, we provide a few layout components based upon `Qt <https://doc.qt.io/qt-6/layout.html>`_ that you can use. These are described in the :ref:`API <api_layouts>`, and examples can be found :ref:`here <example_layouts>`.
 
 Note that the :code:`layout.toolbar` and :code:`layout.footer` slots should only be completely replaced if you wish to customize them. Appending child content will likely break your page.
 

@@ -2,14 +2,18 @@ html {
     overflow-y: auto;
 }
 
-.d-box {
-    display: flex;
-    justify-content: space-around;
-    margin: 0 auto;
-}
-
 .d-grid {
     display: grid;
     gap: 0.25em;
-    margin: 0 auto;
+    grid-auto-rows: auto;
+}
+
+@media only screen and (max-width: 959px) {
+    .d-grid {
+        grid-template-columns: repeat(1, 1fr) !important;
+    }
+
+    .d-grid-item {
+        grid-column: 1 / 1 !important;
+    }
 }

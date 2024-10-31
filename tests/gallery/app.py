@@ -82,40 +82,106 @@ class App(ThemedApp):
 
             with layout.content:
                 with vuetify.VCard(
-                    classes="text-center",
+                    classes="align-center d-flex flex-column text-center",
                     subtitle="This page is for visual testing of this theming package.",
                     title="Widget Gallery",
                 ):
                     vuetify.VCardTitle("Layouts")
                     html.P("GridLayout")
                     # [ setup grid ]
-                    with GridLayout(
-                        classes="mb-4", rows=4, columns=2, height=200, width=400, halign="center", valign="center"
-                    ) as grid:
+                    with GridLayout(classes="mb-4", columns=2, halign="center", valign="center"):
                         vuetify.VBtn(
                             "{{ item }} - {{ index }}",
-                            v_for="(item, index) in ['a', 'b', 'c']",
+                            v_for="(item, index) in ['a', 'b', 'c', 'd']",
                         )
-                        grid.add_child(vuetify.VBtn("e - 4"), row=2, column=0, row_span=2, column_span=2)
-                        grid.add_child(vuetify.VBtn("d - 3"), row=1, column=1)
                     # [ setup grid complete ]
                     html.P("HBoxLayout")
                     # [ setup hbox ]
-                    with HBoxLayout(classes="mb-4", width=400, align="center"):
+                    with HBoxLayout(classes="mb-4"):
                         vuetify.VBtn("Button 1")
                         vuetify.VBtn("Button 2")
                         vuetify.VBtn("Button 3")
                     # [ setup hbox complete ]
                     html.P("VBoxLayout")
                     # [ setup vbox ]
-                    with VBoxLayout(classes="mb-4", height=200, align="center"):
+                    with VBoxLayout(classes="mb-4"):
                         vuetify.VBtn("Button 1")
                         vuetify.VBtn("Button 2")
                         vuetify.VBtn("Button 3")
                     # [ setup vbox complete ]
 
+                    vuetify.VCardTitle("Advanced Layouts")
+                    with html.Div(classes="text-left"):
+                        # [ grid row and column span example ]
+                        html.P("Grid cells can span multiple rows and/or columns.", classes="text-center")
+                        with GridLayout(columns=3, height=400, halign="center", valign="center"):
+                            # The classes parameter is used to highlight the different cells for demonstration purposes.
+                            vuetify.VLabel("Item 1", classes="bg-primary h-100 w-100 justify-center")
+                            vuetify.VLabel("Item 2", classes="bg-secondary h-100 w-100 justify-center")
+                            vuetify.VLabel("Row Span", classes="bg-primary h-100 w-100 justify-center", row_span=2)
+                            vuetify.VLabel("Column Span", classes="bg-error h-100 w-100 justify-center", column_span=2)
+                            vuetify.VLabel(
+                                "Row and Column Span",
+                                classes="bg-secondary h-100 w-100 justify-center",
+                                row_span=2,
+                                column_span=3,
+                            )
+                        # [ grid row and column span example end ]
+
+                        # [ whitespace example ]
+                        html.P("Grid cells can be left blank.", classes="text-center")
+                        with GridLayout(columns=3):
+                            vuetify.VSheet()
+                            InputField(label="Input 1")
+                            vuetify.VSheet()
+                            InputField(label="Input 2")
+                            vuetify.VSheet()
+                            InputField(label="Input 3")
+                        # [ whitespace example end ]
+
+                        # [ mixed boxes example 1 ]
+                        html.P(
+                            "HBoxLayout can contain VBoxLayouts.",
+                            classes="text-center",
+                        )
+                        with HBoxLayout():
+                            with VBoxLayout(classes="bg-primary pa-2"):
+                                vuetify.VLabel("VBoxLayout 1 - Item 1", classes="mb-4")
+                                vuetify.VLabel("VBoxLayout 1 - Item 2")
+                            with VBoxLayout(classes="bg-secondary pa-2", halign="center", width=600):
+                                vuetify.VLabel("VBoxLayout 2 - Item 1", classes="mb-4")
+                                vuetify.VLabel("VBoxLayout 2 - Item 2")
+                        # [ mixed boxes example 1 end ]
+
+                        # [ mixed boxes example 2 ]
+                        html.P(
+                            "VBoxLayout can contain HBoxLayouts.",
+                            classes="text-center",
+                        )
+                        with VBoxLayout():
+                            with HBoxLayout(classes="bg-primary", halign="space-around"):
+                                vuetify.VLabel("HBoxLayout 1 - Item 1")
+                                vuetify.VLabel("HBoxLayout 1 - Item 2")
+                                vuetify.VLabel("HBoxLayout 1 - Item 3")
+                            with HBoxLayout(classes="bg-secondary", halign="space-around"):
+                                vuetify.VLabel("HBoxLayout 2 - Item 1")
+                                vuetify.VLabel("HBoxLayout 2 - Item 2")
+                                vuetify.VLabel("HBoxLayout 2 - Item 3")
+                        # [ mixed boxes example 2 end ]
+
+                        # [ mixed boxes example 3 ]
+                        html.P("GridLayout can also contain HBoxLayouts and VBoxLayouts.", classes="text-center")
+                        with GridLayout(columns=10):
+                            with HBoxLayout(classes="bg-primary", column_span=7, halign="space-around"):
+                                vuetify.VLabel("HBoxLayout Item 1")
+                                vuetify.VLabel("HBoxLayout Item 2")
+                            with VBoxLayout(classes="bg-secondary", column_span=3, halign="center"):
+                                vuetify.VLabel("VBoxLayout Item 1")
+                                vuetify.VLabel("VBoxLayout Item 2")
+                        # [ mixed boxes example 3 end ]
+
                     vuetify.VCardTitle("Containment Components")
-                    with GridLayout(rows=4, columns=3, width=800, halign="center", valign="center"):
+                    with GridLayout(columns=3, halign="center", valign="center"):
                         vuetify.VBtn(
                             "Elevated Button",
                         )
@@ -155,14 +221,14 @@ class App(ThemedApp):
                                 vuetify.VBtn("Tooltip", v_bind="props")
 
                     vuetify.VCardTitle("Navigation Components")
-                    with GridLayout(classes="mb-4", rows=1, columns=1, halign="center", valign="center"):
+                    with GridLayout(classes="mb-4", columns=1, halign="center", valign="center"):
                         with vuetify.VTabs():
                             vuetify.VTab("Tab 1")
                             vuetify.VTab("Tab 2")
                             vuetify.VTab("Tab 3")
 
                     vuetify.VCardTitle("Form Inputs & Controls")
-                    with GridLayout(rows=4, columns=3, width=800, valign="center"):
+                    with GridLayout(columns=3, valign="center"):
                         with html.Div():
                             InputField(
                                 v_model="autoscroll",
@@ -209,7 +275,7 @@ class App(ThemedApp):
 
                     vuetify.VCardTitle("Validation")
                     with vuetify.VForm():
-                        with GridLayout(classes="mb-4", rows=2, columns=3, width=800, valign="center"):
+                        with GridLayout(classes="mb-4", columns=3, width=600, valign="center"):
                             InputField(label="Required Field", required=True)
                             InputField(label="Optional Field")
                             InputField(
@@ -241,7 +307,7 @@ class App(ThemedApp):
                             )
 
                     vuetify.VCardTitle("Feedback Components")
-                    with GridLayout(rows=2, columns=3, width=800, halign="center", valign="center"):
+                    with GridLayout(columns=3, halign="center", valign="center"):
                         vuetify.VAlert("Alert")
                         with vuetify.VBadge():
                             vuetify.VIcon("mdi-ab-testing")

@@ -19,5 +19,6 @@ To make it easier to get started, we provide a UI package, :code:`trame-facade`,
 
    getting_started
    working_with_trame
+   example_layouts
    api
    helpful_links
