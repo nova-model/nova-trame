@@ -11,8 +11,13 @@ def test_theme_configuration() -> None:
 def test_set_theme() -> None:
     app = ThemedApp()
     assert app.state.facade__theme == "ModernTheme"
-    app.set_theme("TechnicalTheme", force=True)
-    assert app.state.facade__theme == "TechnicalTheme"
+    app.set_theme("CompactTheme", force=True)
+    assert app.state.facade__theme == "CompactTheme"
+    try:
+        app.set_theme("FakeTheme")
+        raise AssertionError("Expected ValueError")
+    except ValueError as e:
+        assert str(e).startswith("Theme 'FakeTheme' not found")
 
 
 def test_inheritance() -> None:

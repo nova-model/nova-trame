@@ -69,7 +69,6 @@ class App(ThemedApp):
         with super().create_ui() as layout:
             client.ClientTriggers(mounted=self.read_local_storage)
 
-            # self.set_theme("TechnicalTheme")  # sets the default theme, must not call before layout exists
             layout.toolbar_title.set_text("Widget Gallery")
 
             # [slot child example]

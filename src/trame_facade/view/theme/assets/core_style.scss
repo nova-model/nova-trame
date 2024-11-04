@@ -17,3 +17,14 @@ html {
         grid-column: 1 / 1 !important;
     }
 }
+
+/* Global font sizes can't be set through the Vuetify configuration. */
+.v-theme--CompactTheme {
+    font-size: 0.85rem;
+
+    .v-card-title,
+    .v-list-item-title,
+    .v-toolbar-title {
+        font-size: 1rem;
+    }
+}
