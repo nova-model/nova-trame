@@ -123,7 +123,8 @@ class ThemedApp:
     async def _init_theme(self) -> None:
         if self.local_storage:
             theme = await self.local_storage.get("facade__theme")
-            self.set_theme(theme, False)
+            if theme and theme in self.vuetify_config["theme"]["themes"]:
+                self.set_theme(theme, False)
 
     async def init_theme(self) -> None:
         create_task(self._init_theme())
@@ -143,7 +144,11 @@ class ThemedApp:
         None
         """
         if theme not in self.vuetify_config["theme"]["themes"]:
-            theme = "ModernTheme"
+            raise ValueError(
+                f"Theme '{theme}' not found in the Vuetify configuration. "
+                "For a list of available themes, please visit "
+                "https://nova-application-development.readthedocs.io/en/stable/api.html#trame_facade.ThemedApp."
+            )
 
         # I set force to True by default as I want the user to be able to say self.set_theme('MyTheme')
         # while still blocking theme.py calls to set_theme if the selection menu is disabled.
@@ -203,18 +208,14 @@ class ThemedApp:
                                 with vuetify.VList(width=200):
                                     vuetify.VListSubheader("Select Theme")
                                     vuetify.VDivider()
-                                    with vuetify.VListItem(click=partial(self.set_theme, "ModernTheme")):
-                                        vuetify.VListItemTitle("Modern")
-                                        vuetify.VListItemSubtitle(
-                                            "Selected",
-                                            v_if="facade__theme === 'ModernTheme'",
-                                        )
-                                    with vuetify.VListItem(click=partial(self.set_theme, "TechnicalTheme")):
-                                        vuetify.VListItemTitle("Technical")
-                                        vuetify.VListItemSubtitle(
-                                            "Selected",
-                                            v_if="facade__theme === 'TechnicalTheme'",
-                                        )
+
+                                    for theme in self.vuetify_config.get("theme", {}).get("themes", {}).values():
+                                        with vuetify.VListItem(click=partial(self.set_theme, theme["value"])):
+                                            vuetify.VListItemTitle(theme["title"])
+                                            vuetify.VListItemSubtitle(
+                                                "Selected",
+                                                v_if=f"facade__theme === '{theme['value']}'",
+                                            )
 
                     with vuetify.VMain(classes="align-stretch d-flex flex-column h-screen"):
                         # [slot override example]
