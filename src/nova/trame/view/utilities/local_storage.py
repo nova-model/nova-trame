@@ -30,7 +30,7 @@ class LocalStorageManager:
         self.js_get = client.JSEval(
             exec=(
                 "window.trame.trigger("
-                "  'facade__local_storage_trigger', "
+                "  'nova__local_storage_trigger', "
                 "  [$event.key, window.localStorage.getItem($event.key)]"
                 ");"
             )
@@ -41,7 +41,7 @@ class LocalStorageManager:
         self._ready: dict[str, bool] = {}
         self._values: dict[str, str] = {}
 
-        @ctrl.trigger("facade__local_storage_trigger")
+        @ctrl.trigger("nova__local_storage_trigger")
         def _(key: str, value: str) -> None:
             self._ready[key] = True
             self._values[key] = value

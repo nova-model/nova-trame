@@ -19,7 +19,7 @@ from trame_client.widgets import html
 from trame_server.core import Server
 from trame_server.state import State
 
-from trame_facade.view.utilities.local_storage import LocalStorageManager
+from nova.trame.view.utilities.local_storage import LocalStorageManager
 
 THEME_PATH = Path(__file__).parent
 
@@ -105,9 +105,9 @@ class ThemedApp:
 
         # Since this is only intended for theming Trame apps, I don't think we need to invoke the MVVM framework here,
         # and working directly with the Trame state makes this easier for me to manage.
-        self.state.facade__menu = False
-        self.state.facade__defaults = self.vuetify_config["theme"]["themes"]["ModernTheme"].get("defaults", {})
-        self.state.facade__theme = "ModernTheme"
+        self.state.nova__menu = False
+        self.state.nova__defaults = self.vuetify_config["theme"]["themes"]["ModernTheme"].get("defaults", {})
+        self.state.nova__theme = "ModernTheme"
         self.state.trame__favicon = LocalFileManager(__file__).url("favicon", "./assets/favicon.png")
 
     @property
@@ -123,7 +123,7 @@ class ThemedApp:
 
     async def _init_theme(self) -> None:
         if self.local_storage:
-            theme = await self.local_storage.get("facade__theme")
+            theme = await self.local_storage.get("nova__theme")
             if theme and theme in self.vuetify_config["theme"]["themes"]:
                 self.set_theme(theme, False)
 
@@ -148,19 +148,19 @@ class ThemedApp:
             raise ValueError(
                 f"Theme '{theme}' not found in the Vuetify configuration. "
                 "For a list of available themes, please visit "
-                "https://nova-application-development.readthedocs.io/en/stable/api.html#trame_facade.ThemedApp."
+                "https://nova-application-development.readthedocs.io/en/stable/api.html#nova.trame.ThemedApp."
             )
 
         # I set force to True by default as I want the user to be able to say self.set_theme('MyTheme')
         # while still blocking theme.py calls to set_theme if the selection menu is disabled.
-        if self.state.facade__menu or force:
+        if self.state.nova__menu or force:
             with self.state:
-                self.state.facade__defaults = self.vuetify_config["theme"]["themes"].get(theme, {}).get("defaults", {})
-                self.state.facade__theme = theme
+                self.state.nova__defaults = self.vuetify_config["theme"]["themes"].get(theme, {}).get("defaults", {})
+                self.state.nova__theme = theme
 
         # We only want to sync to localStorage if the user is selecting and we want to preserve the selection.
-        if self.state.facade__menu and self.local_storage:
-            self.local_storage.set("facade__theme", theme)
+        if self.state.nova__menu and self.local_storage:
+            self.local_storage.set("nova__theme", theme)
 
     def create_ui(self) -> VAppLayout:
         """Creates the base UI into which you will inject your content.
@@ -177,10 +177,10 @@ class ThemedApp:
             client.ClientTriggers(mounted=self.init_theme)
             client.Style(self.css)
 
-            with vuetify.VDefaultsProvider(defaults=("facade__defaults",)) as defaults:
+            with vuetify.VDefaultsProvider(defaults=("nova__defaults",)) as defaults:
                 layout.defaults = defaults
 
-                with vuetify.VThemeProvider(theme=("facade__theme",)) as theme:
+                with vuetify.VThemeProvider(theme=("nova__theme",)) as theme:
                     layout.theme = theme
 
                     with vuetify.VAppBar() as toolbar:
@@ -193,7 +193,7 @@ class ThemedApp:
                             layout.actions = actions
 
                             with vuetify.VMenu(
-                                v_if="facade__menu",
+                                v_if="nova__menu",
                                 close_delay=10000,
                                 open_on_hover=True,
                             ) as theme_menu:
@@ -215,7 +215,7 @@ class ThemedApp:
                                             vuetify.VListItemTitle(theme["title"])
                                             vuetify.VListItemSubtitle(
                                                 "Selected",
-                                                v_if=f"facade__theme === '{theme['value']}'",
+                                                v_if=f"nova__theme === '{theme['value']}'",
                                             )
 
                     with vuetify.VMain(classes="align-stretch d-flex flex-column h-screen"):

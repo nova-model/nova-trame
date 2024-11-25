@@ -35,7 +35,7 @@ common structure for applications and defines sections of the page into which yo
 
 If you want to customize a slot, you can either completely replace it or add child content to it. To replace it completely, you can do the following:
 
-.. literalinclude:: ../src/trame_facade/view/theme/theme.py
+.. literalinclude:: ../src/nova/trame/view/theme/theme.py
     :start-after: slot override example
     :end-before: slot override example complete
     :dedent:
@@ -69,6 +69,6 @@ Note that the :code:`layout.toolbar` and :code:`layout.footer` slots should only
 Theming
 +++++++
 
-In order to give applications a consistent look and feel, all applications built with :code:`trame-facade` are based on the `Vuetify <https://vuetifyjs.com/en/>`_ framework. One of the most important features that Vuetify provides is the ability to theme your application. This allows you to easily change the colors, fonts, and other visual elements of your application. We provide two themes that we recommend you choose between depending on your needs, but you can modify or completely replace them if needed.
+In order to give applications a consistent look and feel, all applications built with :code:`nova-trame` are based on the `Vuetify <https://vuetifyjs.com/en/>`_ framework. One of the most important features that Vuetify provides is the ability to theme your application. This allows you to easily change the colors, fonts, and other visual elements of your application. We provide two themes that we recommend you choose between depending on your needs, but you can modify or completely replace them if needed.
 
 For details on manipulating the theming, see the :ref:`API <api_theme>`.

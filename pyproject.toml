@@ -1,12 +1,13 @@
 [tool.poetry]
-name = "trame-facade"
-version = "0.7.3"
+name = "nova-trame"
+version = "0.8.0"
 description = "A Python Package for injecting curated themes and custom components into Trame applications"
 authors = ["Duggan, John <dugganjw@ornl.gov>"]
 readme = "README.md"
 license = "MIT"
 keywords = ["NDIP", "Python", "Trame", "Vuetify"]
-packages = [{include = "trame_facade", from = "src"}]
+packages = [{include = "nova", from = "src"}]
+
 
 [tool.poetry.dependencies]
 libsass = "^0.23.0"
@@ -24,9 +25,6 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.pytest.ini_options]
-pythonpath = [
-  ".", "src"
-]
 testpaths = ["tests"]
 python_files = ["test*.py"]
 norecursedirs = [".git", "tmp*", "_tmp*", "__pycache__"]
@@ -91,4 +89,4 @@ sphinx-rtd-theme = "^3.0.0rc3"
 sphinxcontrib-napoleon ="*"
 
 [tool.poetry.scripts]
-start = "tests.gallery:main"
+app = "tests.gallery:main"

@@ -23,7 +23,7 @@ with open("../pyproject.toml", "rb") as toml_file:
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-sys.path.insert(0, os.path.abspath("../src/trame_facade"))
+sys.path.insert(0, os.path.abspath("../src/nova/trame"))
 
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 extensions = ["sphinx.ext.autodoc", "sphinx.ext.napoleon", "sphinx_rtd_theme"]

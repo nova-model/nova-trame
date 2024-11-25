@@ -1,6 +1,6 @@
 """Tests theme.py."""
 
-from trame_facade import ThemedApp
+from nova.trame import ThemedApp
 
 
 def test_theme_configuration() -> None:
@@ -10,9 +10,9 @@ def test_theme_configuration() -> None:
 
 def test_set_theme() -> None:
     app = ThemedApp()
-    assert app.state.facade__theme == "ModernTheme"
+    assert app.state.nova__theme == "ModernTheme"
     app.set_theme("CompactTheme", force=True)
-    assert app.state.facade__theme == "CompactTheme"
+    assert app.state.nova__theme == "CompactTheme"
     try:
         app.set_theme("FakeTheme")
         raise AssertionError("Expected ValueError")

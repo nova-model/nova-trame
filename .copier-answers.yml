@@ -1,7 +1,7 @@
 # Please do not edit or delete this file. It is needed to be able to update project from template.
-_commit: 0.2.0
+_commit: '0.8'
 _src_path: https://code.ornl.gov/ndip/project-templates/python.git
-project_name: trame-facade
+project_name: nova-trame
 publish_docs: true
 publish_to_pypi: true
-python_package: trame_facade
+python_package: nova-trame

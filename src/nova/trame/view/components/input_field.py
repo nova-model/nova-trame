@@ -166,39 +166,39 @@ class InputField:
     def _setup_autoscroll(state: State, input: AbstractElement) -> None:
         if input.v_model:
             if "id" not in input._py_attr or input.id is None:
-                input.id = f"facade__{input._id}"
-                input.scroll = f"window.facade__autoscroll('{input.id}');"
+                input.id = f"nova__{input._id}"
+                input.scroll = f"window.nova__autoscroll('{input.id}');"
 
             with state:
-                if state["facade_scroll_position"] is None:
-                    state["facade_scroll_position"] = {}
-                state.facade_scroll_position[input.id] = 0
+                if state["nova_scroll_position"] is None:
+                    state["nova_scroll_position"] = {}
+                state.nova_scroll_position[input.id] = 0
 
             autoscroll = client.JSEval(
                 exec=(
-                    "if (window.facade__autoscroll !== undefined) {"
+                    "if (window.nova__autoscroll !== undefined) {"
                     # If the autoscroll function already exists, call it.
-                    "  window.facade__autoscroll($event);"
+                    "  window.nova__autoscroll($event);"
                     "} else {"
                     # Save the JS so it can be called from outside of this script (ie during a scroll event).
-                    "  window.facade__autoscroll = function(id) {"
+                    "  window.nova__autoscroll = function(id) {"
                     # Get the element in the browser by ID
                     "    const element = window.document.querySelector(`#${id}`);"
                     # If the user is at the bottom of the textarea, then we should autoscroll.
-                    "    if (element.scrollTop === window.trame.state.state.facade_scroll_position[id]) {"
+                    "    if (element.scrollTop === window.trame.state.state.nova_scroll_position[id]) {"
                     # Scroll to the bottom
                     "      element.scrollTop = element.scrollHeight;"
                     # Save the new scroll position
-                    "      window.trame.state.state.facade_scroll_position[id] = element.scrollTop;"
-                    "      flushState('facade_scroll_position');"
+                    "      window.trame.state.state.nova_scroll_position[id] = element.scrollTop;"
+                    "      flushState('nova_scroll_position');"
                     # If the user has scrolled back to the bottom, then we should reenable scrolling.
                     "    } else if (element.scrollTop === element.scrollHeight - element.clientHeight) {"
                     # Save the new scroll position
-                    "      window.trame.state.state.facade_scroll_position[id] = element.scrollTop;"
-                    "      flushState('facade_scroll_position');"
+                    "      window.trame.state.state.nova_scroll_position[id] = element.scrollTop;"
+                    "      flushState('nova_scroll_position');"
                     "    }"
                     "  };"
-                    "  window.facade__autoscroll($event);"
+                    "  window.nova__autoscroll($event);"
                     "}"
                 )
             ).exec
@@ -224,7 +224,7 @@ class InputField:
     @staticmethod
     def _setup_ref(input: AbstractElement) -> None:
         if "ref" not in input._py_attr or input.ref is None:
-            input.ref = f"facade__{input._id}"
+            input.ref = f"nova__{input._id}"
 
     @staticmethod
     def _setup_required_rule(input: AbstractElement) -> None:

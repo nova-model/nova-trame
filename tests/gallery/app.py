@@ -16,10 +16,10 @@ from trame_server.core import Server
 from trame_server.state import State
 from vega_datasets import data
 
-from trame_facade import ThemedApp
-from trame_facade.view.components import InputField, RemoteFileInput
-from trame_facade.view.components.visualization import Interactive2DPlot
-from trame_facade.view.layouts import GridLayout, HBoxLayout, VBoxLayout
+from nova.trame import ThemedApp
+from nova.trame.view.components import InputField, RemoteFileInput
+from nova.trame.view.components.visualization import Interactive2DPlot
+from nova.trame.view.layouts import GridLayout, HBoxLayout, VBoxLayout
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -53,7 +53,7 @@ class App(ThemedApp):
 
     def create_state(self) -> None:
         self.state.autoscroll = ""
-        self.state.facade__menu = True
+        self.state.nova__menu = True
         self.state.local_storage_test = ""
         self.state.nested = {
             "selected_file": "",
