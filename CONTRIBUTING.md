@@ -1,6 +1,6 @@
-# Contributing to trame-facade
+# Contributing to nova-trame
 
-Thank you for considering contributing to trame-facade!
+Thank you for considering contributing to nova-trame!
 This document provides guidelines to help you contribute effectively and ensure a smooth process for everyone involved.
 
 ## Getting Started

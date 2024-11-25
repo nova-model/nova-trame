@@ -9,9 +9,9 @@ from trame.widgets import client, html
 from trame.widgets import vuetify3 as vuetify
 from trame_client.widgets.core import AbstractElement
 
-from trame_facade.model.remote_file_input import RemoteFileInputModel
-from trame_facade.view.components import InputField
-from trame_facade.view_model.remote_file_input import RemoteFileInputViewModel
+from nova.trame.model.remote_file_input import RemoteFileInputModel
+from nova.trame.view.components import InputField
+from nova.trame.view_model.remote_file_input import RemoteFileInputViewModel
 
 
 class RemoteFileInput:

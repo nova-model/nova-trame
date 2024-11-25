@@ -72,11 +72,35 @@ tag-release:
       if [ -z $(git ls-remote --tags origin "$VERSION") ]; then
         git remote add gitlab https://oauth2:${NDIP_GROUP_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git
         git tag ${VERSION}
-        git push gitlab ${VERSION} --tags
+        git push gitlab --tags
       fi
   tags:
   - rse-multi-builder
 
+
+build-image:
+  stage: publish
+  variables:
+    OVERWRITE_IMAGE: "false"
+  when: manual
+  script:
+    - IMAGE_TAG=${VERSION}
+    - docker pull ${IMAGE_NAME}:src-${CI_COMMIT_SHA}
+    - docker build -f dockerfiles/Dockerfile -t image .
+    - docker tag image ${IMAGE_NAME}:bin-${CI_COMMIT_SHA}
+    - docker push ${IMAGE_NAME}:bin-${CI_COMMIT_SHA}
+    - docker tag image ${IMAGE_NAME}:latest
+    - docker push ${IMAGE_NAME}:latest
+    - >
+      if ! docker pull ${IMAGE_NAME}:${IMAGE_TAG} || [ "$OVERWRITE_IMAGE" == "true" ]; then
+        docker tag image ${IMAGE_NAME}:${IMAGE_TAG}
+        docker push ${IMAGE_NAME}:${IMAGE_TAG}
+      else
+        echo tag ${IMAGE_TAG} already exists in ${NDIP_DOCKER_REPOSITORY}. Use OVERWRITE_IMAGE="true", delete image in the repository or change the tag
+        exit 1
+      fi
+  tags:
+    - rse-multi-builder
 
 package-build:
   stage: publish

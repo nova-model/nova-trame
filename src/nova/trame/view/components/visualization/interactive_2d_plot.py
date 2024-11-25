@@ -42,7 +42,7 @@ class Interactive2DPlot(vega.Figure):
         self._initialized = False
 
         super().__init__(figure=figure, **kwargs)
-        self.ref = f"facade__vega_{self._id}"
+        self.ref = f"nova__vega_{self._id}"
         self.server.state[self.ref] = {}
         self._start_update_handlers = client.JSEval(
             exec=(

@@ -4,7 +4,7 @@ from typing import Any, Union
 
 from mvvm_lib.interface import BindingInterface
 
-from trame_facade.model.remote_file_input import RemoteFileInputModel
+from nova.trame.model.remote_file_input import RemoteFileInputModel
 
 
 class RemoteFileInputViewModel:
@@ -43,16 +43,16 @@ class RemoteFileInputViewModel:
         self.on_close_bind.update_in_view(None)
 
     def get_dialog_state_name(self) -> str:
-        return f"facade__dialog_{self.id}"
+        return f"nova__dialog_{self.id}"
 
     def get_file_list_state_name(self) -> str:
-        return f"facade__file_list_{self.id}"
+        return f"nova__file_list_{self.id}"
 
     def get_showing_all_state_name(self) -> str:
-        return f"facade__showing_all_{self.id}"
+        return f"nova__showing_all_{self.id}"
 
     def get_valid_selection_state_name(self) -> str:
-        return f"facade__valid_selection_{self.id}"
+        return f"nova__valid_selection_{self.id}"
 
     def init_view(self) -> None:
         self.dialog_bind.update_in_view(False)

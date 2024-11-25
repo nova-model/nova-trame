@@ -1,5 +1,5 @@
 ================
-trame-facade API
+nova-trame API
 ================
 
 ---------------
@@ -8,35 +8,35 @@ View Components
 
 .. _api_layouts:
 
-.. autoclass:: trame_facade.view.layouts.GridLayout
+.. autoclass:: nova.trame.view.layouts.GridLayout
     :members:
     :special-members: __init__
 
-.. autoclass:: trame_facade.view.layouts.HBoxLayout
+.. autoclass:: nova.trame.view.layouts.HBoxLayout
     :members:
     :special-members: __init__
 
-.. autoclass:: trame_facade.view.layouts.VBoxLayout
+.. autoclass:: nova.trame.view.layouts.VBoxLayout
     :members:
     :special-members: __init__
 
 .. _api_theme:
 
-.. autoclass:: trame_facade.ThemedApp
+.. autoclass:: nova.trame.ThemedApp
     :members:
     :special-members: __init__
 
 .. _api_components:
 
-.. autoclass:: trame_facade.view.components.InputField
+.. autoclass:: nova.trame.view.components.InputField
     :members:
     :special-members: __new__
 
-.. autoclass:: trame_facade.view.components.RemoteFileInput
+.. autoclass:: nova.trame.view.components.RemoteFileInput
     :members:
     :special-members: __init__
 
-.. autoclass:: trame_facade.view.components.visualization.Interactive2DPlot
+.. autoclass:: nova.trame.view.components.visualization.Interactive2DPlot
     :members:
     :special-members: __init__
 
@@ -46,7 +46,7 @@ Future: 3D plotting class that takes 3D data and plots it.
 
 Future: Validation class that allows one to add front-end validation rules via Python.
 
-.. autoclass:: trame_facade.view.utilities.local_storage.LocalStorageManager
+.. autoclass:: nova.trame.view.utilities.local_storage.LocalStorageManager
     :members:
     :special-members: __init__
 

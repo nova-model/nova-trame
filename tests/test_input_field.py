@@ -8,8 +8,8 @@ from trame.app import get_server
 from trame.widgets import vuetify3 as vuetify
 from trame_server import Server
 
-from trame_facade.view.components import InputField
-from trame_facade.view.theme import ThemedApp
+from nova.trame import ThemedApp
+from nova.trame.view.components import InputField
 
 
 def test_input_field() -> None:

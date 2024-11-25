@@ -3,7 +3,7 @@
 from selenium.webdriver import ActionChains, Firefox
 from selenium.webdriver.common.by import By
 
-from trame_facade.view.components.visualization import Interactive2DPlot
+from nova.trame.view.components.visualization import Interactive2DPlot
 
 
 def test_interactive_2d_plot() -> None:
@@ -33,12 +33,12 @@ def test_state_synchronization(driver: Firefox) -> None:
     ActionChains(driver).drag_and_drop_by_offset(plot, 10, 5).perform()
 
     # Look for the interval in the state. I want to avoid using the exact ref since it's pseudo-random
-    # (e.g. facade__vega_203) here.
+    # (e.g. nova__vega_203) here.
     trame_state = driver.execute_script("return window.trame.state.state")
     for key, value in trame_state.items():
         if isinstance(value, dict):
             for sub_key in value:
-                if sub_key == "interval" and key.startswith("facade__vega"):
+                if sub_key == "interval" and key.startswith("nova__vega"):
                     interval = value[sub_key]
 
     # We could check exact values, but that seems more sensitive to changes in the gallery.

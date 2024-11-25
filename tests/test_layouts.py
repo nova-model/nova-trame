@@ -3,7 +3,7 @@
 from trame.widgets import html
 from trame.widgets import vuetify3 as vuetify
 
-from trame_facade.view.layouts import GridLayout, HBoxLayout, VBoxLayout
+from nova.trame.view.layouts import GridLayout, HBoxLayout, VBoxLayout
 
 
 def test_grid() -> None:
