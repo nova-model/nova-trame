@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "trame-facade"
-version = "0.7.2"
+version = "0.7.3"
 description = "A Python Package for injecting curated themes and custom components into Trame applications"
 authors = ["Duggan, John <dugganjw@ornl.gov>"]
 readme = "README.md"
@@ -16,8 +16,9 @@ tomli = "^2.0.2"
 trame = "^3.6.3"
 trame-vega = "^2.1.1"
 trame-vuetify = "^2.6.1"
-mvvm-lib = ">=0.3.0"
+mvvm-lib = ">=0.4.0"
 
+pydantic = "^2.10.1"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"

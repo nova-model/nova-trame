@@ -2,9 +2,14 @@
 
 from typing import cast
 
+from mvvm_lib.trame_binding import TrameBinding
+from pydantic import BaseModel, Field
+from trame.app import get_server
 from trame.widgets import vuetify3 as vuetify
+from trame_server import Server
 
 from trame_facade.view.components import InputField
+from trame_facade.view.theme import ThemedApp
 
 
 def test_input_field() -> None:
@@ -46,6 +51,33 @@ def test_input_field() -> None:
 
     input_field = InputField(type="number")
     assert isinstance(input_field, vuetify.VTextField)
+
+
+def test_pydantic() -> None:
+    class User(BaseModel):
+        username: str = Field(
+            default="test_name", min_length=1, title="User Name", description="hint", examples=["user"]
+        )
+
+    obj = User()
+
+    class MyTrameApp(ThemedApp):
+        def __init__(self, server: Server = None) -> None:
+            server = get_server(None, client_type="vue3")
+            super().__init__(server=server)
+            binding = TrameBinding(server.state).new_bind(obj)
+            binding.connect("obj")
+            self.create_ui()
+
+        def create_ui(self) -> None:
+            with super().create_ui() as layout:
+                with layout.content:
+                    input_field = cast(vuetify.VTextField, InputField(v_model="obj.username"))
+                    assert input_field.hint == "hint"
+                    assert input_field.label == "User Name"
+                    assert input_field.placeholder == "user"
+
+    MyTrameApp()
 
 
 def test_invalid_rules() -> None:
