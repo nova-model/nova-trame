@@ -9,6 +9,7 @@ from typing import Optional
 
 import sass
 from mergedeep import Strategy, merge
+from mvvm_lib.pydantic_utils import validate_pydantic_parameter
 from trame.app import get_server
 from trame.assets.local import LocalFileManager
 from trame.ui.vuetify3 import VAppLayout
@@ -251,5 +252,11 @@ class ThemedApp:
                             'class="text-grey-lighten-1 text-caption text-decoration-none" '
                             'target="_blank">© 2024 ORNL</a>'
                         )
+
+            @self.server.controller.trigger("validate_pydantic_field")
+            def validate_pydantic_field(name: str, value: str, index: int) -> bool:
+                if "[index]" in name:
+                    name = name.replace("[index]", f"[{str(index)}]")
+                return validate_pydantic_parameter(name, value, index)
 
             return layout

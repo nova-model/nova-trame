@@ -1,7 +1,10 @@
 """View Implementation for InputField."""
 
-from typing import Any
+import logging
+import re
+from typing import Any, Dict
 
+from mvvm_lib.pydantic_utils import get_field_info
 from trame.app import get_server
 from trame.widgets import client
 from trame.widgets import vuetify3 as vuetify
@@ -9,11 +12,59 @@ from trame_client.widgets.core import AbstractElement
 from trame_server.controller import Controller
 from trame_server.state import State
 
+logger = logging.getLogger(__name__)
+
 
 class InputField:
     """Factory class for generating Vuetify input components."""
 
-    def __new__(cls, required: bool = False, type: str = "text", **kwargs: Any) -> AbstractElement:
+    @staticmethod
+    def create_boilerplate_properties(v_model: str | None) -> dict:
+        if not v_model:
+            return {}
+        object_name_in_state = v_model.split(".")[0]
+        field_info = None
+        try:
+            field_name = ".".join(v_model.split(".")[1:])
+            if "[" in field_name:
+                index_field_name = re.sub(r"\[.*?\]", "[0]", field_name)
+                field_info = get_field_info(index_field_name)
+                if "[" in field_name and "[index]" not in field_name:
+                    field_info = None
+                    logger.warning(
+                        f"{v_model}: validation ignored. We currently only "
+                        f"support single loop with index variable that should be called 'index'"
+                    )
+            else:
+                field_info = get_field_info(field_name)
+        except Exception as _:
+            pass
+        label = ""
+        help_dict: dict = {}
+        placeholder = None
+        if field_info:
+            label = field_info.title
+            if field_info.examples and len(field_info.examples) > 0:
+                placeholder = field_info.examples[0]
+            help_dict = {"hint": field_info.description, "placeholder": placeholder}
+
+        args: Dict[str, Any] = {}
+        if v_model:
+            args |= {
+                "v_model": v_model,
+                "label": label,
+                "help": help_dict,
+                "update_modelValue": f"flushState('{object_name_in_state}')",
+            }
+            if field_info:
+                args |= {
+                    "rules": (f"[(v) => trigger('validate_pydantic_field', ['{field_name}', v, index])]",),
+                }
+        return args
+
+    def __new__(
+        cls, v_model: str | None = None, required: bool = False, type: str = "text", **kwargs: Any
+    ) -> AbstractElement:
         """Constructor for InputField.
 
         Parameters
@@ -46,6 +97,8 @@ class InputField:
             The Vuetify input component.
         """
         server = get_server(None, client_type="vue3")
+
+        kwargs = {**cls.create_boilerplate_properties(v_model), **kwargs}
 
         if "__events" not in kwargs or kwargs["__events"] is None:
             kwargs["__events"] = []
@@ -210,7 +263,7 @@ class InputField:
                 "trigger("
                 f"'{input.ref}__trigger', "
                 f"{base_handler[1] if len(base_handler) > 1 else []}, "
-                f"{base_handler[2] if len(base_handler) > 2 else {}}"
+                f"{base_handler[2] if len(base_handler) > 2 else {} }"
                 f"); {change_handler}"
             )  # Call the developer's provided change method via a trigger, then call ours.
         elif isinstance(base_handler, str):
