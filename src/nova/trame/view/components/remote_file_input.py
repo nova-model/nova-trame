@@ -30,7 +30,6 @@ class RemoteFileInput:
         dialog_props: Optional[dict[str, Any]] = None,
         extensions: Optional[list[str]] = None,
         input_props: Optional[dict[str, Any]] = None,
-        label: str = "",
     ) -> None:
         """Constructor for RemoteFileInput.
 
@@ -51,9 +50,7 @@ class RemoteFileInput:
         extensions : list[str], optional
             Only files with these extensions will be shown by default. The user can still choose to view all files.
         input_props : dict[str, typing.Any], optional
-            Props to be passed to InputField. Must not include label prop, use the top-level label parameter instead.
-        label : str
-            Label shown in the input field and the dialog title.
+            Props to be passed to InputField.
 
         Raises
         ------
@@ -75,7 +72,6 @@ class RemoteFileInput:
         self.dialog_props = dict(dialog_props) if dialog_props else {}
         self.extensions = extensions if extensions else []
         self.input_props = dict(input_props) if input_props else {}
-        self.label = label
 
         if "__events" not in self.input_props:
             self.input_props["__events"] = []
@@ -93,11 +89,10 @@ class RemoteFileInput:
             AbstractElement,
             InputField(
                 v_model=self.v_model,
-                label=self.label,
                 change=(self.vm.select_file, "[$event.target.value]"),
                 **self.input_props,
             ),
-        ):
+        ) as input:
             self.vm.init_view()
 
             with vuetify.Template(v_slot_append=True):
@@ -111,7 +106,7 @@ class RemoteFileInput:
                         **self.dialog_props,
                     ):
                         with vuetify.VCard(classes="pa-4"):
-                            vuetify.VCardTitle(self.label)
+                            vuetify.VCardTitle(input.label)
                             vuetify.VTextField(
                                 v_model=self.v_model,
                                 classes="mb-4 px-4",
