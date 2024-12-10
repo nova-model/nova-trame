@@ -257,19 +257,19 @@ class App(ThemedApp):
                             v_model="selected_file",
                             base_paths=["/run"],
                             extensions=[".pid", ".lock"],
-                            label="File Selector",
+                            input_props={"label": "File Selector"},
                         )
                         RemoteFileInput(
                             v_model="selected_folder",
                             allow_files=False,
                             allow_folders=True,
                             base_paths=["/usr"],
-                            label="Folder Selector",
+                            input_props={"label": "Folder Selector"},
                         )
                         RemoteFileInput(
                             v_model="nested.selected_file",
                             base_paths=["/run"],
-                            label="Nested v_model File Selector",
+                            input_props={"label": "Nested v_model File Selector"},
                         )
 
                     vuetify.VCardTitle("Validation")
