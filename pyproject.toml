@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "nova-trame"
-version = "0.8.0"
+version = "0.9.0"
 description = "A Python Package for injecting curated themes and custom components into Trame applications"
 authors = ["Duggan, John <dugganjw@ornl.gov>"]
 readme = "README.md"
@@ -17,7 +17,7 @@ tomli = "^2.0.2"
 trame = "^3.6.3"
 trame-vega = "^2.1.1"
 trame-vuetify = "^2.6.1"
-mvvm-lib = ">=0.4.0"
+mvvm-lib = ">=0.5.0"
 
 pydantic = "^2.10.1"
 [build-system]

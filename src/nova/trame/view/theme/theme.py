@@ -257,6 +257,6 @@ class ThemedApp:
             def validate_pydantic_field(name: str, value: str, index: int) -> bool:
                 if "[index]" in name:
                     name = name.replace("[index]", f"[{str(index)}]")
-                return validate_pydantic_parameter(name, value, index)
+                return validate_pydantic_parameter(name, value)
 
             return layout

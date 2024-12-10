@@ -28,7 +28,7 @@ class InputField:
             field_name = ".".join(v_model.split(".")[1:])
             if "[" in field_name:
                 index_field_name = re.sub(r"\[.*?\]", "[0]", field_name)
-                field_info = get_field_info(index_field_name)
+                field_info = get_field_info(f"{object_name_in_state}.{index_field_name}")
                 if "[" in field_name and "[index]" not in field_name:
                     field_info = None
                     logger.warning(
@@ -36,7 +36,7 @@ class InputField:
                         f"support single loop with index variable that should be called 'index'"
                     )
             else:
-                field_info = get_field_info(field_name)
+                field_info = get_field_info(v_model)
         except Exception as _:
             pass
         label = ""
@@ -58,7 +58,7 @@ class InputField:
             }
             if field_info:
                 args |= {
-                    "rules": (f"[(v) => trigger('validate_pydantic_field', ['{field_name}', v, index])]",),
+                    "rules": (f"[(v) => trigger('validate_pydantic_field', ['{v_model}', v, index])]",),
                 }
         return args
 
