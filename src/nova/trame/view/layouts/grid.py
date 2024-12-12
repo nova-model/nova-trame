@@ -7,7 +7,7 @@ from trame_client.widgets.core import AbstractElement
 
 
 class GridLayout(html.Div):
-    """Creates a grid with a specified number of rows and columns."""
+    """Creates a grid with a specified number of columns."""
 
     def __init__(
         self,
