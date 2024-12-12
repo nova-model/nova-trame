@@ -40,20 +40,6 @@ View Components
     :members:
     :special-members: __init__
 
-Future: 2D plotting class that takes 2D data and plots it. Replaces Interactive2DPlot which forces the user to build the full plot in altair.
-
-Future: 3D plotting class that takes 3D data and plots it.
-
-Future: Validation class that allows one to add front-end validation rules via Python.
-
 .. autoclass:: nova.trame.view.utilities.local_storage.LocalStorageManager
     :members:
     :special-members: __init__
-
--------
-Models
--------
-
-Future: Class that allows loading and saving of Mantid workspaces.
-
-Future: Validation class that allows one to manage back-end validation rules via Python.
