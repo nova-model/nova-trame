@@ -1,13 +1,15 @@
 """Unit tests for InputField."""
 
+from time import sleep
 from typing import cast
 
-from mvvm_lib.trame_binding import TrameBinding
 from pydantic import BaseModel, Field
+from selenium.webdriver import Firefox
 from trame.app import get_server
 from trame.widgets import vuetify3 as vuetify
 from trame_server import Server
 
+from nova.mvvm.trame_binding import TrameBinding
 from nova.trame import ThemedApp
 from nova.trame.view.components import InputField
 
@@ -78,6 +80,18 @@ def test_pydantic() -> None:
                     assert input_field.placeholder == "user"
 
     MyTrameApp()
+
+
+def test_pydantic_validation(driver: Firefox) -> None:
+    sleep(1)
+    driver.execute_script("window.trame.refs['pydantic-field'].validate();")
+    error_message = driver.execute_script("""
+        const messages_content = document.getElementById("pydantic-field-messages");
+
+        return messages_content.textContent;
+    """)
+
+    assert error_message.startswith("Input should be a valid integer")
 
 
 def test_invalid_rules() -> None:

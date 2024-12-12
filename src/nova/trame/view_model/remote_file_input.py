@@ -2,8 +2,7 @@
 
 from typing import Any, Union
 
-from mvvm_lib.interface import BindingInterface
-
+from nova.mvvm.interface import BindingInterface
 from nova.trame.model.remote_file_input import RemoteFileInputModel
 
 
