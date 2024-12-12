@@ -9,7 +9,6 @@ from typing import Optional
 
 import sass
 from mergedeep import Strategy, merge
-from mvvm_lib.pydantic_utils import validate_pydantic_parameter
 from trame.app import get_server
 from trame.assets.local import LocalFileManager
 from trame.ui.vuetify3 import VAppLayout
@@ -19,6 +18,7 @@ from trame_client.widgets import html
 from trame_server.core import Server
 from trame_server.state import State
 
+from nova.mvvm.pydantic_utils import validate_pydantic_parameter
 from nova.trame.view.utilities.local_storage import LocalStorageManager
 
 THEME_PATH = Path(__file__).parent

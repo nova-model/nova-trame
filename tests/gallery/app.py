@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import cast
 
 from altair import Chart, X, Y, selection_interval
+from pydantic import BaseModel, Field
 from trame.app import get_server
 from trame.decorators import TrameApp
 from trame.widgets import client, html
@@ -16,6 +17,7 @@ from trame_server.core import Server
 from trame_server.state import State
 from vega_datasets import data
 
+from nova.mvvm.trame_binding import TrameBinding
 from nova.trame import ThemedApp
 from nova.trame.view.components import InputField, RemoteFileInput
 from nova.trame.view.components.visualization import Interactive2DPlot
@@ -23,6 +25,12 @@ from nova.trame.view.layouts import GridLayout, HBoxLayout, VBoxLayout
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
+
+
+class Config(BaseModel):
+    """Pydantic object for testing validation."""
+
+    value: int = Field(default=0, description="This field is validated via Pydantic.", title="Pydantic Field")
 
 
 @TrameApp()
@@ -52,7 +60,13 @@ class App(ThemedApp):
         return self.server.state
 
     def create_state(self) -> None:
+        self.config = Config()
+        config_bind = TrameBinding(self.state).new_bind(self.config)
+        config_bind.connect("config")
+        config_bind.update_in_view(self.config)
+
         self.state.autoscroll = ""
+        self.state.config["value"] = "test"
         self.state.nova__menu = True
         self.state.local_storage_test = ""
         self.state.nested = {
@@ -252,7 +266,7 @@ class App(ThemedApp):
                         InputField(type="slider", label="Slider")
                         InputField(type="switch", label="Switch")
                         InputField(type="textarea", auto_grow=True, label="Text Area")
-                        InputField(label="Text Field")
+                        InputField(ref="pydantic-field", id="pydantic-field", v_model=("config.value", "test"))
                         RemoteFileInput(
                             v_model="selected_file",
                             base_paths=["/run"],

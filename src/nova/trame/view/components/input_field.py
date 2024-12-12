@@ -2,15 +2,16 @@
 
 import logging
 import re
-from typing import Any, Dict
+from typing import Any, Dict, Optional, Union
 
-from mvvm_lib.pydantic_utils import get_field_info
 from trame.app import get_server
 from trame.widgets import client
 from trame.widgets import vuetify3 as vuetify
 from trame_client.widgets.core import AbstractElement
 from trame_server.controller import Controller
 from trame_server.state import State
+
+from nova.mvvm.pydantic_utils import get_field_info
 
 logger = logging.getLogger(__name__)
 
@@ -19,24 +20,28 @@ class InputField:
     """Factory class for generating Vuetify input components."""
 
     @staticmethod
-    def create_boilerplate_properties(v_model: str | None) -> dict:
+    def create_boilerplate_properties(v_model: Optional[Union[tuple[str, Any], str]]) -> dict:
         if not v_model:
             return {}
-        object_name_in_state = v_model.split(".")[0]
+        if isinstance(v_model, tuple):
+            field = v_model[0]
+        else:
+            field = v_model
+        object_name_in_state = field.split(".")[0]
         field_info = None
         try:
-            field_name = ".".join(v_model.split(".")[1:])
+            field_name = ".".join(field.split(".")[1:])
             if "[" in field_name:
                 index_field_name = re.sub(r"\[.*?\]", "[0]", field_name)
                 field_info = get_field_info(f"{object_name_in_state}.{index_field_name}")
                 if "[" in field_name and "[index]" not in field_name:
                     field_info = None
                     logger.warning(
-                        f"{v_model}: validation ignored. We currently only "
+                        f"{field}: validation ignored. We currently only "
                         f"support single loop with index variable that should be called 'index'"
                     )
             else:
-                field_info = get_field_info(v_model)
+                field_info = get_field_info(field)
         except Exception as _:
             pass
         label = ""
@@ -58,12 +63,16 @@ class InputField:
             }
             if field_info:
                 args |= {
-                    "rules": (f"[(v) => trigger('validate_pydantic_field', ['{v_model}', v, index])]",),
+                    "rules": (f"[(v) => trigger('validate_pydantic_field', ['{field}', v, index])]",),
                 }
         return args
 
     def __new__(
-        cls, v_model: str | None = None, required: bool = False, type: str = "text", **kwargs: Any
+        cls,
+        v_model: Optional[Union[tuple[str, Any], str]] = None,
+        required: bool = False,
+        type: str = "text",
+        **kwargs: Any,
     ) -> AbstractElement:
         """Constructor for InputField.
 
