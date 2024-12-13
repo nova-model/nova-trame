@@ -85,6 +85,7 @@ def test_pydantic() -> None:
 def test_pydantic_validation(driver: Firefox) -> None:
     sleep(1)
     driver.execute_script("window.trame.refs['pydantic-field'].validate();")
+    sleep(1)
     error_message = driver.execute_script("""
         const messages_content = document.getElementById("pydantic-field-messages");
 
