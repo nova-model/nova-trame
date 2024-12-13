@@ -265,7 +265,9 @@ class App(ThemedApp):
                         )
                         InputField(type="slider", label="Slider")
                         InputField(type="switch", label="Switch")
+                        # [ InputField kwargs example start ]
                         InputField(type="textarea", auto_grow=True, label="Text Area")
+                        # [ InputField kwargs example end ]
                         InputField(ref="pydantic-field", id="pydantic-field", v_model=("config.value", "test"))
                         RemoteFileInput(
                             v_model="selected_file",

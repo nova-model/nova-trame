@@ -78,6 +78,9 @@ class InputField:
 
         Parameters
         ----------
+        v_model : tuple[str, Any] or str, optional
+            The v-model for this component. If this references a Pydantic configuration variable, then this component
+            will attempt to load a label, hint, and validation rules from the configuration for you automatically.
         required : bool
             If true, the input will be visually marked as required and a required rule will be added to the end of the
             rules list.
@@ -99,6 +102,16 @@ class InputField:
             - textarea
 
             Any other value will produce a text field with your type used as an HTML input type attribute.
+        **kwargs
+            All other arguments will be passed to the underlying
+            `Trame Vuetify component <https://trame.readthedocs.io/en/latest/trame.widgets.vuetify3.html>`_.
+            The following example would set the auto_grow and label attributes on
+            `VTextarea <https://trame.readthedocs.io/en/latest/trame.widgets.vuetify3.html#trame.widgets.vuetify3.VTextarea>`_:
+
+            .. literalinclude:: ../tests/gallery/app.py
+                :start-after: InputField kwargs example start
+                :end-before: InputField kwargs example end
+                :dedent:
 
         Returns
         -------
