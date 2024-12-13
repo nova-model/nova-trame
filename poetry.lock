@@ -111,13 +111,13 @@ speedups = ["Brotli", "aiodns (>=3.2.0)", "brotlicffi"]
 
 [[package]]
 name = "aiosignal"
-version = "1.3.1"
+version = "1.3.2"
 description = "aiosignal: a list of registered asynchronous callbacks"
 optional = false
-python-versions = ">=3.7"
+python-versions = ">=3.9"
 files = [
-    {file = "aiosignal-1.3.1-py3-none-any.whl", hash = "sha256:f8376fb07dd1e86a584e4fcdec80b36b7f81aac666ebc724e2c090300dd83b17"},
-    {file = "aiosignal-1.3.1.tar.gz", hash = "sha256:54cd96e15e1649b75d6c87526a6ff0b6c1b0dd3459f43d9ca11d48c339b68cfc"},
+    {file = "aiosignal-1.3.2-py2.py3-none-any.whl", hash = "sha256:45cde58e409a301715980c2b01d0c28bdde3770d8290b5eb2173759d9acb31a5"},
+    {file = "aiosignal-1.3.2.tar.gz", hash = "sha256:a8c255c66fafb1e499c9351d0bf32ff2d8a0321595ebac3b93713656d2436f54"},
 ]
 
 [package.dependencies]
@@ -500,6 +500,24 @@ files = [
 
 [package.extras]
 toml = ["tomli"]
+
+[[package]]
+name = "deepdiff"
+version = "8.0.1"
+description = "Deep Difference and Search of any Python object/data. Recreate objects by adding adding deltas to each other."
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "deepdiff-8.0.1-py3-none-any.whl", hash = "sha256:42e99004ce603f9a53934c634a57b04ad5900e0d8ed0abb15e635767489cbc05"},
+    {file = "deepdiff-8.0.1.tar.gz", hash = "sha256:245599a4586ab59bb599ca3517a9c42f3318ff600ded5e80a3432693c8ec3c4b"},
+]
+
+[package.dependencies]
+orderly-set = "5.2.2"
+
+[package.extras]
+cli = ["click (==8.1.7)", "pyyaml (==6.0.1)"]
+optimize = ["orjson"]
 
 [[package]]
 name = "distlib"
@@ -1128,15 +1146,16 @@ files = [
 
 [[package]]
 name = "nova-mvvm"
-version = "0.6.1"
+version = "0.7.0"
 description = "A Python Package for Model-View-ViewModel pattern"
 optional = false
 python-versions = "<4.0,>=3.10"
 files = [
-    {file = "nova_mvvm-0.6.1-py3-none-any.whl", hash = "sha256:b38719843519c5bce9cbaac2fee3aeac32ae81ee2d123254e8fd9374f98ff27a"},
+    {file = "nova_mvvm-0.7.0-py3-none-any.whl", hash = "sha256:a29c8339946fbd3bdcbb0f1552c7ac02b88f58046875a68fa15b325a55fdefe6"},
 ]
 
 [package.dependencies]
+deepdiff = ">=8.0.1,<9.0.0"
 trame = ">=3.6.3,<4.0.0"
 
 [package.extras]
@@ -1206,6 +1225,17 @@ files = [
     {file = "numpy-2.2.0-pp310-pypy310_pp73-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:a50aeff71d0f97b6450d33940c7181b08be1441c6c193e678211bff11aa725e7"},
     {file = "numpy-2.2.0-pp310-pypy310_pp73-win_amd64.whl", hash = "sha256:df12a1f99b99f569a7c2ae59aa2d31724e8d835fc7f33e14f4792e3071d11221"},
     {file = "numpy-2.2.0.tar.gz", hash = "sha256:140dd80ff8981a583a60980be1a655068f8adebf7a45a06a6858c873fcdcd4a0"},
+]
+
+[[package]]
+name = "orderly-set"
+version = "5.2.2"
+description = "Orderly set"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "orderly_set-5.2.2-py3-none-any.whl", hash = "sha256:f7a37c95a38c01cdfe41c3ffb62925a318a2286ea0a41790c057fc802aec54da"},
+    {file = "orderly_set-5.2.2.tar.gz", hash = "sha256:52a18b86aaf3f5d5a498bbdb27bf3253a4e5c57ab38e5b7a56fa00115cd28448"},
 ]
 
 [[package]]
@@ -2549,5 +2579,5 @@ propcache = ">=0.2.0"
 
 [metadata]
 lock-version = "2.0"
-python-versions = "^3.10"
-content-hash = "119f5c8c3352d3a51c0c65ce1516002b161a30db282cfd37d9303ff543db2a3e"
+python-versions = ">=3.10,<4.0"
+content-hash = "3e74eb6b668757f0b93513307ca3f02018c8a6f943e136431ac3aff98810c893"
