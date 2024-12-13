@@ -20,5 +20,6 @@ To make it easier to get started, we provide a UI package, :code:`nova-trame`, t
    getting_started
    working_with_trame
    example_layouts
+   visualization
    api
    helpful_links
