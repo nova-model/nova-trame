@@ -1,7 +1,7 @@
 """View implementation for RemoteFileInput."""
 
 from functools import partial
-from typing import Any, Optional, cast
+from typing import Any, Optional, Union, cast
 
 from trame.app import get_server
 from trame.widgets import client, html
@@ -22,7 +22,7 @@ class RemoteFileInput:
 
     def __init__(
         self,
-        v_model: Optional[str] = None,
+        v_model: Optional[Union[tuple[str, Any], str]] = None,
         allow_files: bool = True,
         allow_folders: bool = False,
         allow_nonexistent_path: bool = False,
@@ -35,8 +35,9 @@ class RemoteFileInput:
 
         Parameters
         ----------
-        v_model : str
-            The v-model for the input field.
+        v_model : tuple[str, Any] or str, optional
+            The v-model for this component. If this references a Pydantic configuration variable, then this component
+            will attempt to load a label, hint, and validation rules from the configuration for you automatically.
         allow_files : bool
             If true, the user can save a file selection.
         allow_folders : bool
@@ -100,19 +101,17 @@ class RemoteFileInput:
                     vuetify.VIcon("mdi-folder-open")
 
                     with vuetify.VDialog(
-                        v_model=self.vm.get_dialog_state_name(),
-                        activator="parent",
-                        persistent=True,
-                        **self.dialog_props,
+                        v_model=self.vm.get_dialog_state_name(), activator="parent", **self.dialog_props
                     ):
                         with vuetify.VCard(classes="pa-4"):
                             vuetify.VCardTitle(input.label)
                             vuetify.VTextField(
-                                v_model=self.v_model,
+                                v_model=self.vm.get_filter_state_name(),
                                 classes="mb-4 px-4",
                                 label="Current Selection",
                                 __events=["change"],
                                 change=(self.vm.select_file, "[$event.target.value]"),
+                                update_modelValue=(self.vm.filter_paths, "[$event]"),
                             )
 
                             if self.allow_files and self.extensions:
@@ -174,15 +173,19 @@ class RemoteFileInput:
         server = get_server(None, client_type="vue3")
         binding = TrameBinding(server.state)
 
+        if isinstance(self.v_model, tuple):
+            model_name = self.v_model[0]
+        else:
+            model_name = self.v_model
+
         self.vm = RemoteFileInputViewModel(self.model, binding)
 
         self.vm.dialog_bind.connect(self.vm.get_dialog_state_name())
         self.vm.file_list_bind.connect(self.vm.get_file_list_state_name())
+        self.vm.filter_bind.connect(self.vm.get_filter_state_name())
         self.vm.on_close_bind.connect(client.JSEval(exec=f"{self.vm.get_dialog_state_name()} = false;").exec)
         self.vm.on_update_bind.connect(
-            client.JSEval(
-                exec=f"{self.v_model} = $event; flushState('{self.v_model.split('.')[0].split('[')[0]}');"
-            ).exec
+            client.JSEval(exec=f"{model_name} = $event; flushState('{model_name.split('.')[0].split('[')[0]}');").exec
         )
         self.vm.showing_all_bind.connect(self.vm.get_showing_all_state_name())
         self.vm.valid_selection_bind.connect(self.vm.get_valid_selection_state_name())
