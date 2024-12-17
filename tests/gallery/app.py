@@ -223,7 +223,9 @@ class App(ThemedApp):
                             vuetify.VListItem(subtitle="Lorem Ipsum", title="List Item 1")
                             vuetify.VListItem(subtitle="Lorem Ipsum", title="List Item 2")
                             with vuetify.VListItem(subtitle="Lorem Ipsum", title="List Item 3"):
-                                vuetify.VBtn("Button", classes="mt-2")
+                                # [ Vuetify class example start ]
+                                vuetify.VBtn("Button", classes="pr-1 mt-2")
+                                # [ Vuetify class example end ]
                         with vuetify.VMenu():
                             with vuetify.Template(v_slot_activator="{ props }"):
                                 vuetify.VBtn("Open Menu", v_bind="props")
