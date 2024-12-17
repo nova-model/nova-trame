@@ -72,3 +72,24 @@ Theming
 In order to give applications a consistent look and feel, all applications built with :code:`nova-trame` are based on the `Vuetify <https://vuetifyjs.com/en/>`_ framework. One of the most important features that Vuetify provides is the ability to theme your application. This allows you to easily change the colors, fonts, and other visual elements of your application. We provide two themes that we recommend you choose between depending on your needs, but you can modify or completely replace them if needed.
 
 For details on manipulating the theming, see the :ref:`API <api_theme>`.
+
++++++++++++++++++++
+Controlling Spacing
++++++++++++++++++++
+
+Vuetify provides `helper classes <https://vuetifyjs.com/en/styles/spacing/#how-it-works>`_ that allow you to set the margin (space outside of your component) and padding (space inside of your component) for your component.
+
+As an example, `ma-1` would produce a margin of 1 unit (or 4 pixels) on all sides of your component. `mb-2` would produce a margin of 2 units (or 8 pixels) below your component.
+
+In order to use Vuetify helper classes in Trame, you can provide the `classes` argument that is available to all Trame components.
+
+Example:
+
+.. literalinclude:: ../tests/gallery/app.py
+    :start-after: Vuetify class example start
+    :end-before: Vuetify class example end
+    :dedent:
+
+Please note that `VTextField <https://nova-application-development.readthedocs.io/projects/nova-trame/en/latest/>`_ does not respect padding classes in Vuetify. If you need to reduce the padding of an input, you should instead switch to using a raw `Input <https://trame.readthedocs.io/en/latest/trame.widgets.html.html#trame.widgets.html.Input>`_ component.
+
+If you want to learn more about controlling whitespace in web browsers, the `MDN page on the box model <https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/The_box_model>`_ is a good reference.
