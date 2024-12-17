@@ -1,0 +1,10 @@
+{
+    "configurations": [{
+        "name": "Launch",
+        "type": "debugpy",
+        "request": "launch",
+        "cwd": "${workspaceFolder}",
+        "module": "tests.gallery",
+        "args": ["--server"]
+    }]
+}

@@ -1,3 +1,11 @@
+workflow:
+  rules:
+    - if: $CI_COMMIT_TAG
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: never
+    - when: always
+
 stages:
   - lint
   - test
@@ -76,31 +84,6 @@ tag-release:
       fi
   tags:
   - rse-multi-builder
-
-
-build-image:
-  stage: publish
-  variables:
-    OVERWRITE_IMAGE: "false"
-  when: manual
-  script:
-    - IMAGE_TAG=${VERSION}
-    - docker pull ${IMAGE_NAME}:src-${CI_COMMIT_SHA}
-    - docker build -f dockerfiles/Dockerfile -t image .
-    - docker tag image ${IMAGE_NAME}:bin-${CI_COMMIT_SHA}
-    - docker push ${IMAGE_NAME}:bin-${CI_COMMIT_SHA}
-    - docker tag image ${IMAGE_NAME}:latest
-    - docker push ${IMAGE_NAME}:latest
-    - >
-      if ! docker pull ${IMAGE_NAME}:${IMAGE_TAG} || [ "$OVERWRITE_IMAGE" == "true" ]; then
-        docker tag image ${IMAGE_NAME}:${IMAGE_TAG}
-        docker push ${IMAGE_NAME}:${IMAGE_TAG}
-      else
-        echo tag ${IMAGE_TAG} already exists in ${NDIP_DOCKER_REPOSITORY}. Use OVERWRITE_IMAGE="true", delete image in the repository or change the tag
-        exit 1
-      fi
-  tags:
-    - rse-multi-builder
 
 package-build:
   stage: publish

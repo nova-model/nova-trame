@@ -21,8 +21,10 @@ to create an issue [in this repo](https://code.ornl.gov/ndip/project-templates/p
 
 
 ## Installation
+
 ```commandline
 pip install poetry
+
 poetry install
 ```
 
