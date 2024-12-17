@@ -36,6 +36,8 @@ View Components
     :members:
     :special-members: __init__
 
+.. _api_interactive2dplot:
+
 .. autoclass:: nova.trame.view.components.visualization.Interactive2DPlot
     :members:
     :special-members: __init__
