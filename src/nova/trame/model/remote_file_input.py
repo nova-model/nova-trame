@@ -1,6 +1,8 @@
 """Model state for RemoteFileInput."""
 
 import os
+from functools import cmp_to_key
+from locale import strcoll
 from typing import Any, Union
 
 
@@ -17,8 +19,11 @@ class RemoteFileInputModel:
     def get_base_paths(self) -> list[dict[str, Any]]:
         return [{"path": base_path, "directory": True} for base_path in self.base_paths]
 
-    def scan_current_path(self, current_path: str, showing_all_files: bool) -> tuple[list[dict[str, Any]], bool]:
+    def scan_current_path(
+        self, current_path: str, showing_all_files: bool, filter: str
+    ) -> tuple[list[dict[str, Any]], bool]:
         failed = False
+        filter = filter.split("/")[-1]
 
         try:
             if current_path and (not self.valid_subpath(current_path) or not os.path.exists(current_path)):
@@ -32,13 +37,24 @@ class RemoteFileInputModel:
                 scan_path = os.path.dirname(current_path)
 
             for entry in os.scandir(scan_path):
-                if self.valid_entry(entry, showing_all_files):
+                if self.valid_entry(entry, showing_all_files) and (not filter or entry.name.startswith(filter)):
                     files.append({"path": entry.name, "directory": entry.is_dir()})
         except OSError:
             files = self.get_base_paths()
             failed = True
 
-        sorted_files = sorted(files, key=lambda entry: str(entry["path"]).lower())
+        def _sort_files(a: dict[str, Any], b: dict[str, Any]) -> int:
+            if a["directory"] and not b["directory"]:
+                return -1
+            if b["directory"] and not a["directory"]:
+                return 1
+
+            path_a = a["path"].lower()
+            path_b = b["path"].lower()
+
+            return strcoll(path_a, path_b)
+
+        sorted_files = sorted(files, key=cmp_to_key(_sort_files))
 
         return (sorted_files, failed)
 
@@ -86,13 +102,8 @@ class RemoteFileInputModel:
         if subpath == "":
             return False
 
-        try:
-            real_path = os.path.realpath(subpath)
-        except TypeError:
-            return False
-
         for base_path in self.base_paths:
-            if real_path.startswith(base_path):
+            if subpath.startswith(base_path):
                 return True
 
         return False
