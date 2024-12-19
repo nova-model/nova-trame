@@ -128,16 +128,14 @@
                 "defaults": {
                     "VCard": {
                         "class": "pa-4",
-                        "VListItem": {
-                            "class": "border-primary border-sm",
+                        "VCard": {
+                            "class": "border-primary border-sm pa-4",
                             "style": {
                                 "background-color": "rgba(var(--v-theme-primary), 0.1)"
                             }
-                        }
-                    },
-                    "VCol": {
-                        "VCard": {
-                            "class": "border-primary border-sm pa-4",
+                        },
+                        "VListItem": {
+                            "class": "border-primary border-sm",
                             "style": {
                                 "background-color": "rgba(var(--v-theme-primary), 0.1)"
                             }
