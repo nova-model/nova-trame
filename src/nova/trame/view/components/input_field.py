@@ -127,6 +127,8 @@ class InputField:
 
         # This must be present before each input is created or change events won't be triggered.
         if isinstance(kwargs["__events"], list):
+            if "blur" not in kwargs["__events"]:
+                kwargs["__events"].append("blur")
             if "change" not in kwargs["__events"]:
                 kwargs["__events"].append("change")
             if "scroll" not in kwargs["__events"]:
@@ -167,6 +169,7 @@ class InputField:
             case _:
                 input = vuetify.VTextField(type=type, **kwargs)
 
+        cls._setup_ref(input)
         cls._setup_help(input, **kwargs)
 
         cls._check_rules(input)
@@ -174,8 +177,7 @@ class InputField:
             cls._setup_required_label(input)
             cls._setup_required_rule(input)
 
-        cls._setup_ref(input)
-        cls._setup_change_listener(server.controller, input)
+        cls._setup_event_listeners(server.controller, input)
 
         return input
 
@@ -250,7 +252,10 @@ class InputField:
 
     @staticmethod
     def _setup_required_rule(input: AbstractElement) -> None:
-        required_rule = "(value) => value?.length > 0 || 'Field is required'"
+        # The rule needs to check that 1. the input has been touched by the user, and 2. the input is not empty.
+        required_rule = (
+            f"(value) => (!window.trame.refs['{input.ref}'].touched || value?.length > 0) || 'Field is required'"
+        )
         if "rules" in input._py_attr and input.rules:
             # Existing rules will be in format ("[rule1, rule2]",) and we need to append to this list
             rule_end_index = input.rules[0].rindex("]")
@@ -259,7 +264,7 @@ class InputField:
             input.rules = (f"[{required_rule}]",)
 
     @staticmethod
-    def _setup_change_listener(ctrl: Controller, input: AbstractElement) -> None:
+    def _setup_event_listeners(ctrl: Controller, input: AbstractElement) -> None:
         base_handler = None
         if "change" in input._py_attr and input.change is not None:
             base_handler = input.change
@@ -267,7 +272,7 @@ class InputField:
         # Iterate over all saved refs and perform validation if there is a value that can be validated.
         change_handler = (
             "Object.values(window.trame.refs).map("
-            "  (ref) => typeof ref.validate === 'function' && ref.value ? ref.validate() : null"
+            "  (ref) => ref && typeof ref.validate === 'function' && ref.value ? ref.validate() : null"
             ");"
         )
 
@@ -292,4 +297,6 @@ class InputField:
             # Call the developer's provided change JS expression, then call ours.
             change_handler = f"{base_handler}; {change_handler}"
 
+        # The user touched the input, so we can enable the required rule.
+        input.blur = f"window.trame.refs['{input.ref}'].touched = true"
         input.change = change_handler
