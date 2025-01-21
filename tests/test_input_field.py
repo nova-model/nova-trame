@@ -95,6 +95,39 @@ def test_pydantic_validation(driver: Firefox) -> None:
     assert error_message.startswith("Input should be a valid integer")
 
 
+def test_throttle_attributes() -> None:
+    class MyTrameApp(ThemedApp):
+        def __init__(self, server: Server = None) -> None:
+            server = get_server(None, client_type="vue3")
+            super().__init__(server=server)
+
+            self.create_ui()
+
+        def create_ui(self) -> None:
+            with super().create_ui() as layout:
+                with layout.content:
+                    debounced_input = InputField(v_model="debounce_test", debounce=1000)
+                    throttled_input = InputField(v_model="throttle_test", throttle=2000)
+                    noop_input = InputField(
+                        debounce=1000
+                    )  # There's no state to update here, so update_modelValue should still be None.
+
+                    assert hasattr(debounced_input, "update_modelValue")
+                    assert debounced_input.update_modelValue.startswith("window.delay_manager.debounce")
+                    assert hasattr(throttled_input, "update_modelValue")
+                    assert throttled_input.update_modelValue.startswith("window.delay_manager.throttle")
+                    assert hasattr(noop_input, "update_modelValue")
+                    assert noop_input.update_modelValue is None
+
+                    try:
+                        InputField(v_model="invalid_input", debounce=1000, throttle=1000)
+                        raise AssertionError("Debounce and throttle used together should raise a ValueError")
+                    except ValueError:
+                        pass
+
+    MyTrameApp()
+
+
 def test_invalid_rules() -> None:
     try:
         InputField(rules=42)

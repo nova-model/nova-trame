@@ -1,6 +1,7 @@
 """View Implementation for InputField."""
 
 import logging
+import os
 import re
 from typing import Any, Dict, Optional, Union
 
@@ -20,7 +21,14 @@ class InputField:
     """Factory class for generating Vuetify input components."""
 
     @staticmethod
-    def create_boilerplate_properties(v_model: Optional[Union[tuple[str, Any], str]]) -> dict:
+    def create_boilerplate_properties(
+        v_model: Optional[Union[tuple[str, Any], str]], debounce: int, throttle: int
+    ) -> dict:
+        if debounce == -1:
+            debounce = int(os.environ.get("NOVA_TRAME_DEFAULT_DEBOUNCE", 0))
+        if throttle == -1:
+            throttle = int(os.environ.get("NOVA_TRAME_DEFAULT_THROTTLE", 0))
+
         if not v_model:
             return {}
         if isinstance(v_model, tuple):
@@ -55,22 +63,45 @@ class InputField:
 
         args: Dict[str, Any] = {}
         if v_model:
-            args |= {
-                "v_model": v_model,
-                "label": label,
-                "help": help_dict,
-                "update_modelValue": f"flushState('{object_name_in_state}')",
-            }
+            args |= {"v_model": v_model, "label": label, "help": help_dict}
             if field_info:
                 args |= {
                     "rules": (f"[(v) => trigger('validate_pydantic_field', ['{field}', v, index])]",),
                 }
+
+            if debounce > 0 and throttle > 0:
+                raise ValueError("debounce and throttle cannot be used together")
+
+            if debounce > 0:
+                args |= {
+                    "update_modelValue": (
+                        "window.delay_manager.debounce("
+                        f"  '{v_model}',"
+                        f"  () => flushState('{object_name_in_state}'),"
+                        f"  {debounce}"
+                        ")"
+                    )
+                }
+            elif throttle > 0:
+                args |= {
+                    "update_modelValue": (
+                        "window.delay_manager.throttle("
+                        f"  '{v_model}',"
+                        f"  () => flushState('{object_name_in_state}'),"
+                        f"  {throttle}"
+                        ")"
+                    )
+                }
+            else:
+                args |= {"update_modelValue": f"flushState('{object_name_in_state}')"}
         return args
 
     def __new__(
         cls,
         v_model: Optional[Union[tuple[str, Any], str]] = None,
         required: bool = False,
+        debounce: int = -1,
+        throttle: int = -1,
         type: str = "text",
         **kwargs: Any,
     ) -> AbstractElement:
@@ -84,6 +115,16 @@ class InputField:
         required : bool
             If true, the input will be visually marked as required and a required rule will be added to the end of the
             rules list.
+        debounce : int
+            Number of milliseconds to wait after the last user interaction with this field before attempting to update
+            the Trame state. If set to 0, then no debouncing will occur. If set to -1, then the environment variable
+            `NOVA_TRAME_DEFAULT_DEBOUNCE` will be used to set this (defaults to 0). See the `Lodash Docs
+            <https://lodash.com/docs/4.17.15#debounce>`_ for details.
+        throttle : int
+            Number of milliseconds to wait between updates to the Trame state when the user is interacting with this
+            field. If set to 0, then no throttling will occur. If set to -1, then the environment variable
+            `NOVA_TRAME_DEFAULT_THROTTLE` will be used to set this (defaults to 0). See the `Lodash Docs
+            <https://lodash.com/docs/4.17.15#throttle>`_ for details.
         type : str
             The type of input to create. This can be any of the following:
 
@@ -120,7 +161,7 @@ class InputField:
         """
         server = get_server(None, client_type="vue3")
 
-        kwargs = {**cls.create_boilerplate_properties(v_model), **kwargs}
+        kwargs = {**cls.create_boilerplate_properties(v_model, debounce, throttle), **kwargs}
 
         if "__events" not in kwargs or kwargs["__events"] is None:
             kwargs["__events"] = []
