@@ -103,6 +103,8 @@ class ThemedApp:
                     shortcut
                 ]
 
+        self.init_lodash()
+
         # Since this is only intended for theming Trame apps, I don't think we need to invoke the MVVM framework here,
         # and working directly with the Trame state makes this easier for me to manage.
         self.state.nova__menu = False
@@ -113,6 +115,19 @@ class ThemedApp:
     @property
     def state(self) -> State:
         return self.server.state
+
+    def init_lodash(self) -> None:
+        js_path = (Path(__file__).parent / "assets" / "js").resolve()
+        self.server.enable_module(
+            {
+                "scripts": [
+                    "assets/js/lodash.debounce.min.js",
+                    "assets/js/lodash.throttle.min.js",
+                    "assets/js/delay_manager.js",
+                ],
+                "serve": {"assets/js": js_path},
+            }
+        )
 
     def init_mantid(self) -> None:
         """Initializes MantidManager.

@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import cast
 
 from altair import Chart, X, Y, selection_interval
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 from trame.app import get_server
 from trame.decorators import TrameApp
 from trame.widgets import client, html
@@ -30,7 +30,33 @@ logger.setLevel(logging.INFO)
 class Config(BaseModel):
     """Pydantic object for testing validation."""
 
+    debounce: str = Field(
+        default="",
+        description="This field is debounced and will not update its state until you've stopped typing for 1 second.",
+        title="Debounced Field",
+    )
+    throttle: str = Field(
+        default="",
+        description="This field is throttled and will only update its state every 1 second.",
+        title="Throttled Field",
+    )
     value: int = Field(default=0, description="This field is validated via Pydantic.", title="Pydantic Field")
+
+    @field_validator("debounce", mode="after")
+    @classmethod
+    def on_debounce(cls, text: str) -> str:
+        if text:
+            print(f"received debounced update: {text}")
+
+        return text
+
+    @field_validator("throttle", mode="after")
+    @classmethod
+    def on_throttle(cls, text: str) -> str:
+        if text:
+            print(f"received throttled update: {text}")
+
+        return text
 
 
 @TrameApp()
@@ -271,6 +297,8 @@ class App(ThemedApp):
                         InputField(type="textarea", auto_grow=True, label="Text Area")
                         # [ InputField kwargs example end ]
                         InputField(ref="pydantic-field", id="pydantic-field", v_model=("config.value", "test"))
+                        InputField(v_model=("config.debounce"), debounce=1000)
+                        InputField(v_model=("config.throttle"), throttle=1000)
                         RemoteFileInput(
                             v_model="selected_file",
                             base_paths=["/run"],
