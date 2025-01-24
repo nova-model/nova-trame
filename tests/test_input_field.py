@@ -75,9 +75,9 @@ def test_pydantic() -> None:
             with super().create_ui() as layout:
                 with layout.content:
                     input_field = cast(vuetify.VTextField, InputField(v_model="obj.username"))
-                    assert input_field.hint == "hint"
                     assert input_field.label == "User Name"
                     assert input_field.placeholder == "user"
+                    assert input_field.title == "hint"
 
     MyTrameApp()
 
@@ -140,8 +140,8 @@ def test_help() -> None:
     input_field = cast(
         vuetify.VTextField, InputField(help={"hint": "This is a hint.", "placeholder": "This is a placeholder."})
     )
-    assert input_field.hint == "This is a hint."
     assert input_field.placeholder == "This is a placeholder."
+    assert input_field.title == "This is a hint."
 
 
 def test_required() -> None:

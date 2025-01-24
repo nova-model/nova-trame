@@ -276,8 +276,8 @@ class InputField:
     def _setup_help(_input: AbstractElement, **kwargs: Any) -> None:
         help = kwargs.get("help", None)
         if help and isinstance(help, dict):
-            _input.hint = help.get("hint", None)
             _input.placeholder = help.get("placeholder", None)
+            _input.title = help.get("hint", None)
 
     @staticmethod
     def _setup_required_label(input: AbstractElement) -> None:
