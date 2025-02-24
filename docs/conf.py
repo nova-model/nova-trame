@@ -14,7 +14,7 @@ import tomli
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = "NOVA Application Development"
-copyright = "2024, ORNL"
+copyright = "2025, ORNL"
 author = "John Duggan"
 with open("../pyproject.toml", "rb") as toml_file:
     toml_dict = tomli.load(toml_file)

@@ -265,7 +265,7 @@ class ThemedApp:
                         footer.add_child(
                             '<a href="https://www.ornl.gov/" '
                             'class="text-grey-lighten-1 text-caption text-decoration-none" '
-                            'target="_blank">© 2024 ORNL</a>'
+                            'target="_blank">© {{ new Date().getFullYear() }} ORNL</a>'
                         )
 
             @self.server.controller.trigger("validate_pydantic_field")
