@@ -1,5 +1,6 @@
 """Unit tests for InputField."""
 
+from enum import Enum
 from time import sleep
 from typing import cast
 
@@ -93,6 +94,42 @@ def test_pydantic_validation(driver: Firefox) -> None:
     """)
 
     assert error_message.startswith("Input should be a valid integer")
+
+
+def test_items_attributes() -> None:
+    class DropdownOptions(str, Enum):
+        item_a = "item_a"
+        item_b = "item_b"
+        item_c = "item_c"
+
+    class Dropdown(BaseModel):
+        enum_field: DropdownOptions = Field(default=DropdownOptions.item_a)
+        str_field: str = Field(default="test")
+
+    dropdown = Dropdown()
+
+    class MyTrameApp(ThemedApp):
+        def __init__(self, server: Server = None) -> None:
+            server = get_server(None, client_type="vue3")
+            super().__init__(server=server)
+            binding = TrameBinding(server.state).new_bind(dropdown)
+            binding.connect("dropdown")
+            self.create_ui()
+
+        def create_ui(self) -> None:
+            with super().create_ui() as layout:
+                with layout.content:
+                    autopopulated_items = cast(
+                        vuetify.VSelect, InputField(v_model="dropdown.enum_field", type="select")
+                    )
+                    missing_select_type = cast(vuetify.VSelect, InputField(v_model="dropdown.enum_field"))
+                    missing_enum_model = cast(vuetify.VSelect, InputField(v_model="dropdown.str_field", type="select"))
+
+                    assert autopopulated_items.items == ("['item_a', 'item_b', 'item_c']",)
+                    assert missing_select_type.items is None
+                    assert missing_enum_model.items is None
+
+    MyTrameApp()
 
 
 def test_throttle_attributes() -> None:

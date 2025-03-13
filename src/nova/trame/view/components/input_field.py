@@ -3,6 +3,7 @@
 import logging
 import os
 import re
+from enum import Enum
 from typing import Any, Dict, Optional, Union
 
 from trame.app import get_server
@@ -22,7 +23,7 @@ class InputField:
 
     @staticmethod
     def create_boilerplate_properties(
-        v_model: Optional[Union[tuple[str, Any], str]], debounce: int, throttle: int
+        v_model: Optional[Union[tuple[str, Any], str]], field_type: str, debounce: int, throttle: int
     ) -> dict:
         if debounce == -1:
             debounce = int(os.environ.get("NOVA_TRAME_DEFAULT_DEBOUNCE", 0))
@@ -68,6 +69,9 @@ class InputField:
                 args |= {
                     "rules": (f"[(v) => trigger('validate_pydantic_field', ['{field}', v, index])]",),
                 }
+
+                if field_type == "select" and issubclass(field_info.annotation, Enum):
+                    args |= {"items": str([option.value for option in field_info.annotation])}
 
             if debounce > 0 and throttle > 0:
                 raise ValueError("debounce and throttle cannot be used together")
@@ -161,7 +165,7 @@ class InputField:
         """
         server = get_server(None, client_type="vue3")
 
-        kwargs = {**cls.create_boilerplate_properties(v_model, debounce, throttle), **kwargs}
+        kwargs = {**cls.create_boilerplate_properties(v_model, type, debounce, throttle), **kwargs}
 
         if "__events" not in kwargs or kwargs["__events"] is None:
             kwargs["__events"] = []
