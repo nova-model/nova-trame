@@ -4,7 +4,7 @@ html {
 
 .d-grid {
     display: grid;
-    gap: 0.25em;
+    gap: 0.8em;
     grid-auto-rows: auto;
 }
 
@@ -30,6 +30,12 @@ html {
 
     .v-btn {
         min-width: 0px;
-        padding: 0 8px;
+        padding: 5px 5px;
+        box-shadow: none;
+    }
+
+    .v-btn__content {
+        text-transform: none;
     }
 }
+

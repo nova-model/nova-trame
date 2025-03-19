@@ -136,14 +136,14 @@ class App(ThemedApp):
                     # [ setup grid complete ]
                     html.P("HBoxLayout")
                     # [ setup hbox ]
-                    with HBoxLayout(classes="mb-4"):
+                    with HBoxLayout(classes="mb-4", width=400, halign="space-between"):
                         vuetify.VBtn("Button 1")
                         vuetify.VBtn("Button 2")
                         vuetify.VBtn("Button 3")
                     # [ setup hbox complete ]
                     html.P("VBoxLayout")
                     # [ setup vbox ]
-                    with VBoxLayout(classes="mb-4"):
+                    with VBoxLayout(classes="mb-4", height=100, valign="space-between"):
                         vuetify.VBtn("Button 1")
                         vuetify.VBtn("Button 2")
                         vuetify.VBtn("Button 3")
