@@ -159,8 +159,10 @@
                         "dot": true
                     },
                     "VBtn": {
-                        "density": "default"
+                        "density": "compact",
+                        "size": "small"
                     },
+                    
                     "VTextField": {
                         "VBtn": {
                             "size": "small"
