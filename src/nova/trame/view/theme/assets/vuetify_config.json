@@ -152,17 +152,12 @@
                     "secondary": "#f48e5c"
                 },
                 "defaults": {
-                    "global": {
-                        "density": "compact"
-                    },
                     "VBadge": {
                         "dot": true
                     },
                     "VBtn": {
-                        "density": "compact",
                         "size": "small"
                     },
-                    
                     "VTextField": {
                         "VBtn": {
                             "size": "small"
@@ -174,7 +169,11 @@
             }
         },
         "variations": {
-            "colors": ["primary", "secondary", "accent"],
+            "colors": [
+                "primary",
+                "secondary",
+                "accent"
+            ],
             "darken": 5,
             "lighten": 5
         }

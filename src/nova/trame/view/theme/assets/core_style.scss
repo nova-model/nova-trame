@@ -8,6 +8,10 @@ html {
     grid-auto-rows: auto;
 }
 
+.v-toolbar {
+    box-shadow: none !important;
+}
+
 @media only screen and (max-width: 959px) {
     .d-grid {
         grid-template-columns: repeat(1, 1fr) !important;
@@ -20,7 +24,15 @@ html {
 
 /* Global font sizes can't be set through the Vuetify configuration. */
 .v-theme--CompactTheme {
-    font-size: 0.85rem;
+    font-size: 0.75rem;
+    
+    &.v-btn--variant-elevated.bg-primary {
+        box-shadow: none !important;
+        background-color: transparent !important;
+        color: green !important;
+        border: solid 1px lightgrey;
+        border-radius: 4px;
+    }
 
     .v-card-title,
     .v-list-item-title,
@@ -29,13 +41,23 @@ html {
     }
 
     .v-btn {
-        min-width: 0px;
-        padding: 5px 5px;
-        box-shadow: none;
+        min-width: 0px !important;
+        padding: 5px 5px !important;
+        box-shadow: none !important;
     }
 
     .v-btn__content {
         text-transform: none;
     }
-}
+    
 
+    .v-label {
+        font-size: 0.75rem;
+    }
+
+    .v-tab {
+        height: 30px !important;
+        min-width: fit-content !important;
+        padding: 10px !important;
+    }
+}
