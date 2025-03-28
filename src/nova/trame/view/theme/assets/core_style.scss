@@ -12,6 +12,14 @@ html {
     box-shadow: none !important;
 }
 
+.mpl-message, .ui-dialog-titlebar {
+    display: none !important;
+}
+
+.nova-mpl * {
+    resize: none !important;
+}
+
 @media only screen and (max-width: 959px) {
     .d-grid {
         grid-template-columns: repeat(1, 1fr) !important;
@@ -25,7 +33,7 @@ html {
 /* Global font sizes can't be set through the Vuetify configuration. */
 .v-theme--CompactTheme {
     font-size: 0.75rem;
-    
+
     &.v-btn--variant-elevated.bg-primary {
         box-shadow: none !important;
         background-color: transparent !important;
@@ -49,7 +57,6 @@ html {
     .v-btn__content {
         text-transform: none;
     }
-    
 
     .v-label {
         font-size: 0.75rem;

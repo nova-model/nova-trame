@@ -42,6 +42,10 @@ View Components
     :members:
     :special-members: __init__
 
+.. autoclass:: nova.trame.view.components.visualization.MatplotlibFigure
+    :members:
+    :special-members: __init__
+
 .. autoclass:: nova.trame.view.utilities.local_storage.LocalStorageManager
     :members:
     :special-members: __init__
