@@ -6,7 +6,9 @@ from asyncio import create_task
 from pathlib import Path
 from typing import cast
 
+import numpy as np
 from altair import Chart, X, Y, selection_interval
+from matplotlib.figure import Figure
 from pydantic import BaseModel, Field, field_validator
 from trame.app import get_server
 from trame.decorators import TrameApp
@@ -20,7 +22,7 @@ from vega_datasets import data
 from nova.mvvm.trame_binding import TrameBinding
 from nova.trame import ThemedApp
 from nova.trame.view.components import InputField, RemoteFileInput
-from nova.trame.view.components.visualization import Interactive2DPlot
+from nova.trame.view.components.visualization import Interactive2DPlot, MatplotlibFigure
 from nova.trame.view.layouts import GridLayout, HBoxLayout, VBoxLayout
 
 logger = logging.getLogger(__name__)
@@ -57,6 +59,43 @@ class Config(BaseModel):
             print(f"received throttled update: {text}")
 
         return text
+
+
+class MplTest:
+    """Creates a Matplotlib figure using both Trame options for Matplotlib integration."""
+
+    def __init__(self) -> None:
+        self.figure = Figure(layout="constrained")
+        self.ax = self.figure.add_subplot()
+        self.fig_type = ""
+
+        self.create_ui()
+        self.update()
+
+    def create_ui(self) -> None:
+        with html.Div():
+            self.webagg_view = MatplotlibFigure(self.figure, webagg=True, classes="text-left w-100")
+            vuetify.VBtn("Change MPL Figure", click=self.update)
+        with html.Div():
+            self.svg_view = MatplotlibFigure(self.figure, classes="text-left w-100")
+
+    def update(self) -> None:
+        self.ax.clear()
+
+        if self.fig_type == "sin":
+            self.fig_type = "cos"
+            self.ax.set_title("cos")
+            t = np.arange(0.0, 2.0, 0.01)
+            s = np.cos(2 * np.pi * t)
+        else:
+            self.fig_type = "sin"
+            self.ax.set_title("sin")
+            t = np.arange(0.0, 3.0, 0.01)
+            s = np.sin(2 * np.pi * t)
+
+        self.ax.plot(t, s)
+        self.webagg_view.update(self.figure)
+        self.svg_view.update(self.figure)
 
 
 @TrameApp()
@@ -374,6 +413,9 @@ class App(ThemedApp):
                         pointerup=self.read_plot_signal,
                     )
                     html.P(f"Selected interval: {{{{ {self.plot.ref}['interval'] }}}}")
+
+                    with GridLayout(columns=2):
+                        MplTest()
 
                     vuetify.VCardTitle("Local Storage")
                     with html.Div():

@@ -10,7 +10,7 @@ Trame provides integrations with several libraries for 2D and 3D visualization. 
 
 For most use cases, we recommend that you use `Plotly <https://plotly.com/python/>`_. Kitware provides examples of how to integrate with Trame on `GitHub <https://github.com/Kitware/trame-plotly>`_.
 
-If you have existing Matplotlib code, then Kitware also provides a `Matplotlib <https://github.com/Kitware/trame-matplotlib>`_ integration.
+If you have existing Matplotlib code, then we recommend you use `our MatplotlibFigure component <https://nova-application-development.readthedocs.io/projects/nova-trame/en/latest/api.html#nova.trame.view.components.visualization.MatplotlibFigure>`_. Kitware provides a direct `Matplotlib integration <https://github.com/Kitware/trame-matplotlib>`_ with Trame, but it is restricted to performing client-side rendering via SVG. Our component allows you to opt into using the `WebAgg backend <https://matplotlib.org/stable/users/explain/figure/backends.html#interactive-backends>`_ for Matplotlib.
 
 If you need to capture complex interactions with your 2D plot, then you can use `Vega-Altair <https://altair-viz.github.io/>`_ along with our :ref:`Interactive2DPlot <api_interactive2dplot>` component.
 

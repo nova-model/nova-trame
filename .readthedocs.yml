@@ -15,7 +15,7 @@ build:
     # golang: "1.20"
   jobs:
     post_create_environment:
-      - pip install altair sphinx-rtd-theme==3.0.0rc3
+      - pip install altair sphinx-rtd-theme==3.0.2
       - pip install .
 
 # Build documentation in the "docs/" directory with Sphinx
