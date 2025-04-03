@@ -12,6 +12,12 @@ html {
     box-shadow: none !important;
 }
 
+.v-tab.v-btn {
+    height: 30px !important;
+    min-width: fit-content !important;
+    padding: 10px !important;
+}
+
 .mpl-message, .ui-dialog-titlebar {
     display: none !important;
 }
@@ -58,13 +64,25 @@ html {
         text-transform: none;
     }
 
+
     .v-label {
         font-size: 0.75rem;
     }
 
-    .v-tab {
-        height: 30px !important;
-        min-width: fit-content !important;
-        padding: 10px !important;
+    .v-field__input {
+        min-height: 30px;
+        padding: 5px;
+    }
+
+    .v-field {
+        margin: 8px 4px 8px 4px;
+    }
+
+    .v-field--active .v-label {
+        color: green;
+    }
+
+    .d-grid {
+        align-items:center;
     }
 }
