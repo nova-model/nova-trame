@@ -203,7 +203,6 @@ class InputField:
                 items = kwargs.pop("items", None)
                 if isinstance(items, str):
                     items = (items,)
-
                 input = vuetify.VSelect(items=items, **kwargs)
             case "slider":
                 input = vuetify.VSlider(**kwargs)
