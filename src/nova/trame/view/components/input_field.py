@@ -70,7 +70,7 @@ class InputField:
                     "rules": (f"[(v) => trigger('validate_pydantic_field', ['{field}', v, index])]",),
                 }
 
-                if field_type == "select" and issubclass(field_info.annotation, Enum):
+                if field_type in ["autocomplete", "combobox", "select"] and issubclass(field_info.annotation, Enum):
                     args |= {"items": str([option.value for option in field_info.annotation])}
 
             if debounce > 0 and throttle > 0:
@@ -123,25 +123,39 @@ class InputField:
             Number of milliseconds to wait after the last user interaction with this field before attempting to update
             the Trame state. If set to 0, then no debouncing will occur. If set to -1, then the environment variable
             `NOVA_TRAME_DEFAULT_DEBOUNCE` will be used to set this (defaults to 0). See the `Lodash Docs
-            <https://lodash.com/docs/4.17.15#debounce>`_ for details.
+            <https://lodash.com/docs/4.17.15#debounce>`__ for details.
         throttle : int
             Number of milliseconds to wait between updates to the Trame state when the user is interacting with this
             field. If set to 0, then no throttling will occur. If set to -1, then the environment variable
             `NOVA_TRAME_DEFAULT_THROTTLE` will be used to set this (defaults to 0). See the `Lodash Docs
-            <https://lodash.com/docs/4.17.15#throttle>`_ for details.
+            <https://lodash.com/docs/4.17.15#throttle>`__ for details.
         type : str
             The type of input to create. This can be any of the following:
 
-            - autocomplete
-            - autoscroll (produces a textarea that automatically scrolls to the bottom as new content is added)
+            - autocomplete - Produces a dropdown menu that supports autocompletion as the user types. Items can be \
+                automatically populated (see select option for details).
+            - autoscroll - Produces a textarea that automatically scrolls to the bottom as new content is added.
             - checkbox
-            - combobox
+            - combobox - Produces a dropdown menu that supports autocompletion as the user types and allows users to \
+                add new items. Items can be automatically populated (see select option for details).
             - file
             - input
             - otp
             - radio
             - range-slider
-            - select
+            - select - Produces a dropdown menu. This menu can have items automatically populated if the v_model is \
+                connected to a Pydantic field that uses an Enum type. Otherwise, you must specify the items parameter \
+                to `InputField`.
+
+                .. literalinclude:: ../tests/test_input_field.py
+                    :start-after: items autopopulation start
+                    :end-before: items autopopulation end
+                    :dedent:
+
+                .. code-block:: python
+
+                    InputField(v_model="dropdown.enum_field", type="select")
+
             - slider
             - switch
             - textarea

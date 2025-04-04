@@ -97,6 +97,7 @@ def test_pydantic_validation(driver: Firefox) -> None:
 
 
 def test_items_attributes() -> None:
+    # items autopopulation start
     class DropdownOptions(str, Enum):
         item_a = "item_a"
         item_b = "item_b"
@@ -107,6 +108,7 @@ def test_items_attributes() -> None:
         str_field: str = Field(default="test")
 
     dropdown = Dropdown()
+    # items autopopulation end
 
     class MyTrameApp(ThemedApp):
         def __init__(self, server: Server = None) -> None:
