@@ -17,6 +17,22 @@ class DataSelector(vuetify.VAutocomplete):
     """Allows the user to select datafiles from an IPTS experiment."""
 
     def __init__(self, facility: str = "", instrument: str = "", **kwargs: Any) -> None:
+        """Constructor for DataSelector.
+
+        Parameters
+        ----------
+        facility : str, optional
+            The facility to restrict data selection to. Options: HFIR, SNS
+        instrument : str, optional
+            The instrument to restrict data selection to. Must be at the selected facility.
+        **kwargs
+            All other arguments will be passed to the underlying
+            `Autocomplete component <https://trame.readthedocs.io/en/latest/trame.widgets.vuetify3.html#trame.widgets.vuetify3.VAutocomplete>`_.
+
+        Returns
+        -------
+        None
+        """
         if "items" in kwargs:
             raise AttributeError("The items parameter is not allowed on DataSelector widget.")
 
@@ -63,4 +79,23 @@ class DataSelector(vuetify.VAutocomplete):
     def set_state(
         self, facility: Optional[str] = None, instrument: Optional[str] = None, experiment: Optional[str] = None
     ) -> None:
+        """Programmatically set the facility, instrument, and/or experiment to restrict data selection to.
+
+        If a parameter is None, then it will not be updated.
+
+        Parameters
+        ----------
+        facility : str, optional
+            The facility to restrict data selection to. Options: HFIR, SNS
+        instrument : str, optional
+            The instrument to restrict data selection to. Must be at the selected facility.
+        experiment : str, optional
+            The experiment to restrict data selection to. Must begin with "IPTS-". It is your responsibility to validate
+            that the provided experiment exists within the instrument directory. If it doesn't then no datafiles will be
+            shown to the user.
+
+        Returns
+        -------
+        None
+        """
         self._vm.set_state(facility, instrument, experiment)
