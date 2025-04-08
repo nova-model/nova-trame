@@ -2,9 +2,9 @@
 
 import os
 from pathlib import Path
-from typing import List
+from typing import List, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 FACILITIES = ["HFIR", "SNS"]
 INSTRUMENTS = {
@@ -61,6 +61,14 @@ class DataSelectorState(BaseModel):
     instrument: str = Field(default="", title="Instrument")
     experiment: str = Field(default="", title="Experiment")
 
+    @classmethod
+    @field_validator("experiment", mode="after")
+    def validate_experiment(cls, experiment: str) -> str:
+        if not experiment.startswith("IPTS-"):
+            raise ValueError("experiment must use IPTS-{number} format")
+
+        return experiment
+
 
 class DataSelectorModel:
     """Manages file system interactions for the DataSelector widget."""
@@ -100,3 +108,11 @@ class DataSelectorModel:
             pass
 
         return datafiles
+
+    def set_state(self, facility: Optional[str], instrument: Optional[str], experiment: Optional[str]) -> None:
+        if facility is not None:
+            self.state.facility = facility
+        if instrument is not None:
+            self.state.instrument = instrument
+        if experiment is not None:
+            self.state.experiment = experiment

@@ -1,7 +1,7 @@
 """View model implementation for the DataSelector widget."""
 
 import os
-from typing import Any
+from typing import Any, Optional
 
 from nova.mvvm.interface import BindingInterface
 from nova.trame.model.data_selector import DataSelectorModel
@@ -18,6 +18,10 @@ class DataSelectorViewModel:
         self.instruments_bind = binding.new_bind()
         self.experiments_bind = binding.new_bind()
         self.datafiles_bind = binding.new_bind()
+
+    def set_state(self, facility: Optional[str], instrument: Optional[str], experiment: Optional[str]) -> None:
+        self.model.set_state(facility, instrument, experiment)
+        self.update_view()
 
     def update_view(self, _: Any = None) -> None:
         self.state_bind.update_in_view(self.model.state)

@@ -1,6 +1,6 @@
 """View Implementation for DataSelector."""
 
-from typing import Any
+from typing import Any, Optional
 
 from trame.app import get_server
 from trame.widgets import vuetify3 as vuetify
@@ -59,3 +59,8 @@ class DataSelector(vuetify.VAutocomplete):
         self._vm.datafiles_bind.connect(self._datafiles_name)
 
         self._vm.update_view()
+
+    def set_state(
+        self, facility: Optional[str] = None, instrument: Optional[str] = None, experiment: Optional[str] = None
+    ) -> None:
+        self._vm.set_state(facility, instrument, experiment)

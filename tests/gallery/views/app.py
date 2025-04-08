@@ -315,7 +315,8 @@ class App(ThemedApp):
                             vuetify.VTab("Tab 3")
 
                     vuetify.VCardTitle("Data Selection Widgets")
-                    DataSelector(v_model="data_selector", chips=True, label="DataSelector", multiple=True)
+                    a = DataSelector(v_model="data_selector", chips=True, label="DataSelector", multiple=True)
+                    a.set_state(facility="HFIR", instrument="CG2", experiment="IPTS-27744")
                     DataSelector(facility="HFIR", instrument="CG2", chips=True, label="DataSelector", multiple=True)
 
                     vuetify.VCardTitle("Form Inputs & Controls")
