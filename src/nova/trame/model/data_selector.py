@@ -4,7 +4,8 @@ import os
 from pathlib import Path
 from typing import List, Optional
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, ValidationError, field_validator, model_validator
+from typing_extensions import Self
 
 FACILITIES = ["HFIR", "SNS"]
 INSTRUMENTS = {
@@ -54,20 +55,32 @@ INSTRUMENTS = {
 }
 
 
-class DataSelectorState(BaseModel):
+class DataSelectorState(BaseModel, validate_assignment=True):
     """Selection state for identifying datafiles."""
 
     facility: str = Field(default="", title="Facility")
     instrument: str = Field(default="", title="Instrument")
     experiment: str = Field(default="", title="Experiment")
 
-    @classmethod
     @field_validator("experiment", mode="after")
+    @classmethod
     def validate_experiment(cls, experiment: str) -> str:
-        if not experiment.startswith("IPTS-"):
-            raise ValueError("experiment must use IPTS-{number} format")
-
+        if experiment and not experiment.startswith("IPTS-"):
+            raise ValidationError("experiment must begin with IPTS-")
         return experiment
+
+    @model_validator(mode="after")
+    def validate_state(self) -> Self:
+        if self.facility not in FACILITIES:
+            raise ValidationError("facility could not be found")
+        if self.instrument not in INSTRUMENTS.get(self.facility, []):
+            raise ValidationError(f"instrument could not be found in {self.facility}")
+        if self.experiment:
+            instrument_path = Path("/") / self.facility / self.instrument
+            if instrument_path not in os.listdir(instrument_path):
+                raise ValidationError("experiment could not be found in {self.instrument}")
+
+        return self
 
 
 class DataSelectorModel:
