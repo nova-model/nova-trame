@@ -21,7 +21,7 @@ from vega_datasets import data
 
 from nova.mvvm.trame_binding import TrameBinding
 from nova.trame import ThemedApp
-from nova.trame.view.components import FileUpload, InputField, RemoteFileInput
+from nova.trame.view.components import DataSelector, FileUpload, InputField, RemoteFileInput
 from nova.trame.view.components.visualization import Interactive2DPlot, MatplotlibFigure
 from nova.trame.view.layouts import GridLayout, HBoxLayout, VBoxLayout
 
@@ -138,6 +138,7 @@ class App(ThemedApp):
 
         self.state.autoscroll = ""
         self.state.config["value"] = "test"
+        self.state.data_selector = []
         self.state.nova__menu = True
         self.state.local_storage_test = ""
         self.state.nested = {
@@ -312,6 +313,10 @@ class App(ThemedApp):
                             vuetify.VTab("Tab 1")
                             vuetify.VTab("Tab 2")
                             vuetify.VTab("Tab 3")
+
+                    vuetify.VCardTitle("Data Selection Widgets")
+                    DataSelector(v_model="data_selector", chips=True, label="DataSelector", multiple=True)
+                    DataSelector(facility="HFIR", instrument="CG2", chips=True, label="DataSelector", multiple=True)
 
                     vuetify.VCardTitle("Form Inputs & Controls")
                     with GridLayout(columns=3, valign="center"):
