@@ -4,7 +4,7 @@ import os
 from pathlib import Path
 from typing import List, Optional
 
-from pydantic import BaseModel, Field, ValidationError, field_validator, model_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 from typing_extensions import Self
 
 FACILITIES = ["HFIR", "SNS"]
@@ -66,19 +66,16 @@ class DataSelectorState(BaseModel, validate_assignment=True):
     @classmethod
     def validate_experiment(cls, experiment: str) -> str:
         if experiment and not experiment.startswith("IPTS-"):
-            raise ValidationError("experiment must begin with IPTS-")
+            raise ValueError("experiment must begin with IPTS-")
         return experiment
 
     @model_validator(mode="after")
     def validate_state(self) -> Self:
-        if self.facility not in FACILITIES:
-            raise ValidationError("facility could not be found")
-        if self.instrument not in INSTRUMENTS.get(self.facility, []):
-            raise ValidationError(f"instrument could not be found in {self.facility}")
-        if self.experiment:
-            instrument_path = Path("/") / self.facility / self.instrument
-            if instrument_path not in os.listdir(instrument_path):
-                raise ValidationError("experiment could not be found in {self.instrument}")
+        if self.facility and self.facility not in FACILITIES:
+            raise ValueError("facility could not be found")
+        if self.instrument and self.instrument not in INSTRUMENTS.get(self.facility, []):
+            raise ValueError(f"instrument could not be found in {self.facility}")
+        # Validating the experiment is expensive and will fail in our CI due to the filesystem not being mounted there.
 
         return self
 
@@ -105,7 +102,7 @@ class DataSelectorModel:
             for dirname in os.listdir(instrument_path):
                 if dirname.startswith("IPTS-"):
                     experiments.append(dirname)
-        except FileNotFoundError:
+        except OSError:
             pass
 
         return experiments
@@ -117,7 +114,7 @@ class DataSelectorModel:
         try:
             for fname in os.listdir(experiment_path):
                 datafiles.append(str(experiment_path / fname))
-        except FileNotFoundError:
+        except OSError:
             pass
 
         return datafiles

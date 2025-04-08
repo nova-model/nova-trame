@@ -315,11 +315,7 @@ class App(ThemedApp):
                             vuetify.VTab("Tab 3")
 
                     vuetify.VCardTitle("Data Selection Widgets")
-                    data_selector = DataSelector(
-                        v_model="data_selector", chips=True, label="DataSelector", multiple=True
-                    )
-                    data_selector.set_state(experiment="IPTS-27744")
-                    DataSelector(facility="HFIR", instrument="CG2", chips=True, label="DataSelector", multiple=True)
+                    DataSelector(v_model="data_selector", chips=True, label="DataSelector", multiple=True)
 
                     vuetify.VCardTitle("Form Inputs & Controls")
                     with GridLayout(columns=3, valign="center"):
