@@ -31,13 +31,6 @@ class ThemedApp:
     """Automatically injects theming into your Trame application.
 
     You should always inherit from this class when you define your Trame application.
-
-    Currently, it supports two themes:
-
-    1. ModernTheme - The recommended theme for most applications. Leverages ORNL brand colors and a typical Vuetify \
-    appearance.
-    2. CompactTheme - Similar to ModernTheme but with a smaller global font size and reduced margins and paddings on \
-    all components.
     """
 
     def __init__(
@@ -151,7 +144,10 @@ class ThemedApp:
         Parameters
         ----------
         theme : str, optional
-            The new theme to use. If the theme is not found, the default theme will be used.
+            The new theme to use. If the theme is not found, the default theme will be used. The available options are:
+
+            1. ModernTheme (default) - Leverages ORNL brand colors and a typical Vuetify appearance.
+            2. CompactTheme - Similar to ModernTheme but with a smaller global font size and increased density.
         force : bool, optional
             If True, the theme will be set even if the theme selection menu is disabled.
 
