@@ -275,7 +275,7 @@ class MatplotlibFigure(matplotlib.Figure):
             ready_%(port)d(
                 function() {
                     var websocket_type = mpl.get_websocket_type();
-                    var websocket = new websocket_type(`ws://${window.location.host}/mpl/%(port)d`);
+                    var websocket = new websocket_type('mpl/%(port)d');
 
                     var fig = new mpl.figure(
                         // A unique numeric identifier for the figure
