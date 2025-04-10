@@ -56,8 +56,7 @@
         },
         "VFileInput": {
             "color": "primary",
-            "prependIcon": false,
-            "variant": "outlined"
+            "prependIcon": false
         },
         "VLabel": {
             "style": {
@@ -92,8 +91,7 @@
             "color": "primary"
         },
         "VSelect": {
-            "color": "primary",
-            "variant": "outlined"
+            "color": "primary"
         },
         "VSlider": {
             "color": "primary"
@@ -108,12 +106,10 @@
             "color": "primary"
         },
         "VTextarea": {
-            "color": "primary",
-            "variant": "outlined"
+            "color": "primary"
         },
         "VTextField": {
-            "color": "primary",
-            "variant": "outlined"
+            "color": "primary"
         },
         "VWindowItem": {
             "reverseTransition": "fade-transition",
@@ -161,6 +157,15 @@
                     },
                     "VBtn": {
                         "size": "small"
+                    },
+                    "VFileInput": {
+                        "variant": "outlined"
+                    },
+                    "VSelect": {
+                        "variant": "outlined"
+                    },
+                    "VTextarea": {
+                        "variant": "outlined"
                     },
                     "VTextField": {
                         "VBtn": {

@@ -12,12 +12,6 @@ html {
     box-shadow: none !important;
 }
 
-.v-tab.v-btn {
-    height: 30px !important;
-    min-width: fit-content !important;
-    padding: 10px !important;
-}
-
 .mpl-message, .ui-dialog-titlebar {
     display: none !important;
 }
@@ -46,6 +40,12 @@ html {
         color: green !important;
         border: solid 1px lightgrey;
         border-radius: 4px;
+    }
+
+    .v-tab.v-btn {
+        height: 30px !important;
+        min-width: fit-content !important;
+        padding: 10px !important;
     }
 
     .v-card-title,
