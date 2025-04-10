@@ -169,9 +169,9 @@
                     },
                     "VTextField": {
                         "VBtn": {
-                            "size": "small",
-                            "variant": "outlined"
-                        }
+                            "size": "small"
+                        },
+                        "variant": "outlined"
                     }
                 },
                 "title": "Compact",
