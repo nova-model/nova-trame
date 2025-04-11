@@ -3,56 +3,63 @@
 import os
 from pathlib import Path
 from typing import List, Optional
+from warnings import warn
 
 from pydantic import BaseModel, Field, field_validator, model_validator
 from typing_extensions import Self
 
-FACILITIES = ["HFIR", "SNS"]
 INSTRUMENTS = {
-    "HFIR": [
-        "CG1A",
-        "CG1B",
-        "CG1D",
-        "CG2",
-        "CG3",
-        "CG4B",
-        "CG4C",
-        "CG4D",
-        "HB1",
-        "HB1A",
-        "HB2A",
-        "HB2B",
-        "HB2C",
-        "HB3",
-        "HB3A",
-        "NOWG",
-        "NOWV",
-    ],
-    "SNS": [
-        "ARCS",
-        "BL0",
-        "BSS",
-        "CNCS",
-        "CORELLI",
-        "EQSANS",
-        "HYS",
-        "LENS",
-        "MANDI",
-        "NOM",
-        "NOWG",
-        "NSE",
-        "PG3",
-        "REF_L",
-        "REF_M",
-        "SEQ",
-        "SNAP",
-        "TOPAZ",
-        "USANS",
-        "VENUS",
-        "VIS",
-        "VULCAN",
-    ],
+    "HFIR": {
+        "CG-1A": "CG1A",
+        "CG-1B": "CG1B",
+        "CG-1D": "CG1D",
+        "CG-2": "CG2",
+        "CG-3": "CG3",
+        "CG-4B": "CG4B",
+        "CG-4C": "CG4C",
+        "CG-4D": "CG4D",
+        "HB-1": "HB1",
+        "HB-1A": "HB1A",
+        "HB-2A": "HB2A",
+        "HB-2B": "HB2B",
+        "HB-2C": "HB2C",
+        "HB-3": "HB3",
+        "HB-3A": "HB3A",
+        "NOW-G": "NOWG",
+        "NOW-V": "NOWV",
+    },
+    "SNS": {
+        "BL-18": "ARCS",
+        "BL-0": "BL0",
+        "BL-2": "BSS",
+        "BL-5": "CNCS",
+        "BL-9": "CORELLI",
+        "BL-6": "EQSANS",
+        "BL-14B": "HYS",
+        "BL-11B": "MANDI",
+        "BL-1B": "NOM",
+        "NOW-G": "NOWG",
+        "BL-15": "NSE",
+        "BL-11A": "PG3",
+        "BL-4B": "REF_L",
+        "BL-4A": "REF_M",
+        "BL-17": "SEQ",
+        "BL-3": "SNAP",
+        "BL-12": "TOPAZ",
+        "BL-1A": "USANS",
+        "BL-10": "VENUS",
+        "BL-16B": "VIS",
+        "BL-7": "VULCAN",
+    },
 }
+
+
+def get_facilities() -> List[str]:
+    return list(INSTRUMENTS.keys())
+
+
+def get_instruments(facility: str) -> List[str]:
+    return list(INSTRUMENTS.get(facility, {}).keys())
 
 
 class DataSelectorState(BaseModel, validate_assignment=True):
@@ -71,10 +78,19 @@ class DataSelectorState(BaseModel, validate_assignment=True):
 
     @model_validator(mode="after")
     def validate_state(self) -> Self:
-        if self.facility and self.facility not in FACILITIES:
-            raise ValueError("facility could not be found")
-        if self.instrument and self.instrument not in INSTRUMENTS.get(self.facility, []):
-            raise ValueError(f"instrument could not be found in {self.facility}")
+        valid_facilities = get_facilities()
+        if self.facility and self.facility not in valid_facilities:
+            warn(f"Facility '{self.facility}' could not be found. Valid options: {valid_facilities}", stacklevel=1)
+
+        valid_instruments = get_instruments(self.facility)
+        if self.instrument and self.instrument not in valid_instruments:
+            warn(
+                (
+                    f"Instrument '{self.instrument}' could not be found in '{self.facility}'. "
+                    f"Valid options: {valid_instruments}"
+                ),
+                stacklevel=1,
+            )
         # Validating the experiment is expensive and will fail in our CI due to the filesystem not being mounted there.
 
         return self
@@ -89,15 +105,18 @@ class DataSelectorModel:
         self.state.instrument = instrument
 
     def get_facilities(self) -> List[str]:
-        return FACILITIES
+        return get_facilities()
+
+    def get_instrument_dir(self) -> str:
+        return INSTRUMENTS.get(self.state.facility, {}).get(self.state.instrument, "")
 
     def get_instruments(self) -> List[str]:
-        return INSTRUMENTS.get(self.state.facility, [])
+        return get_instruments(self.state.facility)
 
     def get_experiments(self) -> List[str]:
         experiments = []
 
-        instrument_path = Path("/") / self.state.facility / self.state.instrument
+        instrument_path = Path("/") / self.state.facility / self.get_instrument_dir()
         try:
             for dirname in os.listdir(instrument_path):
                 if dirname.startswith("IPTS-"):
@@ -105,19 +124,19 @@ class DataSelectorModel:
         except OSError:
             pass
 
-        return experiments
+        return sorted(experiments)
 
     def get_datafiles(self) -> List[str]:
         datafiles = []
 
-        experiment_path = Path("/") / self.state.facility / self.state.instrument / self.state.experiment / "nexus"
+        experiment_path = Path("/") / self.state.facility / self.get_instrument_dir() / self.state.experiment / "nexus"
         try:
             for fname in os.listdir(experiment_path):
                 datafiles.append(str(experiment_path / fname))
         except OSError:
             pass
 
-        return datafiles
+        return sorted(datafiles)
 
     def set_state(self, facility: Optional[str], instrument: Optional[str], experiment: Optional[str]) -> None:
         if facility is not None:

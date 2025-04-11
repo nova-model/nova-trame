@@ -1,6 +1,5 @@
 """View model implementation for the DataSelector widget."""
 
-import os
 from typing import Any, Optional
 
 from nova.mvvm.interface import BindingInterface
@@ -30,5 +29,5 @@ class DataSelectorViewModel:
         self.experiments_bind.update_in_view(self.model.get_experiments())
 
         datafile_paths = self.model.get_datafiles()
-        datafile_options = [{"title": os.path.basename(datafile), "value": datafile} for datafile in datafile_paths]
+        datafile_options = [{"file": datafile} for datafile in datafile_paths]
         self.datafiles_bind.update_in_view(datafile_options)

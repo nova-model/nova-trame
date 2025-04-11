@@ -1,6 +1,7 @@
 """Unit tests for DataSelector."""
 
-from pydantic import ValidationError
+from warnings import catch_warnings
+
 from trame.app import get_server
 from trame_server.core import Server
 
@@ -18,20 +19,29 @@ def test_data_selector() -> None:
         def create_ui(self) -> None:
             with super().create_ui() as layout:
                 with layout.content:
-                    input = DataSelector()
+                    input = DataSelector(v_model="test")
+                    assert input.v_model == "test"
                     assert input._model.state.facility == ""
                     assert input._model.state.instrument == ""
                     assert input._model.state.experiment == ""
 
-                    input.set_state(facility="HFIR", instrument="CG2", experiment="IPTS-27744")
+                    input.set_state(facility="HFIR", instrument="CG-2", experiment="IPTS-27744")
                     assert input._model.state.facility == "HFIR"
-                    assert input._model.state.instrument == "CG2"
+                    assert input._model.state.instrument == "CG-2"
                     assert input._model.state.experiment == "IPTS-27744"
 
-                    try:
+                    with catch_warnings(record=True) as captured_warnings:
                         input.set_state(facility="NSS")
-                        raise AssertionError("Invalid facility should trigger a ValidationError")
-                    except ValidationError:
-                        pass
+                        assert str(captured_warnings[0].message).startswith("Facility 'NSS' could not be found.")
+
+                    with catch_warnings(record=True) as captured_warnings:
+                        DataSelector(v_model="test", facility="HIFR")
+                        assert str(captured_warnings[0].message).startswith("Facility 'HIFR' could not be found.")
+
+                    with catch_warnings(record=True) as captured_warnings:
+                        DataSelector(v_model="test", facility="SNS", instrument="BL1B")
+                        assert str(captured_warnings[0].message).startswith(
+                            "Instrument 'BL1B' could not be found in 'SNS'."
+                        )
 
     MyTrameApp()
