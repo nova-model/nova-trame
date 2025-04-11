@@ -119,7 +119,7 @@ class DataSelectorModel:
         instrument_path = Path("/") / self.state.facility / self.get_instrument_dir()
         try:
             for dirname in os.listdir(instrument_path):
-                if dirname.startswith("IPTS-"):
+                if dirname.startswith("IPTS-") and os.access(instrument_path / dirname, mode=os.R_OK):
                     experiments.append(dirname)
         except OSError:
             pass
