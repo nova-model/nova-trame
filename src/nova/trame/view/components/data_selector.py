@@ -78,66 +78,71 @@ class DataSelector(vuetify.VDataTable):
         self.create_ui(facility, instrument, **kwargs)
 
     def create_ui(self, facility: str, instrument: str, **kwargs: Any) -> None:
-        with GridLayout(columns=3):
-            columns = 3
-            if facility == "":
-                columns -= 1
-                InputField(v_model=f"{self._state_name}.facility", items=(self._facilities_name,), type="autocomplete")
-            if instrument == "":
-                columns -= 1
-                InputField(
-                    v_model=f"{self._state_name}.instrument", items=(self._instruments_name,), type="autocomplete"
-                )
-            InputField(
-                v_model=f"{self._state_name}.experiment",
-                column_span=columns,
-                items=(self._experiments_name,),
-                type="autocomplete",
-            )
-
-        with GridLayout(columns=3, valign="start"):
-            if not self._prefix:
-                with html.Div():
-                    vuetify.VListSubheader("Available Directories", classes="justify-center px-0")
-                    vuetify.VTreeview(
-                        v_if=(f"{self._directories_name}.length > 0",),
-                        activatable=True,
-                        active_strategy="single-independent",
-                        item_value="path",
-                        items=(self._directories_name,),
-                        update_activated=(self._vm.set_directory, "$event"),
+        with html.Div():
+            with GridLayout(columns=3):
+                columns = 3
+                if facility == "":
+                    columns -= 1
+                    InputField(
+                        v_model=f"{self._state_name}.facility", items=(self._facilities_name,), type="autocomplete"
                     )
-                    vuetify.VListItem("No directories found", v_else=True)
+                if instrument == "":
+                    columns -= 1
+                    InputField(
+                        v_model=f"{self._state_name}.instrument", items=(self._instruments_name,), type="autocomplete"
+                    )
+                InputField(
+                    v_model=f"{self._state_name}.experiment",
+                    column_span=columns,
+                    items=(self._experiments_name,),
+                    type="autocomplete",
+                )
 
-            super().__init__(
-                v_model=self._v_model,
-                column_span=3 if self._prefix else 2,
-                headers=("[{ align: 'center', key: 'title', title: 'Available Datafiles' }]",),
-                item_title="title",
-                item_value="path",
-                select_strategy=self._select_strategy,
-                show_select=True,
-                **kwargs,
-            )
-            self.items = (self._datafiles_name,)
-            if "update_modelValue" not in kwargs:
-                self.update_modelValue = f"flushState('{self._v_model.split('.')[0]}')"
+            with GridLayout(columns=3, valign="start"):
+                if not self._prefix:
+                    with html.Div():
+                        vuetify.VListSubheader("Available Directories", classes="justify-center px-0")
+                        vuetify.VTreeview(
+                            v_if=(f"{self._directories_name}.length > 0",),
+                            activatable=True,
+                            active_strategy="single-independent",
+                            item_value="path",
+                            items=(self._directories_name,),
+                            update_activated=(self._vm.set_directory, "$event"),
+                        )
+                        vuetify.VListItem("No directories found", v_else=True)
 
-        with cast(
-            vuetify.VSelect,
-            InputField(
-                v_if=f"{self._v_model}.length > 0",
-                v_model=self._v_model,
-                classes="nova-readonly",
-                clearable=True,
-                label=self._label,
-                readonly=True,
-                type="select",
-            ),
-        ):
-            with vuetify.Template(raw_attrs=['v-slot:selection="{ item, index }"']):
-                vuetify.VChip("{{ item.title }}", v_if="index < 2")
-                html.Span(f"(+{{{{ {self._v_model}.length - 2 }}}} others)", v_if="index === 2", classes="text-caption")
+                super().__init__(
+                    v_model=self._v_model,
+                    column_span=3 if self._prefix else 2,
+                    headers=("[{ align: 'center', key: 'title', title: 'Available Datafiles' }]",),
+                    item_title="title",
+                    item_value="path",
+                    select_strategy=self._select_strategy,
+                    show_select=True,
+                    **kwargs,
+                )
+                self.items = (self._datafiles_name,)
+                if "update_modelValue" not in kwargs:
+                    self.update_modelValue = f"flushState('{self._v_model.split('.')[0]}')"
+
+            with cast(
+                vuetify.VSelect,
+                InputField(
+                    v_if=f"{self._v_model}.length > 0",
+                    v_model=self._v_model,
+                    classes="nova-readonly",
+                    clearable=True,
+                    label=self._label,
+                    readonly=True,
+                    type="select",
+                ),
+            ):
+                with vuetify.Template(raw_attrs=['v-slot:selection="{ item, index }"']):
+                    vuetify.VChip("{{ item.title }}", v_if="index < 2")
+                    html.Span(
+                        f"(+{{{{ {self._v_model}.length - 2 }}}} others)", v_if="index === 2", classes="text-caption"
+                    )
 
     def create_model(self, facility: str, instrument: str) -> None:
         self._model = DataSelectorModel(facility, instrument, self._prefix)
