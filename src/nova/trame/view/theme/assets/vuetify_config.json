@@ -168,6 +168,9 @@
                     "VCombobox": {
                         "variant": "outlined"
                     },
+                    "VDataTable": {
+                        "density": "compact"
+                    },
                     "VFileInput": {
                         "variant": "outlined"
                     },
