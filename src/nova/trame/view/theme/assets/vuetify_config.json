@@ -156,11 +156,17 @@
                     "secondary": "#f48e5c"
                 },
                 "defaults": {
+                    "VAutocomplete": {
+                        "variant": "outlined"
+                    },
                     "VBadge": {
                         "dot": true
                     },
                     "VBtn": {
                         "size": "small"
+                    },
+                    "VCombobox": {
+                        "variant": "outlined"
                     },
                     "VFileInput": {
                         "variant": "outlined"
