@@ -4,6 +4,7 @@ import logging
 import os
 import re
 from enum import Enum
+from inspect import isclass
 from typing import Any, Dict, Optional, Union
 
 from trame.app import get_server
@@ -70,7 +71,11 @@ class InputField:
                     "rules": (f"[(v) => trigger('validate_pydantic_field', ['{field}', v, index])]",),
                 }
 
-                if field_type in ["autocomplete", "combobox", "select"] and issubclass(field_info.annotation, Enum):
+                if (
+                    field_type in ["autocomplete", "combobox", "select"]
+                    and isclass(field_info.annotation)
+                    and issubclass(field_info.annotation, Enum)
+                ):
                     args |= {"items": str([option.value for option in field_info.annotation])}
 
             if debounce > 0 and throttle > 0:
