@@ -34,6 +34,12 @@ html {
     resize: none !important;
 }
 
+.nova-readonly {
+    .v-select__menu-icon {
+        display: none;
+    }
+}
+
 &.v-window {
     overflow-x: visible !important;
     overflow-y: visible !important;
@@ -61,6 +67,16 @@ html {
         border-radius: 4px;
     }
 
+    .v-data-table {
+        td {
+            vertical-align: middle;
+        }
+
+        .v-divider {
+            margin: 0;
+        }
+    }
+
     .v-tab.v-btn {
         height: 30px !important;
         min-width: fit-content !important;
@@ -86,7 +102,7 @@ html {
     .v-label {
         font-size: 0.75rem;
     }
-    
+
     .v-field__input {
         min-height: 30px;
         padding: 5px;
@@ -95,12 +111,31 @@ html {
     .v-field {
         margin: 8px 4px 8px 4px;
     }
-    
+
     .v-field--active .v-label {
         color: green;
     }
 
     .d-grid {
         align-items:center;
+    }
+
+    .v-treeview {
+        .v-list-item {
+            text-align: left;
+
+            .v-list-item__prepend {
+                width: 40px;
+            }
+
+            .v-btn {
+                height: 24px;
+                width: 24px;
+
+                .v-icon {
+                    font-size: 16px;
+                }
+            }
+        }
     }
 }

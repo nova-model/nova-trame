@@ -182,9 +182,12 @@
                     },
                     "VTextField": {
                         "VBtn": {
-                            "size": "small"
+                            "size": "default"
                         },
                         "variant": "outlined"
+                    },
+                    "VTreeview": {
+                        "density": "compact"
                     }
                 },
                 "title": "Compact",

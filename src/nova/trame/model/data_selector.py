@@ -2,7 +2,7 @@
 
 import os
 from pathlib import Path
-from typing import List, Optional
+from typing import Any, List, Optional
 from warnings import warn
 
 from pydantic import BaseModel, Field, field_validator, model_validator
@@ -68,6 +68,8 @@ class DataSelectorState(BaseModel, validate_assignment=True):
     facility: str = Field(default="", title="Facility")
     instrument: str = Field(default="", title="Instrument")
     experiment: str = Field(default="", title="Experiment")
+    directory: str = Field(default="")
+    prefix: str = Field(default="")
 
     @field_validator("experiment", mode="after")
     @classmethod
@@ -99,19 +101,20 @@ class DataSelectorState(BaseModel, validate_assignment=True):
 class DataSelectorModel:
     """Manages file system interactions for the DataSelector widget."""
 
-    def __init__(self, facility: str, instrument: str) -> None:
+    def __init__(self, facility: str, instrument: str, prefix: str) -> None:
         self.state = DataSelectorState()
         self.state.facility = facility
         self.state.instrument = instrument
+        self.state.prefix = prefix
 
     def get_facilities(self) -> List[str]:
-        return get_facilities()
+        return sorted(get_facilities())
 
     def get_instrument_dir(self) -> str:
         return INSTRUMENTS.get(self.state.facility, {}).get(self.state.instrument, "")
 
     def get_instruments(self) -> List[str]:
-        return get_instruments(self.state.facility)
+        return sorted(get_instruments(self.state.facility))
 
     def get_experiments(self) -> List[str]:
         experiments = []
@@ -126,17 +129,66 @@ class DataSelectorModel:
 
         return sorted(experiments)
 
+    def get_directories(self) -> List[Any]:
+        if not self.state.experiment:
+            return []
+
+        directories = []
+
+        experiment_path = Path("/") / self.state.facility / self.get_instrument_dir() / self.state.experiment
+        try:
+            for dirpath, _, _ in os.walk(experiment_path):
+                # Get the relative path from the start path
+                path_parts = os.path.relpath(dirpath, experiment_path).split(os.sep)
+
+                # Only create a new entry for top-level directories
+                if len(path_parts) == 1 and path_parts[0] != ".":  # This indicates a top-level directory
+                    current_dir = {"path": dirpath, "title": path_parts[0]}
+                    directories.append(current_dir)
+
+                # Add subdirectories to the corresponding parent directory
+                elif len(path_parts) > 1:
+                    current_level: Any = directories
+                    for part in path_parts[:-1]:  # Parent directories
+                        for item in current_level:
+                            if item["title"] == part:
+                                if "children" not in item:
+                                    item["children"] = []
+                                current_level = item["children"]
+                                break
+
+                    # Add the last part (current directory) as a child
+                    current_level.append({"path": dirpath, "title": path_parts[-1]})
+        except OSError:
+            pass
+
+        return directories
+
     def get_datafiles(self) -> List[str]:
         datafiles = []
 
-        experiment_path = Path("/") / self.state.facility / self.get_instrument_dir() / self.state.experiment / "nexus"
         try:
-            for fname in os.listdir(experiment_path):
-                datafiles.append(str(experiment_path / fname))
+            if self.state.prefix:
+                datafile_path = str(
+                    Path("/")
+                    / self.state.facility
+                    / self.get_instrument_dir()
+                    / self.state.experiment
+                    / self.state.prefix
+                )
+            else:
+                datafile_path = self.state.directory
+
+            for entry in os.scandir(datafile_path):
+                if entry.is_file():
+                    datafiles.append(entry.path)
         except OSError:
             pass
 
         return sorted(datafiles)
+
+    def set_directory(self, directory_path: str) -> None:
+        self.state.directory = directory_path
 
     def set_state(self, facility: Optional[str], instrument: Optional[str], experiment: Optional[str]) -> None:
         if facility is not None:
