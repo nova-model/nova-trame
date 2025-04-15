@@ -67,6 +67,25 @@ html {
         border-radius: 4px;
     }
 
+    .nova-data-selector {
+        .v-data-table__td {
+            max-width: 100px;
+            overflow: hidden;
+            padding: 0 !important;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .v-data-table-footer {
+            justify-content: center;
+
+            .v-data-table-footer__items-per-page,
+            .v-data-table-footer__info {
+                display: none;
+            }
+        }
+    }
+
     .v-data-table {
         td {
             vertical-align: middle;

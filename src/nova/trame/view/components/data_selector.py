@@ -78,7 +78,7 @@ class DataSelector(vuetify.VDataTable):
         self.create_ui(facility, instrument, **kwargs)
 
     def create_ui(self, facility: str, instrument: str, **kwargs: Any) -> None:
-        with html.Div():
+        with html.Div(classes="nova-data-selector"):
             with GridLayout(columns=3):
                 columns = 3
                 if facility == "":
@@ -98,24 +98,25 @@ class DataSelector(vuetify.VDataTable):
                     type="autocomplete",
                 )
 
-            with GridLayout(columns=3, height="500px", valign="start"):
+            with GridLayout(columns=2, valign="start"):
                 if not self._prefix:
-                    with html.Div(classes="overflow-y-auto", style="max-height: 500px"):
+                    with html.Div():
                         vuetify.VListSubheader("Available Directories", classes="justify-center px-0")
                         vuetify.VTreeview(
                             v_if=(f"{self._directories_name}.length > 0",),
                             activatable=True,
                             active_strategy="single-independent",
+                            classes="overflow-y-auto",
                             item_value="path",
                             items=(self._directories_name,),
+                            style="max-height: 500px",
                             update_activated=(self._vm.set_directory, "$event"),
                         )
-                        vuetify.VListItem("No directories found", v_else=True)
+                        vuetify.VListItem("No directories found", classes="text-center", v_else=True)
 
                 super().__init__(
                     v_model=self._v_model,
-                    column_span=3 if self._prefix else 2,
-                    headers=("[{ align: 'center', key: 'title', title: 'Available Datafiles' }]",),
+                    headers=("[{ align: 'left', key: 'title', title: 'Available Datafiles' }]",),
                     item_title="title",
                     item_value="path",
                     select_strategy=self._select_strategy,
