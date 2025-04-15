@@ -109,7 +109,7 @@ class DataSelector(vuetify.VDataTable):
                             classes="overflow-y-auto",
                             item_value="path",
                             items=(self._directories_name,),
-                            style="max-height: 500px",
+                            style="max-height: 460px",
                             update_activated=(self._vm.set_directory, "$event"),
                         )
                         vuetify.VListItem("No directories found", classes="text-center", v_else=True)
