@@ -129,6 +129,17 @@ class DataSelectorModel:
 
         return sorted(experiments)
 
+    def sort_directories(self, directories: List[Any]) -> List[Any]:
+        # Sort the current level of dictionaries
+        sorted_dirs = sorted(directories, key=lambda x: x["title"])
+
+        # Process each sorted item to sort their children
+        for item in sorted_dirs:
+            if "children" in item and isinstance(item["children"], list):
+                item["children"] = self.sort_directories(item["children"])
+
+        return sorted_dirs
+
     def get_directories(self) -> List[Any]:
         if not self.state.experiment:
             return []
@@ -162,7 +173,7 @@ class DataSelectorModel:
         except OSError:
             pass
 
-        return directories
+        return self.sort_directories(directories)
 
     def get_datafiles(self) -> List[str]:
         datafiles = []

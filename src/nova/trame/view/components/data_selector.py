@@ -98,9 +98,9 @@ class DataSelector(vuetify.VDataTable):
                     type="autocomplete",
                 )
 
-            with GridLayout(columns=3, valign="start"):
+            with GridLayout(columns=3, height="500px", valign="start"):
                 if not self._prefix:
-                    with html.Div():
+                    with html.Div(classes="overflow-y-auto", style="max-height: 500px"):
                         vuetify.VListSubheader("Available Directories", classes="justify-center px-0")
                         vuetify.VTreeview(
                             v_if=(f"{self._directories_name}.length > 0",),
@@ -129,13 +129,14 @@ class DataSelector(vuetify.VDataTable):
             with cast(
                 vuetify.VSelect,
                 InputField(
-                    v_if=f"{self._v_model}.length > 0",
+                    v_show=f"{self._v_model}.length > 0",
                     v_model=self._v_model,
                     classes="nova-readonly",
                     clearable=True,
                     label=self._label,
                     readonly=True,
                     type="select",
+                    click_clear=f"{self._v_model} = []; flushState('{self._v_model.split('.')[0]}');",
                 ),
             ):
                 with vuetify.Template(raw_attrs=['v-slot:selection="{ item, index }"']):
