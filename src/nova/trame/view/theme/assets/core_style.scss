@@ -68,6 +68,10 @@ html {
     }
 
     .nova-data-selector {
+        .v-list-item {
+            padding-left: 0;
+        }
+
         .v-data-table__td {
             max-width: 100px;
             overflow: hidden;
