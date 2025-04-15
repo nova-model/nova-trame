@@ -141,7 +141,7 @@ class DataSelector(vuetify.VDataTable):
                 ),
             ):
                 with vuetify.Template(raw_attrs=['v-slot:selection="{ item, index }"']):
-                    vuetify.VChip("{{ item.title }}", v_if="index < 2")
+                    vuetify.VChip("{{ item.title.split('/').reverse()[0] }}", v_if="index < 2")
                     html.Span(
                         f"(+{{{{ {self._v_model}.length - 2 }}}} others)", v_if="index === 2", classes="text-caption"
                     )
