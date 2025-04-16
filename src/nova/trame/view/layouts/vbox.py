@@ -14,6 +14,8 @@ class VBoxLayout(html.Div):
         width: Optional[Union[int, str]] = None,
         halign: Optional[str] = None,
         valign: Optional[str] = None,
+        gap: Optional[Union[int, str]] = "0em",
+        vspace: Optional[Union[int, str]] = "0em",
         **kwargs: Any,
     ) -> None:
         """Constructor for VBoxLayout.
@@ -51,7 +53,7 @@ class VBoxLayout(html.Div):
             classes = " ".join(classes)
         classes += " d-flex flex-column"
 
-        style = self.get_root_styles(height, width, halign, valign) | kwargs.pop("style", {})
+        style = self.get_root_styles(height, width, halign, valign, gap, vspace) | kwargs.pop("style", {})
 
         super().__init__(classes=classes, style=style, **kwargs)
 
@@ -61,9 +63,13 @@ class VBoxLayout(html.Div):
         width: Optional[Union[int, str]],
         halign: Optional[str],
         valign: Optional[str],
+        gap: Optional[Union[int, str]],
+        vspace: Optional[Union[int, str]],
     ) -> dict:
         height = f"{height}px" if isinstance(height, int) else height
         width = f"{width}px" if isinstance(width, int) else width
+        gap = f"{gap}px" if isinstance(gap, int) else gap
+        vspace = f"{vspace}px" if isinstance(vspace, int) else vspace
 
         styles = {}
 
@@ -75,5 +81,9 @@ class VBoxLayout(html.Div):
             styles["align-items"] = halign
         if valign:
             styles["justify-content"] = valign
+        if gap:
+            styles["gap"] = gap
+        if vspace:
+            styles["margin-bottom"] = vspace
 
         return styles
