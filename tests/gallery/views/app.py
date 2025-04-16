@@ -21,9 +21,11 @@ from vega_datasets import data
 
 from nova.mvvm.trame_binding import TrameBinding
 from nova.trame import ThemedApp
-from nova.trame.view.components import InputField, RemoteFileInput
+from nova.trame.view.components import FileUpload, InputField, RemoteFileInput
 from nova.trame.view.components.visualization import Interactive2DPlot, MatplotlibFigure
 from nova.trame.view.layouts import GridLayout, HBoxLayout, VBoxLayout
+
+from ..view_models.file_upload import FileUploadVM
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -125,8 +127,12 @@ class App(ThemedApp):
         return self.server.state
 
     def create_state(self) -> None:
+        binding = TrameBinding(self.state)
+        self.file_upload_vm = FileUploadVM(binding)
+        self.file_upload_vm.model_bind.connect("file_upload")
+
         self.config = Config()
-        config_bind = TrameBinding(self.state).new_bind(self.config)
+        config_bind = binding.new_bind(self.config)
         config_bind.connect("config")
         config_bind.update_in_view(self.config)
 
@@ -309,6 +315,7 @@ class App(ThemedApp):
 
                     vuetify.VCardTitle("Form Inputs & Controls")
                     with GridLayout(columns=3, valign="center"):
+                        FileUpload(v_model="file_upload.file", base_paths=["/HFIR", "/SNS"], label="Upload File")
                         with html.Div():
                             InputField(
                                 v_model="autoscroll",

@@ -233,7 +233,7 @@ class ThemedApp:
                         # [slot override example]
                         layout.pre_content = vuetify.VSheet(classes="bg-background ")
                         # [slot override example complete]
-                        with vuetify.VContainer(classes="flex-1-1 overflow-hidden pt-0 pb-0", fluid=True):
+                        with vuetify.VContainer(classes="flex-0-1 overflow-hidden pt-0 pb-0", fluid=True):
                             layout.content = html.Div(classes="h-100 overflow-y-auto pb-1 ")
                         layout.post_content = vuetify.VSheet(classes="bg-background ")
 

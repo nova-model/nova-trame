@@ -10,8 +10,9 @@ from trame_client.widgets.core import AbstractElement
 
 from nova.mvvm.trame_binding import TrameBinding
 from nova.trame.model.remote_file_input import RemoteFileInputModel
-from nova.trame.view.components import InputField
 from nova.trame.view_model.remote_file_input import RemoteFileInputViewModel
+
+from .input_field import InputField
 
 
 class RemoteFileInput:
@@ -30,6 +31,7 @@ class RemoteFileInput:
         dialog_props: Optional[dict[str, Any]] = None,
         extensions: Optional[list[str]] = None,
         input_props: Optional[dict[str, Any]] = None,
+        return_contents: bool = False,
     ) -> None:
         """Constructor for RemoteFileInput.
 
@@ -52,6 +54,9 @@ class RemoteFileInput:
             Only files with these extensions will be shown by default. The user can still choose to view all files.
         input_props : dict[str, typing.Any], optional
             Props to be passed to InputField.
+        return_contents : bool
+            If true, then the v_model will contain the contents of the file. If false, then the v_model will contain the
+            path of the file.
 
         Raises
         ------
@@ -73,6 +78,7 @@ class RemoteFileInput:
         self.dialog_props = dict(dialog_props) if dialog_props else {}
         self.extensions = extensions if extensions else []
         self.input_props = dict(input_props) if input_props else {}
+        self.return_contents = return_contents
 
         if "__events" not in self.input_props:
             self.input_props["__events"] = []
@@ -178,14 +184,35 @@ class RemoteFileInput:
         else:
             model_name = self.v_model
 
+        self.set_v_model = client.JSEval(
+            exec=f"{model_name} = $event; flushState('{model_name.split('.')[0].split('[')[0]}');"
+        ).exec
+
         self.vm = RemoteFileInputViewModel(self.model, binding)
 
         self.vm.dialog_bind.connect(self.vm.get_dialog_state_name())
         self.vm.file_list_bind.connect(self.vm.get_file_list_state_name())
         self.vm.filter_bind.connect(self.vm.get_filter_state_name())
         self.vm.on_close_bind.connect(client.JSEval(exec=f"{self.vm.get_dialog_state_name()} = false;").exec)
-        self.vm.on_update_bind.connect(
-            client.JSEval(exec=f"{model_name} = $event; flushState('{model_name.split('.')[0].split('[')[0]}');").exec
-        )
+        if self.return_contents:
+            self.vm.on_update_bind.connect(self.read_file)
+        else:
+            self.vm.on_update_bind.connect(self.set_v_model)
         self.vm.showing_all_bind.connect(self.vm.get_showing_all_state_name())
         self.vm.valid_selection_bind.connect(self.vm.get_valid_selection_state_name())
+
+    def read_file(self, file_path: str) -> None:
+        with open(file_path, mode="rb") as file:
+            self.decode_file(file.read())
+
+    def decode_file(self, bytestream: bytes) -> None:
+        decoded_content = bytestream.decode("latin1")
+        self.set_v_model(decoded_content)
+
+    def select_file(self, value: str) -> None:
+        """Programmatically set the v_model value."""
+        self.vm.select_file(value)
+
+    def open_dialog(self) -> None:
+        """Programmatically opens the dialog for selecting a file."""
+        self.vm.open_dialog()
