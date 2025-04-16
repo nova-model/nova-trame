@@ -35,6 +35,8 @@ class RemoteFileInputViewModel:
         self.previous_value = self.value
         self.populate_file_list()
 
+        self.dialog_bind.update_in_view(True)
+
     def close_dialog(self, cancel: bool = False) -> None:
         if not cancel:
             self.on_update_bind.update_in_view(self.value)
