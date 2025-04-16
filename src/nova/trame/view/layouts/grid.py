@@ -16,6 +16,7 @@ class GridLayout(html.Div):
         width: Optional[Union[int, str]] = None,
         halign: Optional[str] = None,
         valign: Optional[str] = None,
+        gap: Optional[Union[int, str]] = "0em",
         **kwargs: Any,
     ) -> None:
         """Constructor for GridLayout.
@@ -64,7 +65,7 @@ class GridLayout(html.Div):
             classes = " ".join(classes)
         classes += " d-grid"
 
-        style = self.get_root_styles(columns, height, width, halign, valign) | kwargs.pop("style", {})
+        style = self.get_root_styles(columns, height, width, halign, valign, gap) | kwargs.pop("style", {})
 
         super().__init__(classes=classes, style=style, **kwargs)
 
@@ -75,9 +76,11 @@ class GridLayout(html.Div):
         width: Optional[Union[int, str]],
         halign: Optional[str],
         valign: Optional[str],
+        gap: Optional[Union[int, str]],
     ) -> dict[str, str]:
         height = f"{height}px" if isinstance(height, int) else height
         width = f"{width}px" if isinstance(width, int) else width
+        gap = f"{gap}px" if isinstance(gap, int) else gap
 
         styles = {
             "grid-template-columns": f"repeat({columns}, 1fr)",
@@ -91,6 +94,8 @@ class GridLayout(html.Div):
             styles["justify-items"] = halign
         if valign:
             styles["align-items"] = valign
+        if gap:
+            styles["gap"] = gap
 
         return styles
 
