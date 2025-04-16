@@ -12,20 +12,6 @@ html {
     box-shadow: none !important;
 }
 
-.v-tab.v-btn {
-    height: 30px !important;
-    min-width: fit-content !important;
-    padding: 10px !important;
-}
-
-.v-container {
-    padding: 0px !important;
-}
-
-.v-checkbox .v-selection-control {
-    min-height: 0px !important;
-}
-
 .mpl-message, .ui-dialog-titlebar {
     display: none !important;
 }
@@ -34,7 +20,7 @@ html {
     resize: none !important;
 }
 
-&.v-window {
+.v-window {
     overflow-x: visible !important;
     overflow-y: visible !important;
 }
@@ -67,6 +53,14 @@ html {
         padding: 10px !important;
     }
 
+    .v-container {
+        padding: 0px !important;
+    }
+
+    .v-checkbox .v-selection-control {
+        min-height: 0px !important;
+    }
+
     .v-card-title,
     .v-list-item-title,
     .v-toolbar-title {
@@ -86,7 +80,7 @@ html {
     .v-label {
         font-size: 0.75rem;
     }
-    
+
     .v-field__input {
         min-height: 30px;
         padding: 5px;
@@ -95,7 +89,7 @@ html {
     .v-field {
         margin: 8px 4px 8px 4px;
     }
-    
+
     .v-field--active .v-label {
         color: green;
     }

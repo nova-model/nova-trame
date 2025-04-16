@@ -37,6 +37,9 @@ class GridLayout(html.Div):
         valign : optional[str]
             The vertical alignment of items in the grid. See `MDN
             <https://developer.mozilla.org/en-US/docs/Web/CSS/align-items>`__ for available options.
+        gap : optional[str]
+            The gap to place between items (works both horizontally and vertically). Can be any CSS gap value (e.g.
+            "4px" or "0.25em"). Defaults to no gap between items.
         kwargs : Any
             Additional keyword arguments to pass to html.Div.
 
