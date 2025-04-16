@@ -8,7 +8,7 @@ from trame.widgets import vuetify3 as vuetify
 
 from nova.mvvm.trame_binding import TrameBinding
 from nova.trame.model.data_selector import DataSelectorModel
-from nova.trame.view.layouts import GridLayout
+from nova.trame.view.layouts import GridLayout, VBoxLayout
 from nova.trame.view_model.data_selector import DataSelectorViewModel
 
 from .input_field import InputField
@@ -78,7 +78,7 @@ class DataSelector(vuetify.VDataTable):
         self.create_ui(facility, instrument, **kwargs)
 
     def create_ui(self, facility: str, instrument: str, **kwargs: Any) -> None:
-        with html.Div(classes="nova-data-selector"):
+        with VBoxLayout(classes="nova-data-selector", height="100%"):
             with GridLayout(columns=3):
                 columns = 3
                 if facility == "":
@@ -98,24 +98,24 @@ class DataSelector(vuetify.VDataTable):
                     type="autocomplete",
                 )
 
-            with GridLayout(columns=2, valign="start"):
+            with GridLayout(columns=2, classes="flex-1-0", valign="start"):
                 if not self._prefix:
-                    with html.Div():
-                        vuetify.VListSubheader("Available Directories", classes="justify-center px-0")
+                    with html.Div(classes="d-flex flex-column h-100 overflow-hidden"):
+                        vuetify.VListSubheader("Available Directories", classes="flex-0-1 justify-center px-0")
                         vuetify.VTreeview(
                             v_if=(f"{self._directories_name}.length > 0",),
                             activatable=True,
                             active_strategy="single-independent",
-                            classes="overflow-y-auto",
+                            classes="flex-1-0 h-0 overflow-y-auto",
                             item_value="path",
                             items=(self._directories_name,),
-                            style="max-height: 460px",
                             update_activated=(self._vm.set_directory, "$event"),
                         )
-                        vuetify.VListItem("No directories found", classes="text-center", v_else=True)
+                        vuetify.VListItem("No directories found", classes="flex-0-1 text-center", v_else=True)
 
                 super().__init__(
                     v_model=self._v_model,
+                    classes="overflow-y-auto",
                     headers=("[{ align: 'left', key: 'title', title: 'Available Datafiles' }]",),
                     item_title="title",
                     item_value="path",
@@ -123,6 +123,8 @@ class DataSelector(vuetify.VDataTable):
                     show_select=True,
                     **kwargs,
                 )
+                if self._label:
+                    self.label = self._label
                 self.items = (self._datafiles_name,)
                 if "update_modelValue" not in kwargs:
                     self.update_modelValue = f"flushState('{self._v_model.split('.')[0]}')"
@@ -130,11 +132,9 @@ class DataSelector(vuetify.VDataTable):
             with cast(
                 vuetify.VSelect,
                 InputField(
-                    v_show=f"{self._v_model}.length > 0",
                     v_model=self._v_model,
-                    classes="nova-readonly",
+                    classes="flex-0-1 nova-readonly",
                     clearable=True,
-                    label=self._label,
                     readonly=True,
                     type="select",
                     click_clear=f"{self._v_model} = []; flushState('{self._v_model.split('.')[0]}');",
