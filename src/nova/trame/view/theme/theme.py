@@ -219,7 +219,6 @@ class ThemedApp:
 
                                 with vuetify.VList(width=200):
                                     vuetify.VListSubheader("Select Theme")
-                                    vuetify.VDivider()
 
                                     for theme in self.vuetify_config.get("theme", {}).get("themes", {}).values():
                                         with vuetify.VListItem(click=partial(self.set_theme, theme["value"])):
