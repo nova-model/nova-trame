@@ -16,7 +16,7 @@ from .input_field import InputField
 vuetify.enable_lab()
 
 
-class DataSelector(vuetify.VDataTable):
+class DataSelector(vuetify.VDataTableVirtual):
     """Allows the user to select datafiles from an IPTS experiment."""
 
     def __init__(
@@ -98,7 +98,7 @@ class DataSelector(vuetify.VDataTable):
                     type="autocomplete",
                 )
 
-            with GridLayout(columns=2, classes="flex-1-0", valign="start"):
+            with GridLayout(columns=2, classes="flex-1-0 h-0", valign="start"):
                 if not self._prefix:
                     with html.Div(classes="d-flex flex-column h-100 overflow-hidden"):
                         vuetify.VListSubheader("Available Directories", classes="flex-0-1 justify-center px-0")
@@ -115,7 +115,7 @@ class DataSelector(vuetify.VDataTable):
 
                 super().__init__(
                     v_model=self._v_model,
-                    classes="overflow-y-auto",
+                    classes="h-100 overflow-y-auto",
                     headers=("[{ align: 'left', key: 'title', title: 'Available Datafiles' }]",),
                     item_title="title",
                     item_value="path",
