@@ -1,3 +1,7 @@
+### nova-trame, 0.18.2
+
+* Passing a string to the style parameter to GridLayout, HBoxLayout, and VBoxLayout will no longer cause Trame to crash (thanks to John Duggan).
+
 ### nova-trame, 0.18.1
 
 * The `CompactTheme` has been overhauled and should produce denser UIs (thanks to Kristin Maroun).

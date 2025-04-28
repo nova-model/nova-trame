@@ -37,3 +37,21 @@ def test_vbox() -> None:
     with VBoxLayout():
         html.Div("Test 1")
         html.Div("Test 2")
+
+
+def test_style_attributes() -> None:
+    # Test dict-typed style
+    with GridLayout(style={"height": "40px"}):
+        html.Div("Test", style={"height": "100%"})
+    with HBoxLayout(style={"height": "40px"}):
+        html.Div("Test", style={"height": "100%"})
+    with VBoxLayout(style={"height": "40px"}):
+        html.Div("Test", style={"height": "100%"})
+
+    # Test string-typed style
+    with GridLayout(style="height: 40px"):
+        html.Div("Test", style="height: 40px")
+    with HBoxLayout(style="height: 40px"):
+        html.Div("Test", style="height: 40px")
+    with VBoxLayout(style="height: 40px"):
+        html.Div("Test", style="height: 40px")
