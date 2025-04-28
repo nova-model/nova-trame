@@ -3,7 +3,7 @@
 from typing import Any, Optional, cast
 
 from trame.app import get_server
-from trame.widgets import html
+from trame.widgets import client, html
 from trame.widgets import vuetify3 as vuetify
 
 from nova.mvvm.trame_binding import TrameBinding
@@ -72,6 +72,9 @@ class DataSelector(vuetify.VDataTableVirtual):
         self._directories_name = f"nova__dataselector_{self._next_id}_directories"
         self._datafiles_name = f"nova__dataselector_{self._next_id}_datafiles"
 
+        self._flush_state = f"flushState('{self._v_model.split('.')[0]}')"
+        self._reset_state = client.JSEval(exec=f"{self._v_model} = []; {self._flush_state}").exec
+
         self.create_model(facility, instrument)
         self.create_viewmodel()
 
@@ -128,7 +131,7 @@ class DataSelector(vuetify.VDataTableVirtual):
                     self.label = self._label
                 self.items = (self._datafiles_name,)
                 if "update_modelValue" not in kwargs:
-                    self.update_modelValue = f"flushState('{self._v_model.split('.')[0]}')"
+                    self.update_modelValue = {self._flush_state}
 
             with cast(
                 vuetify.VSelect,
@@ -138,7 +141,7 @@ class DataSelector(vuetify.VDataTableVirtual):
                     clearable=True,
                     readonly=True,
                     type="select",
-                    click_clear=f"{self._v_model} = []; flushState('{self._v_model.split('.')[0]}');",
+                    click_clear=self.reset,
                 ),
             ):
                 with vuetify.Template(raw_attrs=['v-slot:selection="{ item, index }"']):
@@ -161,8 +164,12 @@ class DataSelector(vuetify.VDataTableVirtual):
         self._vm.experiments_bind.connect(self._experiments_name)
         self._vm.directories_bind.connect(self._directories_name)
         self._vm.datafiles_bind.connect(self._datafiles_name)
+        self._vm.reset_bind.connect(self.reset)
 
         self._vm.update_view()
+
+    def reset(self, _: Any = None) -> None:
+        self._reset_state()
 
     def set_state(
         self, facility: Optional[str] = None, instrument: Optional[str] = None, experiment: Optional[str] = None
