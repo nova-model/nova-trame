@@ -1,6 +1,8 @@
 ### nova-trame, 0.18.2
 
 * Passing a string to the style parameter to GridLayout, HBoxLayout, and VBoxLayout will no longer cause Trame to crash (thanks to John Duggan).
+* WebAgg-based Matplotlib figures are no longer automatically scrolled to on page load (thanks to John Duggan).
+* RemoteFileInput will no longer attempt to navigate to another directory after the filtering text field loses focus. The compact UI for this widget has also been updated (thanks to John Duggan).
 
 ### nova-trame, 0.18.1
 

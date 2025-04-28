@@ -47,6 +47,16 @@ html {
         border-radius: 4px;
     }
 
+    .nova-remote-file-input {
+        .v-input__append {
+            margin-left: 0;
+        }
+
+        .v-btn {
+            height: 30px;
+        }
+    }
+
     .v-tab.v-btn {
         height: 30px !important;
         min-width: fit-content !important;
