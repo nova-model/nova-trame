@@ -123,7 +123,8 @@ class MatplotlibFigure(matplotlib.Figure):
             with open(Path(css_path, fname)) as css_file:
                 content = css_file.read()
                 client.Style(content)
-        client.Script(FigureManagerWebAgg.get_javascript())
+        js = FigureManagerWebAgg.get_javascript()
+        client.Script(js.replace("window.setTimeout(set_focus, 100);", "//"))
 
         MatplotlibFigure.mpl_initialized = True
 
