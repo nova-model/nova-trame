@@ -116,6 +116,7 @@ class DataSelector(vuetify.VDataTableVirtual):
                 super().__init__(
                     v_model=self._v_model,
                     classes="h-100 overflow-y-auto",
+                    fixed_header=True,
                     headers=("[{ align: 'left', key: 'title', title: 'Available Datafiles' }]",),
                     item_title="title",
                     item_value="path",

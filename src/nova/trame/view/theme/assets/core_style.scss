@@ -64,8 +64,17 @@ html {
     }
 
     .nova-data-selector {
+        .v-list-subheader__text {
+            color: black;
+        }
+
         .v-list-item {
             padding-left: 0;
+        }
+
+        .v-list-subheader__text,
+        .v-list-item-title {
+            font-size: 0.75rem !important;
         }
 
         .v-data-table__td {
