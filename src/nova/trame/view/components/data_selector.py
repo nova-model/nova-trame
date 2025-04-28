@@ -131,7 +131,7 @@ class DataSelector(vuetify.VDataTableVirtual):
                     self.label = self._label
                 self.items = (self._datafiles_name,)
                 if "update_modelValue" not in kwargs:
-                    self.update_modelValue = {self._flush_state}
+                    self.update_modelValue = self._flush_state
 
             with cast(
                 vuetify.VSelect,
