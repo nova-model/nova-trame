@@ -100,6 +100,10 @@ class RemoteFileInput:
                 **self.input_props,
             ),
         ) as input:
+            if isinstance(input.classes, str):
+                input.classes += " nova-remote-file-input"
+            else:
+                input.classes = "nova-remote-file-input"
             self.vm.init_view()
 
             with vuetify.Template(v_slot_append=True):
@@ -110,13 +114,11 @@ class RemoteFileInput:
                         v_model=self.vm.get_dialog_state_name(), activator="parent", **self.dialog_props
                     ):
                         with vuetify.VCard(classes="pa-4"):
-                            vuetify.VCardTitle(input.label)
                             vuetify.VTextField(
                                 v_model=self.vm.get_filter_state_name(),
                                 classes="mb-4 px-4",
-                                label="Current Selection",
-                                __events=["change"],
-                                change=(self.vm.select_file, "[$event.target.value]"),
+                                label=input.label,
+                                variant="outlined",
                                 update_modelValue=(self.vm.filter_paths, "[$event]"),
                             )
 
