@@ -4,6 +4,8 @@ from typing import Any, Optional, Union
 
 from trame.widgets import html
 
+from .utils import merge_styles
+
 
 class VBoxLayout(html.Div):
     """Creates an element that vertically stacks its children."""
@@ -34,6 +36,12 @@ class VBoxLayout(html.Div):
         valign : optional[str]
             The vertical alignment of items in the grid. See `MDN
             <https://developer.mozilla.org/en-US/docs/Web/CSS/justify-items>`__ for available options.
+        gap : optional[str]
+            The horizontal gap to place between items. Can be any CSS gap value (e.g. "4px" or "0.25em"). Defaults to no
+            gap between items.
+        vspace : optional[str]
+            The vertical gap to place between items. Can be any CSS gap value (e.g. "4px" or "0.25em"). Defaults to no
+            gap between items.
         kwargs : Any
             Additional keyword arguments to pass to html.Div.
 
@@ -53,9 +61,10 @@ class VBoxLayout(html.Div):
             classes = " ".join(classes)
         classes += " d-flex flex-column"
 
-        style = self.get_root_styles(height, width, halign, valign, gap, vspace) | kwargs.pop("style", {})
+        widget_style = self.get_root_styles(height, width, halign, valign, gap, vspace)
+        user_style = kwargs.pop("style", {})
 
-        super().__init__(classes=classes, style=style, **kwargs)
+        super().__init__(classes=classes, style=merge_styles(widget_style, user_style), **kwargs)
 
     def get_root_styles(
         self,

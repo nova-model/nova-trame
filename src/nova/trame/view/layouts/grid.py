@@ -5,6 +5,8 @@ from typing import Any, Optional, Union
 from trame.widgets import html
 from trame_client.widgets.core import AbstractElement
 
+from .utils import merge_styles
+
 
 class GridLayout(html.Div):
     """Creates a grid with a specified number of columns."""
@@ -37,6 +39,9 @@ class GridLayout(html.Div):
         valign : optional[str]
             The vertical alignment of items in the grid. See `MDN
             <https://developer.mozilla.org/en-US/docs/Web/CSS/align-items>`__ for available options.
+        gap : optional[str]
+            The gap to place between items (works both horizontally and vertically). Can be any CSS gap value (e.g.
+            "4px" or "0.25em"). Defaults to no gap between items.
         kwargs : Any
             Additional keyword arguments to pass to html.Div.
 
@@ -65,9 +70,10 @@ class GridLayout(html.Div):
             classes = " ".join(classes)
         classes += " d-grid"
 
-        style = self.get_root_styles(columns, height, width, halign, valign, gap) | kwargs.pop("style", {})
+        widget_style = self.get_root_styles(columns, height, width, halign, valign, gap)
+        user_style = kwargs.pop("style", {})
 
-        super().__init__(classes=classes, style=style, **kwargs)
+        super().__init__(classes=classes, style=merge_styles(widget_style, user_style), **kwargs)
 
     def get_root_styles(
         self,
