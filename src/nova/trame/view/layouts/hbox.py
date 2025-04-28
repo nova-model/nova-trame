@@ -4,6 +4,8 @@ from typing import Any, Optional, Union
 
 from trame.widgets import html
 
+from .utils import merge_styles
+
 
 class HBoxLayout(html.Div):
     """Creates an element that horizontally stacks its children."""
@@ -59,9 +61,10 @@ class HBoxLayout(html.Div):
             classes = " ".join(classes)
         classes += " d-flex flex-row"
 
-        style = self.get_root_styles(height, width, halign, valign, gap, vspace) | kwargs.pop("style", {})
+        widget_style = self.get_root_styles(height, width, halign, valign, gap, vspace)
+        user_style = kwargs.pop("style", {})
 
-        super().__init__(classes=classes, style=style, **kwargs)
+        super().__init__(classes=classes, style=merge_styles(widget_style, user_style), **kwargs)
 
     def get_root_styles(
         self,
