@@ -6,14 +6,13 @@ Changelog = "https://code.ornl.gov/ndip/public-packages/nova-trame/blob/main/CHA
 
 [tool.poetry]
 name = "nova-trame"
-version = "0.18.2"
+version = "0.19.0"
 description = "A Python Package for injecting curated themes and custom components into Trame applications"
 authors = ["Duggan, John <dugganjw@ornl.gov>"]
 readme = "README.md"
 license = "MIT"
 keywords = ["NDIP", "Python", "Trame", "Vuetify"]
 packages = [{include = "nova", from = "src"}]
-
 
 [tool.poetry.dependencies]
 altair = "*"

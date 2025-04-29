@@ -20,6 +20,12 @@ html {
     resize: none !important;
 }
 
+.nova-readonly {
+    .v-select__menu-icon {
+        display: none;
+    }
+}
+
 .v-window {
     overflow-x: visible !important;
     overflow-y: visible !important;
@@ -45,6 +51,49 @@ html {
         color: green !important;
         border: solid 1px lightgrey;
         border-radius: 4px;
+    }
+
+    .nova-data-selector {
+        .v-list-subheader__text {
+            color: black;
+            font-weight: 500;
+        }
+
+        .v-list-item {
+            padding-left: 0;
+        }
+
+        .v-list-subheader__text,
+        .v-list-item-title {
+            font-size: 0.75rem !important;
+        }
+
+        .v-data-table__td {
+            max-width: 100px;
+            overflow: hidden;
+            padding: 0 !important;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .v-data-table-footer {
+            justify-content: center;
+
+            .v-data-table-footer__items-per-page,
+            .v-data-table-footer__info {
+                display: none;
+            }
+        }
+    }
+
+    .v-data-table {
+        th, td {
+            vertical-align: middle;
+        }
+
+        .v-divider {
+            margin: 0;
+        }
     }
 
     .nova-remote-file-input {
@@ -106,5 +155,24 @@ html {
 
     .d-grid {
         align-items:center;
+    }
+
+    .v-treeview {
+        .v-list-item {
+            text-align: left;
+
+            .v-list-item__prepend {
+                width: 40px;
+            }
+
+            .v-btn {
+                height: 24px;
+                width: 24px;
+
+                .v-icon {
+                    font-size: 16px;
+                }
+            }
+        }
     }
 }

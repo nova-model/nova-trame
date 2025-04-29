@@ -152,17 +152,23 @@
                     "secondary": "#f48e5c"
                 },
                 "defaults": {
+                    "VAutocomplete": {
+                        "variant": "outlined"
+                    },
                     "VBadge": {
                         "dot": true
                     },
                     "VBtn": {
                         "size": "small"
                     },
-                    "VAutocomplete": {
-                        "variant": "outlined"
-                    },
                     "VCombobox": {
                         "variant": "outlined"
+                    },
+                    "VDataTable": {
+                        "density": "compact"
+                    },
+                    "VDataTableVirtual": {
+                        "density": "compact"
                     },
                     "VFileInput": {
                         "variant": "outlined"
@@ -175,9 +181,12 @@
                     },
                     "VTextField": {
                         "VBtn": {
-                            "size": "small"
+                            "size": "default"
                         },
                         "variant": "outlined"
+                    },
+                    "VTreeview": {
+                        "density": "compact"
                     }
                 },
                 "title": "Compact",

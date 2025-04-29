@@ -40,6 +40,10 @@ View Components
     :members:
     :special-members: __init__
 
+.. autoclass:: nova.trame.view.components.DataSelector
+    :members:
+    :special-members: __init__
+
 .. _api_interactive2dplot:
 
 .. autoclass:: nova.trame.view.components.visualization.Interactive2DPlot
