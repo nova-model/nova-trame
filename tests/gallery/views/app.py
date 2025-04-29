@@ -21,10 +21,11 @@ from vega_datasets import data
 
 from nova.mvvm.trame_binding import TrameBinding
 from nova.trame import ThemedApp
-from nova.trame.view.components import FileUpload, InputField, RemoteFileInput
+from nova.trame.view.components import DataSelector, FileUpload, InputField, RemoteFileInput
 from nova.trame.view.components.visualization import Interactive2DPlot, MatplotlibFigure
 from nova.trame.view.layouts import GridLayout, HBoxLayout, VBoxLayout
 
+from ..view_models.data_selector import DataSelectorVM
 from ..view_models.file_upload import FileUploadVM
 
 logger = logging.getLogger(__name__)
@@ -128,6 +129,10 @@ class App(ThemedApp):
 
     def create_state(self) -> None:
         binding = TrameBinding(self.state)
+
+        self.data_selector_vm = DataSelectorVM(binding)
+        self.data_selector_vm.model_bind.connect("data_selector")
+
         self.file_upload_vm = FileUploadVM(binding)
         self.file_upload_vm.model_bind.connect("file_upload")
 
@@ -312,6 +317,10 @@ class App(ThemedApp):
                             vuetify.VTab("Tab 1")
                             vuetify.VTab("Tab 2")
                             vuetify.VTab("Tab 3")
+
+                    vuetify.VCardTitle("Data Selection Widgets")
+                    with html.Div(classes="border-md text-left", style="height: 650px;"):
+                        DataSelector(v_model="data_selector.selected_files", chips=True)
 
                     vuetify.VCardTitle("Form Inputs & Controls")
                     with GridLayout(columns=3, valign="center"):
