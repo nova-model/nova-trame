@@ -21,7 +21,7 @@ class DataSelectorViewModel:
         self.datafiles_bind = binding.new_bind()
         self.reset_bind = binding.new_bind()
 
-    def set_directory(self, directory_path: str) -> None:
+    def set_directory(self, directory_path: str = "") -> None:
         self.model.set_directory(directory_path)
         self.update_view()
 

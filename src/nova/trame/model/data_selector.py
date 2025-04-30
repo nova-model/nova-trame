@@ -69,6 +69,7 @@ class DataSelectorState(BaseModel, validate_assignment=True):
     instrument: str = Field(default="", title="Instrument")
     experiment: str = Field(default="", title="Experiment")
     directory: str = Field(default="")
+    extensions: List[str] = Field(default=[])
     prefix: str = Field(default="")
 
     @field_validator("experiment", mode="after")
@@ -101,10 +102,11 @@ class DataSelectorState(BaseModel, validate_assignment=True):
 class DataSelectorModel:
     """Manages file system interactions for the DataSelector widget."""
 
-    def __init__(self, facility: str, instrument: str, prefix: str) -> None:
+    def __init__(self, facility: str, instrument: str, extensions: List[str], prefix: str) -> None:
         self.state = DataSelectorState()
         self.state.facility = facility
         self.state.instrument = instrument
+        self.state.extensions = extensions
         self.state.prefix = prefix
 
     def get_facilities(self) -> List[str]:
@@ -192,7 +194,12 @@ class DataSelectorModel:
 
             for entry in os.scandir(datafile_path):
                 if entry.is_file():
-                    datafiles.append(entry.path)
+                    if self.state.extensions:
+                        for extension in self.state.extensions:
+                            if entry.path.lower().endswith(extension):
+                                datafiles.append(entry.path)
+                    else:
+                        datafiles.append(entry.path)
         except OSError:
             pass
 

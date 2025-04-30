@@ -1,6 +1,6 @@
 """View Implementation for DataSelector."""
 
-from typing import Any, Optional, cast
+from typing import Any, List, Optional, cast
 
 from trame.app import get_server
 from trame.widgets import client, html
@@ -24,6 +24,7 @@ class DataSelector(vuetify.VDataTableVirtual):
         v_model: str,
         facility: str = "",
         instrument: str = "",
+        extensions: Optional[List[str]] = None,
         prefix: str = "",
         select_strategy: str = "all",
         **kwargs: Any,
@@ -39,6 +40,8 @@ class DataSelector(vuetify.VDataTableVirtual):
             The facility to restrict data selection to. Options: HFIR, SNS
         instrument : str, optional
             The instrument to restrict data selection to. Please use the instrument acronym (e.g. CG-2).
+        extensions : List[str], optional
+            A list of file extensions to restrict selection to. If unset, then all files will be shown.
         prefix : str, optional
             A subdirectory within the user's chosen experiment to show files. If not specified, the user will be shown a
             folder browser and will be able to see all files in the experiment that they have access to.
@@ -62,6 +65,7 @@ class DataSelector(vuetify.VDataTableVirtual):
             self._label = None
 
         self._v_model = v_model
+        self._extensions = extensions if extensions is not None else []
         self._prefix = prefix
         self._select_strategy = select_strategy
 
@@ -151,7 +155,7 @@ class DataSelector(vuetify.VDataTableVirtual):
                     )
 
     def create_model(self, facility: str, instrument: str) -> None:
-        self._model = DataSelectorModel(facility, instrument, self._prefix)
+        self._model = DataSelectorModel(facility, instrument, self._extensions, self._prefix)
 
     def create_viewmodel(self) -> None:
         server = get_server(None, client_type="vue3")

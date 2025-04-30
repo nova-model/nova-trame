@@ -19,8 +19,9 @@ def test_data_selector() -> None:
         def create_ui(self) -> None:
             with super().create_ui() as layout:
                 with layout.content:
-                    input = DataSelector(v_model="test")
+                    input = DataSelector(v_model="test", extensions=[".tiff"])
                     assert input.v_model == "test"
+                    assert input._extensions == [".tiff"]
                     assert input._model.state.facility == ""
                     assert input._model.state.instrument == ""
                     assert input._model.state.experiment == ""
