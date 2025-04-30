@@ -1,3 +1,11 @@
+### nova-trame, 0.19.1
+
+* DataSelector now has an additional parameter `extensions` for restricting the selectable datafiles to a list of file extensions (thanks to John Duggan).
+
+### nova-trame, 0.19.0
+
+* You can now use `nova.trame.view.components.DataSelector` to allow the user to select a list of data files from the analysis cluster (thanks to John Duggan).
+
 ### nova-trame, 0.18.2
 
 * Passing a string to the style parameter to GridLayout, HBoxLayout, and VBoxLayout will no longer cause Trame to crash (thanks to John Duggan).
