@@ -290,7 +290,7 @@ class InputField:
                 )
             ).exec
 
-            @state.change(input.v_model)
+            @state.change(input.v_model.split(".")[0])
             def _autoscroll(**kwargs: Any) -> None:
                 autoscroll(input.id)
 
