@@ -1,10 +1,10 @@
 """Module for the Tool outputs."""
 
-from nova.mvvm.trame_binding import TrameBinding
-from nova.trame.view.components import InputField
 from trame.app import get_server
 from trame.widgets import vuetify3 as vuetify
 
+from nova.mvvm.trame_binding import TrameBinding
+from nova.trame.view.components import InputField
 from nova.trame.view_model.tool_outputs import ToolOutputsViewModel
 
 
@@ -18,11 +18,11 @@ class ToolOutputWindows:
         ----------
         id : str
             Component id. Should be used consistently with ToolRunner and other components
+
         Returns
         -------
         None
         """
-
         self.id = f"tool_outputs_{id}"
         self.create_viewmodel(id)
         self.view_model.tool_outputs_bind.connect(self.id)

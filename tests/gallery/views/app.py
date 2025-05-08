@@ -1,17 +1,15 @@
 """Creates the UI for the widget gallery."""
+
 import json
 import logging
 from asyncio import create_task
 from pathlib import Path
-from typing import cast, Any
+from typing import Any, cast
 
 import blinker
 import numpy as np
 from altair import Chart, X, Y, selection_interval
 from matplotlib.figure import Figure
-from nova.common.job import WorkState, ToolOutputs
-from nova.common.signals import get_signal_id, Signal, ToolCommand
-from nova.mvvm.trame_binding import TrameBinding
 from pydantic import BaseModel, Field, field_validator
 from trame.app import get_server
 from trame.decorators import TrameApp
@@ -22,6 +20,9 @@ from trame_server.core import Server
 from trame_server.state import State
 from vega_datasets import data
 
+from nova.common.job import ToolOutputs, WorkState
+from nova.common.signals import Signal, ToolCommand, get_signal_id
+from nova.mvvm.trame_binding import TrameBinding
 from nova.trame import ThemedApp
 from nova.trame.view.components import DataSelector, FileUpload, InputField, RemoteFileInput
 from nova.trame.view.components.execution_buttons import ExecutionButtons
@@ -29,6 +30,7 @@ from nova.trame.view.components.progress_bar import ProgressBar
 from nova.trame.view.components.tool_outputs import ToolOutputWindows
 from nova.trame.view.components.visualization import Interactive2DPlot, MatplotlibFigure
 from nova.trame.view.layouts import GridLayout, HBoxLayout, VBoxLayout
+
 from ..view_models.data_selector import DataSelectorVM
 from ..view_models.file_upload import FileUploadVM
 
@@ -137,16 +139,14 @@ class App(ThemedApp):
         outputs_signal = blinker.signal(get_signal_id("test", Signal.OUTPUTS))
 
         if command == ToolCommand.START:
-            await progress_signal.send_async(
-                "test_sender", state=WorkState.RUNNING, details="")
+            await progress_signal.send_async("test_sender", state=WorkState.RUNNING, details="")
             await outputs_signal.send_async(
-                "test_sender", outputs=ToolOutputs(stdout="test_output", stderr="test_error"))
+                "test_sender", outputs=ToolOutputs(stdout="test_output", stderr="test_error")
+            )
 
-            await progress_signal.send_async(
-                "test_sender", state=WorkState.RUNNING, details="")
+            await progress_signal.send_async("test_sender", state=WorkState.RUNNING, details="")
         else:
-            await progress_signal.send_async(
-                "test_sender", state=WorkState.FINISHED, details="")
+            await progress_signal.send_async("test_sender", state=WorkState.FINISHED, details="")
 
     def create_state(self) -> None:
         binding = TrameBinding(self.state)
@@ -192,9 +192,9 @@ class App(ThemedApp):
                 ProgressBar("test")
             with layout.content:
                 with vuetify.VCard(
-                        classes="align-center d-flex flex-column text-center",
-                        subtitle="This page is for visual testing of this theming package.",
-                        title="Widget Gallery",
+                    classes="align-center d-flex flex-column text-center",
+                    subtitle="This page is for visual testing of this theming package.",
+                    title="Widget Gallery",
                 ):
                     vuetify.VCardTitle("Layouts")
                     html.P("GridLayout")
@@ -435,9 +435,9 @@ class App(ThemedApp):
                         vuetify.VProgressCircular(indeterminate=True)
                         vuetify.VProgressLinear(indeterminate=True)
                         with vuetify.VSnackbar(
-                                "Snackbar",
-                                v_model="snackbar",
-                                timeout=-1,
+                            "Snackbar",
+                            v_model="snackbar",
+                            timeout=-1,
                         ):
                             with vuetify.Template(v_slot_actions=True):
                                 vuetify.VBtn("Close", click="snackbar = false")

@@ -1,11 +1,11 @@
 """Module for the Progress Tab."""
 
-from nova.mvvm.trame_binding import TrameBinding
 from trame.app import get_server
 from trame.widgets import client
 from trame.widgets import vuetify3 as vuetify
 from trame_client.widgets import html
 
+from nova.mvvm.trame_binding import TrameBinding
 from nova.trame.view_model.execution_buttons import ExecutionButtonsViewModel
 
 
@@ -23,11 +23,11 @@ class ExecutionButtons:
             Display stop button.
         download_btn : bool
             Display download button.
+
         Returns
         -------
         None
         """
-
         self.id = f"execution_{id}"
 
         self.server = get_server(None, client_type="vue3")

@@ -4,10 +4,11 @@ import asyncio
 from typing import Any, Optional
 
 import blinker
+from pydantic import BaseModel
+
 from nova.common.job import WorkState
 from nova.common.signals import Signal, ToolCommand, get_signal_id
 from nova.mvvm.interface import BindingInterface
-from pydantic import BaseModel
 
 
 def job_running(status: WorkState) -> bool:

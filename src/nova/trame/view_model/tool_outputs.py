@@ -3,6 +3,7 @@
 from typing import Any
 
 import blinker
+
 from nova.common.job import ToolOutputs
 from nova.common.signals import Signal, get_signal_id
 from nova.mvvm.interface import BindingInterface

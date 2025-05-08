@@ -3,10 +3,11 @@
 from typing import Any
 
 import blinker
+from pydantic import BaseModel
+
 from nova.common.job import WorkState
 from nova.common.signals import Signal, get_signal_id
 from nova.mvvm.interface import BindingInterface
-from pydantic import BaseModel
 
 
 def details_from_state(state: WorkState) -> str:
