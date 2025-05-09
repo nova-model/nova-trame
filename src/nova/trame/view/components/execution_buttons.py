@@ -62,6 +62,7 @@ class ExecutionButtons:
                 disabled=(f"{self.id}.run_disabled",),
                 prepend_icon="mdi-play",
                 classes="mr-4",
+                id=f"{self.id}_run",
                 click=self.run,
             )
             if self.stop_btn:
@@ -70,6 +71,7 @@ class ExecutionButtons:
                     disabled=(f"{self.id}.stop_disabled",),
                     loading=(f"{self.id}.stop_in_progress",),
                     classes="mr-4",
+                    id=f"{self.id}_stop",
                     prepend_icon="mdi-stop",
                     click=self.stop,
                 )
@@ -80,6 +82,7 @@ class ExecutionButtons:
                 loading=(f"{self.id}.cancel_in_progress",),
                 prepend_icon="mdi-cancel",
                 classes="mr-4",
+                id=f"{self.id}_cancel",
                 click=self.cancel,
             )
             if self.download_btn:
@@ -87,6 +90,7 @@ class ExecutionButtons:
                     "Download Results",
                     disabled=(f"{self.id}.download_disabled",),
                     loading=(f"{self.id}.download_in_progress",),
+                    id=f"{self.id}.download",
                     click=self.download,
                 )
 

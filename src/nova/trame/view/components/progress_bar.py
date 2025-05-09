@@ -38,6 +38,7 @@ class ProgressBar:
             height="25",
             model_value=(f"{self.id}.progress", "0"),
             striped=True,
+            id=f"{self.id}_show_progress",
             v_show=(f"{self.id}.show_progress",),
         ):
             html.H5(v_text=f"{self.id}.details")
@@ -46,6 +47,7 @@ class ProgressBar:
             model_value="100",
             striped=False,
             color="error",
+            id=f"{self.id}_show_failed",
             v_show=(f"{self.id}.show_failed",),
         ):
             html.H5(v_text=f"{self.id}.details", classes="text-white")
@@ -54,6 +56,7 @@ class ProgressBar:
             model_value="100",
             striped=False,
             color="primary",
+            id=f"{self.id}_show_ok",
             v_show=(f"{self.id}.show_ok",),
         ):
             html.H5(v_text=f"{self.id}.details", classes="text-white")
