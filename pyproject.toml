@@ -6,7 +6,7 @@ Changelog = "https://code.ornl.gov/ndip/public-packages/nova-trame/blob/main/CHA
 
 [tool.poetry]
 name = "nova-trame"
-version = "0.19.2"
+version = "0.20.0"
 description = "A Python Package for injecting curated themes and custom components into Trame applications"
 authors = ["Duggan, John <dugganjw@ornl.gov>"]
 readme = "README.md"
@@ -28,6 +28,8 @@ trame-vega = "*"
 trame-vuetify = "*"
 nova-mvvm = "*"
 pydantic = "*"
+nova-common = ">=0.2.0"
+blinker = "^1.9.0"
 
 [build-system]
 requires = ["poetry-core"]
@@ -84,7 +86,7 @@ omit = [
 command_line = "-m pytest --junit-xml=reports/junit.xml"
 data_file = "reports/.coverage"
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.dev.dependencies]
 mypy = "^1.10.0"
 pre-commit = "^2.20.0"
 coverage = "^6.4.3"
