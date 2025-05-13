@@ -130,10 +130,14 @@ html {
         min-width: 0px !important;
         padding: 5px 5px !important;
         box-shadow: none !important;
-    }
 
-    .v-btn__content {
-        text-transform: none;
+        .v-btn__content {
+            text-transform: none;
+        }
+
+        .v-btn__prepend {
+            margin-left: 1px;
+        }
     }
 
     .v-label {
@@ -143,6 +147,10 @@ html {
     .v-field__input {
         min-height: 30px;
         padding: 5px;
+    }
+
+    textarea.v-field__input {
+        mask-image: none !important;
     }
 
     .v-field {
