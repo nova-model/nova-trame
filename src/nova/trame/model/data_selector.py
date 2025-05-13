@@ -54,23 +54,17 @@ INSTRUMENTS = {
 }
 
 
-def get_facilities() -> List[str]:
-    return list(INSTRUMENTS.keys())
-
-
-def get_instruments(facility: str) -> List[str]:
-    return list(INSTRUMENTS.get(facility, {}).keys())
-
-
 class DataSelectorState(BaseModel, validate_assignment=True):
     """Selection state for identifying datafiles."""
 
     facility: str = Field(default="", title="Facility")
     instrument: str = Field(default="", title="Instrument")
     experiment: str = Field(default="", title="Experiment")
+    user_directory: str = Field(default="", title="User Directory")
     directory: str = Field(default="")
     extensions: List[str] = Field(default=[])
     prefix: str = Field(default="")
+    show_user_directories: bool = Field(default=False)
 
     @field_validator("experiment", mode="after")
     @classmethod
@@ -81,11 +75,11 @@ class DataSelectorState(BaseModel, validate_assignment=True):
 
     @model_validator(mode="after")
     def validate_state(self) -> Self:
-        valid_facilities = get_facilities()
+        valid_facilities = self.get_facilities()
         if self.facility and self.facility not in valid_facilities:
             warn(f"Facility '{self.facility}' could not be found. Valid options: {valid_facilities}", stacklevel=1)
 
-        valid_instruments = get_instruments(self.facility)
+        valid_instruments = self.get_instruments()
         if self.instrument and self.instrument not in valid_instruments:
             warn(
                 (
@@ -98,25 +92,37 @@ class DataSelectorState(BaseModel, validate_assignment=True):
 
         return self
 
+    def get_facilities(self) -> List[str]:
+        facilities = list(INSTRUMENTS.keys())
+        if self.show_user_directories:
+            facilities.append("User Directory")
+        return facilities
+
+    def get_instruments(self) -> List[str]:
+        return list(INSTRUMENTS.get(self.facility, {}).keys())
+
 
 class DataSelectorModel:
     """Manages file system interactions for the DataSelector widget."""
 
-    def __init__(self, facility: str, instrument: str, extensions: List[str], prefix: str) -> None:
+    def __init__(
+        self, facility: str, instrument: str, extensions: List[str], prefix: str, show_user_directories: bool
+    ) -> None:
         self.state = DataSelectorState()
         self.state.facility = facility
         self.state.instrument = instrument
         self.state.extensions = extensions
         self.state.prefix = prefix
+        self.state.show_user_directories = show_user_directories
 
     def get_facilities(self) -> List[str]:
-        return sorted(get_facilities())
+        return sorted(self.state.get_facilities())
 
     def get_instrument_dir(self) -> str:
         return INSTRUMENTS.get(self.state.facility, {}).get(self.state.instrument, "")
 
     def get_instruments(self) -> List[str]:
-        return sorted(get_instruments(self.state.facility))
+        return sorted(self.state.get_instruments())
 
     def get_experiments(self) -> List[str]:
         experiments = []
@@ -142,17 +148,32 @@ class DataSelectorModel:
 
         return sorted_dirs
 
-    def get_directories(self) -> List[Any]:
+    def get_experiment_directory_path(self) -> Optional[Path]:
         if not self.state.experiment:
+            return None
+
+        return Path("/") / self.state.facility / self.get_instrument_dir() / self.state.experiment
+
+    def get_user_directory_path(self) -> Optional[Path]:
+        if not self.state.user_directory:
+            return None
+
+        return Path("/SNS/users") / self.state.user_directory
+
+    def get_directories(self) -> List[str]:
+        if self.state.facility == "User Directory":
+            base_path = self.get_user_directory_path()
+        else:
+            base_path = self.get_experiment_directory_path()
+
+        if not base_path:
             return []
 
         directories = []
-
-        experiment_path = Path("/") / self.state.facility / self.get_instrument_dir() / self.state.experiment
         try:
-            for dirpath, _, _ in os.walk(experiment_path):
+            for dirpath, _, _ in os.walk(base_path):
                 # Get the relative path from the start path
-                path_parts = os.path.relpath(dirpath, experiment_path).split(os.sep)
+                path_parts = os.path.relpath(dirpath, base_path).split(os.sep)
 
                 # Only create a new entry for top-level directories
                 if len(path_parts) == 1 and path_parts[0] != ".":  # This indicates a top-level directory
