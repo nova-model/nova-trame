@@ -44,6 +44,18 @@ View Components
     :members:
     :special-members: __init__
 
+.. autoclass:: nova.trame.view.components.ExecutionButtons
+    :members:
+    :special-members: __init__
+
+.. autoclass:: nova.trame.view.components.ProgressBar
+    :members:
+    :special-members: __init__
+
+.. autoclass:: nova.trame.view.components.ToolOutputWindows
+    :members:
+    :special-members: __init__
+
 .. _api_interactive2dplot:
 
 .. autoclass:: nova.trame.view.components.visualization.Interactive2DPlot
