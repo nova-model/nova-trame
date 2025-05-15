@@ -10,7 +10,10 @@ from nova.trame.view_model.tool_outputs import ToolOutputsViewModel
 
 
 class ToolOutputWindows:
-    """Tool outputs class. Displays windows with tool stdout/stderr."""
+    """Tool outputs class. Displays windows with tool stdout/stderr.
+
+    This is intended to be used with the `nova-galaxy ToolRunner <https://nova-application-development.readthedocs.io/projects/nova-galaxy/en/latest/core_concepts/tool_runner.html>`__.
+    """
 
     def __init__(self, id: str) -> None:
         """Constructor for ToolOutputWindows.

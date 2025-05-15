@@ -10,7 +10,10 @@ from nova.trame.view_model.execution_buttons import ExecutionButtonsViewModel
 
 
 class ExecutionButtons:
-    """Execution buttons class. Adds Run/Stop/Cancel/Download buttons to the view."""
+    """Execution buttons class. Adds Run/Stop/Cancel/Download buttons to the view.
+
+    This is intended to be used with the `nova-galaxy ToolRunner <https://nova-application-development.readthedocs.io/projects/nova-galaxy/en/latest/core_concepts/tool_runner.html>`__.
+    """
 
     def __init__(self, id: str, stop_btn: bool = False, download_btn: bool = False) -> None:
         """Constructor for ExecutionButtons.
@@ -18,7 +21,7 @@ class ExecutionButtons:
         Parameters
         ----------
         id : str
-            Component id. Should be used consistently with ToolRunner and other components
+            Component id. Should be used consistently with ToolRunner and other components.
         stop_btn: bool
             Display stop button.
         download_btn : bool
