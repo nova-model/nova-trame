@@ -1,3 +1,11 @@
+### nova-trame, 0.20.0
+
+* Three new components are available: ExecutionButtons, ProgressBar, and ToolOutputWindows. These components allow you to quickly add widgets to your UI for running and monitoring jobs (thanks to Sergey Yakubov).
+
+### nova-trame, 0.19.2
+
+* InputFields using type=autoscroll now work with nested state variables (thanks to John Duggan).
+
 ### nova-trame, 0.19.1
 
 * DataSelector now has an additional parameter `extensions` for restricting the selectable datafiles to a list of file extensions (thanks to John Duggan).
