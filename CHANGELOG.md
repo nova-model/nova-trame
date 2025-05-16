@@ -1,3 +1,7 @@
+### nova-trame, 0.20.1
+
+* DataSelector now supports a `show_user_directories` flag that will allow users to choose datafiles from user directories (thanks to John Duggan).
+
 ### nova-trame, 0.20.0
 
 * Three new components are available: ExecutionButtons, ProgressBar, and ToolOutputWindows. These components allow you to quickly add widgets to your UI for running and monitoring jobs (thanks to Sergey Yakubov).

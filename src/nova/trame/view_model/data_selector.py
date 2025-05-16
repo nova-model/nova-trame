@@ -29,17 +29,23 @@ class DataSelectorViewModel:
         self.model.set_state(facility, instrument, experiment)
         self.update_view()
 
+    def reset(self) -> None:
+        self.model.set_directory("")
+        self.reset_bind.update_in_view(None)
+
     def on_state_updated(self, results: Dict[str, Any]) -> None:
         for update in results.get("updated", []):
             match update:
                 case "facility":
                     self.model.set_state(facility=None, instrument="", experiment="")
-                    self.model.set_directory("")
-                    self.reset_bind.update_in_view(None)
+                    self.reset()
                 case "instrument":
                     self.model.set_state(facility=None, instrument=None, experiment="")
-                    self.model.set_directory("")
-                    self.reset_bind.update_in_view(None)
+                    self.reset()
+                case "experiment":
+                    self.reset()
+                case "user_directory":
+                    self.reset()
         self.update_view()
 
     def update_view(self) -> None:

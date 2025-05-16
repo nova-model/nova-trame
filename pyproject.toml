@@ -6,7 +6,7 @@ Changelog = "https://code.ornl.gov/ndip/public-packages/nova-trame/blob/main/CHA
 
 [tool.poetry]
 name = "nova-trame"
-version = "0.20.0"
+version = "0.20.1"
 description = "A Python Package for injecting curated themes and custom components into Trame applications"
 authors = ["Duggan, John <dugganjw@ornl.gov>"]
 readme = "README.md"
