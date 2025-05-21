@@ -4,7 +4,7 @@ from typing import Any, List, Optional, cast
 from warnings import warn
 
 from trame.app import get_server
-from trame.widgets import client, html
+from trame.widgets import client, datagrid, html
 from trame.widgets import vuetify3 as vuetify
 
 from nova.mvvm.trame_binding import TrameBinding
@@ -17,7 +17,7 @@ from .input_field import InputField
 vuetify.enable_lab()
 
 
-class DataSelector(vuetify.VDataTableVirtual):
+class DataSelector(datagrid.VGrid):
     """Allows the user to select datafiles from an IPTS experiment."""
 
     def __init__(
@@ -137,18 +137,26 @@ class DataSelector(vuetify.VDataTableVirtual):
 
                 super().__init__(
                     v_model=self._v_model,
-                    classes="h-100 overflow-y-auto",
-                    fixed_header=True,
-                    headers=("[{ align: 'left', key: 'title', title: 'Available Datafiles' }]",),
-                    item_title="title",
-                    item_value="path",
-                    select_strategy=self._select_strategy,
-                    show_select=True,
+                    can_focus=False,
+                    columns=(
+                        "[{"
+                        "    cellTemplate: (createElement, props) => window.rvCellTemplate(createElement, props),"
+                        "    columnTemplate: (createElement, props) => window.rvColumnTemplate(createElement, props),"
+                        f"   datafiles_key: '{self._datafiles_name}',"
+                        f"   model_key: '{self._v_model}',"
+                        "    name: 'Available Datafiles',"
+                        "    prop: 'title'"
+                        "}]",
+                    ),
+                    hide_attribution=True,
+                    readonly=True,
+                    stretch=True,
+                    source=(self._datafiles_name,),
+                    theme="compact",
                     **kwargs,
                 )
                 if self._label:
                     self.label = self._label
-                self.items = (self._datafiles_name,)
                 if "update_modelValue" not in kwargs:
                     self.update_modelValue = self._flush_state
 

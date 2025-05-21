@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Any, List, Optional
 from warnings import warn
 
+from natsort import natsorted
 from pydantic import BaseModel, Field, field_validator, model_validator
 from typing_extensions import Self
 
@@ -116,13 +117,13 @@ class DataSelectorModel:
         self.state.show_user_directories = show_user_directories
 
     def get_facilities(self) -> List[str]:
-        return sorted(self.state.get_facilities())
+        return natsorted(self.state.get_facilities())
 
     def get_instrument_dir(self) -> str:
         return INSTRUMENTS.get(self.state.facility, {}).get(self.state.instrument, "")
 
     def get_instruments(self) -> List[str]:
-        return sorted(self.state.get_instruments())
+        return natsorted(self.state.get_instruments())
 
     def get_experiments(self) -> List[str]:
         experiments = []
@@ -135,11 +136,11 @@ class DataSelectorModel:
         except OSError:
             pass
 
-        return sorted(experiments)
+        return natsorted(experiments)
 
     def sort_directories(self, directories: List[Any]) -> List[Any]:
         # Sort the current level of dictionaries
-        sorted_dirs = sorted(directories, key=lambda x: x["title"])
+        sorted_dirs = natsorted(directories, key=lambda x: x["title"])
 
         # Process each sorted item to sort their children
         for item in sorted_dirs:
@@ -158,7 +159,7 @@ class DataSelectorModel:
         if not self.state.user_directory:
             return None
 
-        return Path("/SNS/users") / self.state.user_directory
+        return Path("/SNS/users") / self.state.user_directory / "nova"
 
     def get_directories(self) -> List[str]:
         if self.state.facility == "User Directory":
@@ -224,7 +225,7 @@ class DataSelectorModel:
         except OSError:
             pass
 
-        return sorted(datafiles)
+        return natsorted(datafiles)
 
     def set_directory(self, directory_path: str) -> None:
         self.state.directory = directory_path

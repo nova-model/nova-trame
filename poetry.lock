@@ -1559,6 +1559,22 @@ pyspark-connect = ["pyspark[connect] (>=3.5.0)"]
 sqlframe = ["sqlframe (>=3.22.0)"]
 
 [[package]]
+name = "natsort"
+version = "8.4.0"
+description = "Simple yet flexible natural sorting in Python."
+optional = false
+python-versions = ">=3.7"
+groups = ["main"]
+files = [
+    {file = "natsort-8.4.0-py3-none-any.whl", hash = "sha256:4732914fb471f56b5cce04d7bae6f164a592c7712e1c85f9ef585e197299521c"},
+    {file = "natsort-8.4.0.tar.gz", hash = "sha256:45312c4a0e5507593da193dedd04abb1469253b601ecaf63445ad80f0a1ea581"},
+]
+
+[package.extras]
+fast = ["fastnumbers (>=2.0.0)"]
+icu = ["PyICU (>=1.0.0)"]
+
+[[package]]
 name = "nodeenv"
 version = "1.9.1"
 description = "Node.js virtual environment builder"
@@ -3382,4 +3398,4 @@ propcache = ">=0.2.1"
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<4.0"
-content-hash = "928d2f9b4435bebdc59a8b590ec2afb95379253c8b28d9ba5f5bad75b4fb0f3d"
+content-hash = "91e8e1d24d36005c14cd33cb029fdb422626ec28ab50005ff22ca07f642ae839"
