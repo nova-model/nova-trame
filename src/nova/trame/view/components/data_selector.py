@@ -79,6 +79,7 @@ class DataSelector(datagrid.VGrid):
         self._select_strategy = select_strategy
         self._show_user_directories = show_user_directories
 
+        self._revogrid_id = f"nova__dataselector_{self._next_id}_rv"
         self._state_name = f"nova__dataselector_{self._next_id}_state"
         self._facilities_name = f"nova__dataselector_{self._next_id}_facilities"
         self._instruments_name = f"nova__dataselector_{self._next_id}_instruments"
@@ -87,6 +88,9 @@ class DataSelector(datagrid.VGrid):
         self._datafiles_name = f"nova__dataselector_{self._next_id}_datafiles"
 
         self._flush_state = f"flushState('{self._v_model_name_in_state}');"
+        self._reset_rv_grid = client.JSEval(
+            exec=f"window.rvUpdateCheckboxes('{self._v_model}', '{self._datafiles_name}')"
+        ).exec
         self._reset_state = client.JSEval(exec=f"{self._v_model} = []; {self._flush_state}").exec
 
         self.create_model(facility, instrument)
@@ -145,10 +149,13 @@ class DataSelector(datagrid.VGrid):
                         f"   datafiles_key: '{self._datafiles_name}',"
                         f"   model_key: '{self._v_model}',"
                         "    name: 'Available Datafiles',"
-                        "    prop: 'title'"
+                        "    prop: 'title',"
+                        f"   state_key: '{self._v_model_name_in_state}',"
                         "}]",
                     ),
+                    frame_size=10,
                     hide_attribution=True,
+                    id=self._revogrid_id,
                     readonly=True,
                     stretch=True,
                     source=(self._datafiles_name,),
@@ -159,6 +166,12 @@ class DataSelector(datagrid.VGrid):
                     self.label = self._label
                 if "update_modelValue" not in kwargs:
                     self.update_modelValue = self._flush_state
+
+                # Sets up some JavaScript event handlers when the component is mounted.
+                with self:
+                    client.ClientTriggers(
+                        mounted=f"window.rvOnMount('{self._revogrid_id}', '{self._v_model}', '{self._datafiles_name}');"
+                    )
 
             with cast(
                 vuetify.VSelect,
@@ -199,6 +212,7 @@ class DataSelector(datagrid.VGrid):
 
     def reset(self, _: Any = None) -> None:
         self._reset_state()
+        self._reset_rv_grid()
 
     def set_state(
         self, facility: Optional[str] = None, instrument: Optional[str] = None, experiment: Optional[str] = None
