@@ -159,6 +159,8 @@ class DataSelectorModel:
         if not self.state.user_directory:
             return None
 
+        # We don't want to pull all user directory content as there can be an extremely large amount of content.
+        # To deal with this, we make an assumption that anything the user wants exposed is placed in the nova directory.
         return Path("/SNS/users") / self.state.user_directory / "nova"
 
     def get_directories(self) -> List[str]:

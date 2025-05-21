@@ -1,82 +1,107 @@
-window.rvOnMount = function(id, modelKey, dataKey) {
-    const grid = document.querySelector(`#${id}`)
-    grid.addEventListener('viewportscroll', () => {
-        window.rvUpdateCheckboxes(modelKey, dataKey)
-    })
-}
+class RevoGrid {
+    constructor(id, modelKey, dataKey, stateKey) {
+        this.id = id
+        this.modelKey = modelKey
+        this.dataKey = dataKey
+        this.stateKey = stateKey
 
-window.rvUpdateCheckboxes = function(modelKey, dataKey) {
-    const trameState = window.trame.state.state
-    const modelValue = _.get(trameState, modelKey)
-    const availableData = _.get(trameState, dataKey)
-    const selectAllCheckbox = document.querySelector(".header-content input")
-    const rowCheckboxes = document.querySelectorAll(".rgCell")
-
-    if (selectAllCheckbox === null) {
-        return
+        this.grid = document.querySelector(`#${this.id}`)
+        this.grid.addEventListener('viewportscroll', () => {
+            this.updateCheckboxes()
+        })
     }
 
-    if (modelValue.length === 0) {
-        selectAllCheckbox.checked = false
-        selectAllCheckbox.indeterminate = false
-    } else if (modelValue.length === availableData.length) {
-        selectAllCheckbox.checked = true
-        selectAllCheckbox.indeterminate = false
-    } else {
-        selectAllCheckbox.checked = false
-        selectAllCheckbox.indeterminate = true
+    updateCheckboxes() {
+        const trameState = window.trame.state.state
+        const modelValue = _.get(trameState, this.modelKey)
+        const availableData = _.get(trameState, this.dataKey)
+        const selectAllCheckbox = this.grid.querySelector(".header-content input")
+        const rowCheckboxes = this.grid.querySelectorAll(".rgCell")
+
+        if (selectAllCheckbox === null) {
+            return
+        }
+
+        if (modelValue.length === 0) {
+            selectAllCheckbox.checked = false
+            selectAllCheckbox.indeterminate = false
+        } else if (modelValue.length === availableData.length) {
+            selectAllCheckbox.checked = true
+            selectAllCheckbox.indeterminate = false
+        } else {
+            selectAllCheckbox.checked = false
+            selectAllCheckbox.indeterminate = true
+        }
+
+        rowCheckboxes.forEach((element) => {
+            const input = element.querySelector('input')
+
+            const rowIndex = element.dataset.rgrow
+            input.checked = modelValue.includes(availableData[rowIndex].path)
+        })
     }
 
-    rowCheckboxes.forEach((element) => {
-        input = element.querySelector('input')
-        rowIndex = element.dataset.rgrow
-        input.checked = modelValue.includes(availableData[rowIndex].path)
-    })
+    cellTemplate(createElement, props) {
+        const inputVNode = createElement('input', {
+            type: 'checkbox',
+            onChange: (e) => {
+                const trameState = window.trame.state.state
+                const modelValue = _.get(trameState, this.modelKey)
+                const path = props.data[props.rowIndex].path
+                const index = modelValue.indexOf(path)
+
+                // We need to assign instead of modifying in place in order for the Trame watcher to pick up changes.
+                if (e.target.checked && index < 0) {
+                    _.set(trameState, this.modelKey, _.concat(modelValue, path))
+                } else if (index >= 0) {
+                    _.set(trameState, this.modelKey, modelValue.toSpliced(index, 1))
+                }
+
+                // Update the UI
+                this.updateCheckboxes(this.modelKey, this.dataKey)
+                window.trame.state.dirty(this.stateKey)
+            },
+        })
+
+        return createElement('label', undefined, inputVNode, props.model[props.prop])
+    }
+
+    columnTemplate(createElement) {
+        const inputVNode = createElement('input', {
+            type: 'checkbox',
+            onChange: (e) => {
+                const trameState = window.trame.state.state
+                const availableData = _.get(trameState, this.dataKey)
+
+                if (e.target.checked) {
+                    _.set(trameState, this.modelKey, availableData.map((item) => item.path))
+                } else {
+                    _.set(trameState, this.modelKey, [])
+                }
+
+                // Update the UI
+                this.updateCheckboxes(this.modelKey, this.dataKey)
+                window.trame.state.dirty(this.stateKey)
+            },
+        })
+
+        console.log(inputVNode)
+        return [inputVNode, 'Available Datafiles']
+    }
 }
 
-window.rvCellTemplate = function(createElement, props) {
-    const inputVNode = createElement('input', {
-        type: 'checkbox',
-        onChange: (e) => {
-            const trameState = window.trame.state.state
-            const modelValue = _.get(trameState, props.column.model_key)
-            const path = props.data[props.rowIndex].path
-            const index = modelValue.indexOf(path)
+class RevoGridManager {
+    constructor() {
+        this.grids = {}
+    }
 
-            // We need to assign instead of modifying in place in order for the Trame watcher to pick up changes.
-            if (e.target.checked && index < 0) {
-                _.set(trameState, props.column.model_key, _.concat(modelValue, path))
-            } else if (index >= 0) {
-                _.set(trameState, props.column.model_key, modelValue.toSpliced(index, 1))
-            }
+    add(id, modelKey, dataKey, stateKey) {
+        this.grids[id] = new RevoGrid(id, modelKey, dataKey, stateKey)
+    }
 
-            // Update the UI
-            window.rvUpdateCheckboxes(props.column.model_key, props.column.datafiles_key)
-            window.trame.state.dirty(props.column.state_key)
-        },
-    })
-
-    return createElement('label', undefined, inputVNode, props.model[props.prop])
+    get(id) {
+        return this.grids[id]
+    }
 }
 
-window.rvColumnTemplate = function (createElement, props) {
-    const inputVNode = createElement('input', {
-        type: 'checkbox',
-        onChange: (e) => {
-            const trameState = window.trame.state.state
-            const availableData = _.get(trameState, props.datafiles_key)
-
-            if (e.target.checked) {
-                _.set(trameState, props.model_key, availableData.map((item) => item.path))
-            } else {
-                _.set(trameState, props.model_key, [])
-            }
-
-            // Update the UI
-            window.rvUpdateCheckboxes(props.model_key, props.datafiles_key)
-            window.trame.state.dirty(props.state_key)
-        },
-    })
-
-    return [inputVNode, 'Available Datafiles']
-}
+window.grid_manager = new RevoGridManager()

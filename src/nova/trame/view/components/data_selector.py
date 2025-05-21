@@ -52,7 +52,7 @@ class DataSelector(datagrid.VGrid):
             If unset, the `all` strategy will be used.
         show_user_directories : bool, optional
             Whether or not to allow users to select data files from user directories. Ignored if the facility parameter
-            is set.
+            is set. Please note that the component only looks for a "nova" directory and ignores all other content.
         **kwargs
             All other arguments will be passed to the underlying
             `VDataTable component <https://trame.readthedocs.io/en/latest/trame.widgets.vuetify3.html#trame.widgets.vuetify3.VDataTable>`_.
@@ -89,7 +89,7 @@ class DataSelector(datagrid.VGrid):
 
         self._flush_state = f"flushState('{self._v_model_name_in_state}');"
         self._reset_rv_grid = client.JSEval(
-            exec=f"window.rvUpdateCheckboxes('{self._v_model}', '{self._datafiles_name}')"
+            exec=f"window.grid_manager.get('{self._revogrid_id}').updateCheckboxes()"
         ).exec
         self._reset_state = client.JSEval(exec=f"{self._v_model} = []; {self._flush_state}").exec
 
@@ -144,13 +144,12 @@ class DataSelector(datagrid.VGrid):
                     can_focus=False,
                     columns=(
                         "[{"
-                        "    cellTemplate: (createElement, props) => window.rvCellTemplate(createElement, props),"
-                        "    columnTemplate: (createElement, props) => window.rvColumnTemplate(createElement, props),"
-                        f"   datafiles_key: '{self._datafiles_name}',"
-                        f"   model_key: '{self._v_model}',"
+                        "    cellTemplate: (createElement, props) =>"
+                        f"       window.grid_manager.get('{self._revogrid_id}').cellTemplate(createElement, props),"
+                        "    columnTemplate: (createElement) =>"
+                        f"       window.grid_manager.get('{self._revogrid_id}').columnTemplate(createElement),"
                         "    name: 'Available Datafiles',"
                         "    prop: 'title',"
-                        f"   state_key: '{self._v_model_name_in_state}',"
                         "}]",
                     ),
                     frame_size=10,
@@ -170,7 +169,14 @@ class DataSelector(datagrid.VGrid):
                 # Sets up some JavaScript event handlers when the component is mounted.
                 with self:
                     client.ClientTriggers(
-                        mounted=f"window.rvOnMount('{self._revogrid_id}', '{self._v_model}', '{self._datafiles_name}');"
+                        mounted=(
+                            "window.grid_manager.add("
+                            f"  '{self._revogrid_id}',"
+                            f"  '{self._v_model}',"
+                            f"  '{self._datafiles_name}',"
+                            f"  '{self._v_model_name_in_state}'"
+                            ")"
+                        )
                     )
 
             with cast(
