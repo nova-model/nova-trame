@@ -67,9 +67,9 @@ window.rvColumnTemplate = function (createElement, props) {
             const availableData = _.get(trameState, props.datafiles_key)
 
             if (e.target.checked) {
-                _.set(trameState, 'config.selected_files', availableData.map((item) => item.path))
+                _.set(trameState, props.model_key, availableData.map((item) => item.path))
             } else {
-                _.set(trameState, 'config.selected_files', [])
+                _.set(trameState, props.model_key, [])
             }
 
             // Update the UI
