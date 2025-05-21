@@ -3007,6 +3007,21 @@ dev = ["nox", "pre-commit", "pytest (>=6)", "pytest-cov (>=3)", "ruff"]
 test = ["nox", "pytest (>=6)", "pytest-cov (>=3)"]
 
 [[package]]
+name = "trame-datagrid"
+version = "0.2.1"
+description = "Trame widget for RevoGrid"
+optional = false
+python-versions = "*"
+groups = ["main"]
+files = [
+    {file = "trame-datagrid-0.2.1.tar.gz", hash = "sha256:284cbf294dc4c10b32a9fdfcc15391aee5eeb4fd726733ac83a289b959b344ee"},
+    {file = "trame_datagrid-0.2.1-py3-none-any.whl", hash = "sha256:93ac6aa6213eab9d28ca37762a1ef8cdbf8e61d85a7a25ec48734b007816325f"},
+]
+
+[package.dependencies]
+trame-client = "*"
+
+[[package]]
 name = "trame-matplotlib"
 version = "2.0.3"
 description = "Markdown widget for trame"
@@ -3398,4 +3413,4 @@ propcache = ">=0.2.1"
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<4.0"
-content-hash = "91e8e1d24d36005c14cd33cb029fdb422626ec28ab50005ff22ca07f642ae839"
+content-hash = "6f04613f54e5481ade404734f3e36d1c7b0e4c198b5a01d3394fabcde51d9a94"
