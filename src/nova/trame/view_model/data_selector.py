@@ -46,7 +46,7 @@ class DataSelectorViewModel:
                     self.reset()
                 case "experiment":
                     self.reset()
-                case "user_directory":
+                case "custom_directory":
                     self.reset()
         self.update_view()
 

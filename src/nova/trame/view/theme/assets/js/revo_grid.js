@@ -85,7 +85,6 @@ class RevoGrid {
             },
         })
 
-        console.log(inputVNode)
         return [inputVNode, 'Available Datafiles']
     }
 }
