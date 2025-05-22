@@ -3,7 +3,7 @@
 import json
 import os
 import socketserver
-from asyncio import FIRST_COMPLETED, new_event_loop, set_event_loop, wait
+from asyncio import FIRST_COMPLETED, create_task, new_event_loop, set_event_loop, wait
 from io import BytesIO
 from mimetypes import types_map
 from pathlib import Path
@@ -188,9 +188,9 @@ class MatplotlibFigure(matplotlib.Figure):
                         raise ValueError("unexpected message type: %s", print(msg))
 
             # Forward websocket data in both directions
-            await wait(
-                [ws_forward(ws_server, ws_client), ws_forward(ws_client, ws_server)], return_when=FIRST_COMPLETED
-            )
+            server_to_client = create_task(ws_forward(ws_server, ws_client))
+            client_to_server = create_task(ws_forward(ws_client, ws_server))
+            await wait([server_to_client, client_to_server], return_when=FIRST_COMPLETED)
             await client_session.close()  # Ensure the connection is cleaned up when the Trame client disconnects.
 
             return ws_server
