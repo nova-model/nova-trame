@@ -1,6 +1,10 @@
-### nova-trame, 0.20.2
+### nova-trame, 0.20.3
 
 * Performance of the DataSelector for large numbers of files should be improved (thanks to John Duggan).
+
+### nova-trame, 0.20.2
+
+* Matplotlib figure will no longer raise a TypeError when running on Python >= 3.11 (thanks to John Duggan).
 
 ### nova-trame, 0.20.1
 
