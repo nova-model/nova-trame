@@ -8,7 +8,7 @@ from trame.widgets import client, datagrid, html
 from trame.widgets import vuetify3 as vuetify
 
 from nova.mvvm.trame_binding import TrameBinding
-from nova.trame.model.data_selector import DataSelectorModel
+from nova.trame.model.data_selector import CUSTOM_DIRECTORIES_LABEL, DataSelectorModel
 from nova.trame.view.layouts import GridLayout, VBoxLayout
 from nova.trame.view_model.data_selector import DataSelectorViewModel
 
@@ -75,7 +75,6 @@ class DataSelector(datagrid.VGrid):
         self._v_model = v_model
         self._v_model_name_in_state = v_model.split(".")[0]
         self._allow_custom_directories = allow_custom_directories
-        self._custom_directories_name = "Custom Directory"
         self._extensions = extensions if extensions is not None else []
         self._prefix = prefix
         self._select_strategy = select_strategy
@@ -111,13 +110,13 @@ class DataSelector(datagrid.VGrid):
                 if instrument == "":
                     columns -= 1
                     InputField(
-                        v_if=f"{self._state_name}.facility !== '{self._custom_directories_name}'",
+                        v_if=f"{self._state_name}.facility !== '{CUSTOM_DIRECTORIES_LABEL}'",
                         v_model=f"{self._state_name}.instrument",
                         items=(self._instruments_name,),
                         type="autocomplete",
                     )
                 InputField(
-                    v_if=f"{self._state_name}.facility !== '{self._custom_directories_name}'",
+                    v_if=f"{self._state_name}.facility !== '{CUSTOM_DIRECTORIES_LABEL}'",
                     v_model=f"{self._state_name}.experiment",
                     column_span=columns,
                     items=(self._experiments_name,),

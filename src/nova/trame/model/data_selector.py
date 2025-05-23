@@ -9,6 +9,8 @@ from natsort import natsorted
 from pydantic import BaseModel, Field, field_validator, model_validator
 from typing_extensions import Self
 
+CUSTOM_DIRECTORIES_LABEL = "Custom Directory"
+
 INSTRUMENTS = {
     "HFIR": {
         "CG-1A": "CG1A",
@@ -59,7 +61,6 @@ class DataSelectorState(BaseModel, validate_assignment=True):
     """Selection state for identifying datafiles."""
 
     allow_custom_directories: bool = Field(default=False)
-    custom_directories_name: str = Field(default="Custom Directory")
     facility: str = Field(default="", title="Facility")
     instrument: str = Field(default="", title="Instrument")
     experiment: str = Field(default="", title="Experiment")
@@ -82,11 +83,7 @@ class DataSelectorState(BaseModel, validate_assignment=True):
             warn(f"Facility '{self.facility}' could not be found. Valid options: {valid_facilities}", stacklevel=1)
 
         valid_instruments = self.get_instruments()
-        if (
-            self.instrument
-            and self.facility != self.custom_directories_name
-            and self.instrument not in valid_instruments
-        ):
+        if self.instrument and self.facility != CUSTOM_DIRECTORIES_LABEL and self.instrument not in valid_instruments:
             warn(
                 (
                     f"Instrument '{self.instrument}' could not be found in '{self.facility}'. "
@@ -101,7 +98,7 @@ class DataSelectorState(BaseModel, validate_assignment=True):
     def get_facilities(self) -> List[str]:
         facilities = list(INSTRUMENTS.keys())
         if self.allow_custom_directories:
-            facilities.append(self.custom_directories_name)
+            facilities.append(CUSTOM_DIRECTORIES_LABEL)
         return facilities
 
     def get_instruments(self) -> List[str]:
@@ -168,7 +165,7 @@ class DataSelectorModel:
         return Path(self.state.custom_directory)
 
     def get_directories(self) -> List[str]:
-        using_custom_directory = self.state.facility == self.state.custom_directories_name
+        using_custom_directory = self.state.facility == CUSTOM_DIRECTORIES_LABEL
         if using_custom_directory:
             base_path = self.get_custom_directory_path()
         else:
