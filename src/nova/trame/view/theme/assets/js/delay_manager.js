@@ -6,7 +6,7 @@ class DelayManager {
 
     debounce(id, func, wait, ...args) {
         if (!(id in this.debounces)) {
-            this.debounces[id] = window.debounce(func, wait)
+            this.debounces[id] = _.debounce(func, wait)
         }
 
         this.debounces[id](...args)
@@ -14,7 +14,7 @@ class DelayManager {
 
     throttle(id, func, wait, ...args) {
         if (!(id in this.throttles)) {
-            this.throttles[id] = window.throttle(func, wait)
+            this.throttles[id] = _.throttle(func, wait)
         }
 
         this.throttles[id](...args)

@@ -16,6 +16,31 @@ html {
     display: none !important;
 }
 
+.nova-data-selector revo-grid {
+    font-family: 'Roboto', sans-serif;
+    font-size: 0.75rem !important;
+    overflow-x: hidden;
+
+    .header-content, .rgCell label {
+        align-items: center;
+        display: flex;
+
+        input {
+            cursor: pointer;
+            margin-right: 0.25em;
+        }
+    }
+
+    .header-content {
+        font-weight: 500;
+        height: 40px;
+    }
+
+    .inner-content-table {
+        width: 100% !important;
+    }
+}
+
 .nova-mpl * {
     resize: none !important;
 }
