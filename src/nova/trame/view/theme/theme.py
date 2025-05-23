@@ -114,9 +114,9 @@ class ThemedApp:
         self.server.enable_module(
             {
                 "scripts": [
-                    "assets/js/lodash.debounce.min.js",
-                    "assets/js/lodash.throttle.min.js",
+                    "assets/js/lodash.min.js",
                     "assets/js/delay_manager.js",
+                    "assets/js/revo_grid.js",
                 ],
                 "serve": {"assets/js": js_path},
             }

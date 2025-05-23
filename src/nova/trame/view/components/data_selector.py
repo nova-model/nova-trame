@@ -4,11 +4,11 @@ from typing import Any, List, Optional, cast
 from warnings import warn
 
 from trame.app import get_server
-from trame.widgets import client, html
+from trame.widgets import client, datagrid, html
 from trame.widgets import vuetify3 as vuetify
 
 from nova.mvvm.trame_binding import TrameBinding
-from nova.trame.model.data_selector import DataSelectorModel
+from nova.trame.model.data_selector import CUSTOM_DIRECTORIES_LABEL, DataSelectorModel
 from nova.trame.view.layouts import GridLayout, VBoxLayout
 from nova.trame.view_model.data_selector import DataSelectorViewModel
 
@@ -17,18 +17,18 @@ from .input_field import InputField
 vuetify.enable_lab()
 
 
-class DataSelector(vuetify.VDataTableVirtual):
+class DataSelector(datagrid.VGrid):
     """Allows the user to select datafiles from an IPTS experiment."""
 
     def __init__(
         self,
         v_model: str,
+        allow_custom_directories: bool = False,
         facility: str = "",
         instrument: str = "",
         extensions: Optional[List[str]] = None,
         prefix: str = "",
         select_strategy: str = "all",
-        show_user_directories: bool = False,
         **kwargs: Any,
     ) -> None:
         """Constructor for DataSelector.
@@ -38,6 +38,9 @@ class DataSelector(vuetify.VDataTableVirtual):
         v_model : str
             The name of the state variable to bind to this widget. The state variable will contain a list of the files
             selected by the user.
+        allow_custom_directories : bool, optional
+            Whether or not to allow users to provide their own directories to search for datafiles in. Ignored if the
+            facility parameter is set.
         facility : str, optional
             The facility to restrict data selection to. Options: HFIR, SNS
         instrument : str, optional
@@ -50,9 +53,6 @@ class DataSelector(vuetify.VDataTableVirtual):
         select_strategy : str, optional
             The selection strategy to pass to the `VDataTable component <https://trame.readthedocs.io/en/latest/trame.widgets.vuetify3.html#trame.widgets.vuetify3.VDataTable>`__.
             If unset, the `all` strategy will be used.
-        show_user_directories : bool, optional
-            Whether or not to allow users to select data files from user directories. Ignored if the facility parameter
-            is set.
         **kwargs
             All other arguments will be passed to the underlying
             `VDataTable component <https://trame.readthedocs.io/en/latest/trame.widgets.vuetify3.html#trame.widgets.vuetify3.VDataTable>`_.
@@ -69,16 +69,17 @@ class DataSelector(vuetify.VDataTableVirtual):
         else:
             self._label = None
 
-        if facility and show_user_directories:
-            warn("show_user_directories will be ignored since the facility parameter is set.", stacklevel=1)
+        if facility and allow_custom_directories:
+            warn("allow_custom_directories will be ignored since the facility parameter is set.", stacklevel=1)
 
         self._v_model = v_model
         self._v_model_name_in_state = v_model.split(".")[0]
+        self._allow_custom_directories = allow_custom_directories
         self._extensions = extensions if extensions is not None else []
         self._prefix = prefix
         self._select_strategy = select_strategy
-        self._show_user_directories = show_user_directories
 
+        self._revogrid_id = f"nova__dataselector_{self._next_id}_rv"
         self._state_name = f"nova__dataselector_{self._next_id}_state"
         self._facilities_name = f"nova__dataselector_{self._next_id}_facilities"
         self._instruments_name = f"nova__dataselector_{self._next_id}_instruments"
@@ -87,6 +88,9 @@ class DataSelector(vuetify.VDataTableVirtual):
         self._datafiles_name = f"nova__dataselector_{self._next_id}_datafiles"
 
         self._flush_state = f"flushState('{self._v_model_name_in_state}');"
+        self._reset_rv_grid = client.JSEval(
+            exec=f"window.grid_manager.get('{self._revogrid_id}').updateCheckboxes()"
+        ).exec
         self._reset_state = client.JSEval(exec=f"{self._v_model} = []; {self._flush_state}").exec
 
         self.create_model(facility, instrument)
@@ -106,19 +110,19 @@ class DataSelector(vuetify.VDataTableVirtual):
                 if instrument == "":
                     columns -= 1
                     InputField(
-                        v_if=f"{self._state_name}.facility !== 'User Directory'",
+                        v_if=f"{self._state_name}.facility !== '{CUSTOM_DIRECTORIES_LABEL}'",
                         v_model=f"{self._state_name}.instrument",
                         items=(self._instruments_name,),
                         type="autocomplete",
                     )
                 InputField(
-                    v_if=f"{self._state_name}.facility !== 'User Directory'",
+                    v_if=f"{self._state_name}.facility !== '{CUSTOM_DIRECTORIES_LABEL}'",
                     v_model=f"{self._state_name}.experiment",
                     column_span=columns,
                     items=(self._experiments_name,),
                     type="autocomplete",
                 )
-                InputField(v_else=True, v_model=f"{self._state_name}.user_directory", column_span=2)
+                InputField(v_else=True, v_model=f"{self._state_name}.custom_directory", column_span=2)
 
             with GridLayout(columns=2, classes="flex-1-0 h-0", valign="start"):
                 if not self._prefix:
@@ -137,20 +141,43 @@ class DataSelector(vuetify.VDataTableVirtual):
 
                 super().__init__(
                     v_model=self._v_model,
-                    classes="h-100 overflow-y-auto",
-                    fixed_header=True,
-                    headers=("[{ align: 'left', key: 'title', title: 'Available Datafiles' }]",),
-                    item_title="title",
-                    item_value="path",
-                    select_strategy=self._select_strategy,
-                    show_select=True,
+                    can_focus=False,
+                    columns=(
+                        "[{"
+                        "    cellTemplate: (createElement, props) =>"
+                        f"       window.grid_manager.get('{self._revogrid_id}').cellTemplate(createElement, props),"
+                        "    columnTemplate: (createElement) =>"
+                        f"       window.grid_manager.get('{self._revogrid_id}').columnTemplate(createElement),"
+                        "    name: 'Available Datafiles',"
+                        "    prop: 'title',"
+                        "}]",
+                    ),
+                    frame_size=10,
+                    hide_attribution=True,
+                    id=self._revogrid_id,
+                    readonly=True,
+                    stretch=True,
+                    source=(self._datafiles_name,),
+                    theme="compact",
                     **kwargs,
                 )
                 if self._label:
                     self.label = self._label
-                self.items = (self._datafiles_name,)
                 if "update_modelValue" not in kwargs:
                     self.update_modelValue = self._flush_state
+
+                # Sets up some JavaScript event handlers when the component is mounted.
+                with self:
+                    client.ClientTriggers(
+                        mounted=(
+                            "window.grid_manager.add("
+                            f"  '{self._revogrid_id}',"
+                            f"  '{self._v_model}',"
+                            f"  '{self._datafiles_name}',"
+                            f"  '{self._v_model_name_in_state}'"
+                            ")"
+                        )
+                    )
 
             with cast(
                 vuetify.VSelect,
@@ -171,7 +198,7 @@ class DataSelector(vuetify.VDataTableVirtual):
 
     def create_model(self, facility: str, instrument: str) -> None:
         self._model = DataSelectorModel(
-            facility, instrument, self._extensions, self._prefix, self._show_user_directories
+            facility, instrument, self._extensions, self._prefix, self._allow_custom_directories
         )
 
     def create_viewmodel(self) -> None:
@@ -191,6 +218,7 @@ class DataSelector(vuetify.VDataTableVirtual):
 
     def reset(self, _: Any = None) -> None:
         self._reset_state()
+        self._reset_rv_grid()
 
     def set_state(
         self, facility: Optional[str] = None, instrument: Optional[str] = None, experiment: Optional[str] = None

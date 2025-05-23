@@ -5,8 +5,11 @@ from pathlib import Path
 from typing import Any, List, Optional
 from warnings import warn
 
+from natsort import natsorted
 from pydantic import BaseModel, Field, field_validator, model_validator
 from typing_extensions import Self
+
+CUSTOM_DIRECTORIES_LABEL = "Custom Directory"
 
 INSTRUMENTS = {
     "HFIR": {
@@ -57,14 +60,14 @@ INSTRUMENTS = {
 class DataSelectorState(BaseModel, validate_assignment=True):
     """Selection state for identifying datafiles."""
 
+    allow_custom_directories: bool = Field(default=False)
     facility: str = Field(default="", title="Facility")
     instrument: str = Field(default="", title="Instrument")
     experiment: str = Field(default="", title="Experiment")
-    user_directory: str = Field(default="", title="User Directory")
+    custom_directory: str = Field(default="", title="Custom Directory")
     directory: str = Field(default="")
     extensions: List[str] = Field(default=[])
     prefix: str = Field(default="")
-    show_user_directories: bool = Field(default=False)
 
     @field_validator("experiment", mode="after")
     @classmethod
@@ -80,7 +83,7 @@ class DataSelectorState(BaseModel, validate_assignment=True):
             warn(f"Facility '{self.facility}' could not be found. Valid options: {valid_facilities}", stacklevel=1)
 
         valid_instruments = self.get_instruments()
-        if self.instrument and self.instrument not in valid_instruments:
+        if self.instrument and self.facility != CUSTOM_DIRECTORIES_LABEL and self.instrument not in valid_instruments:
             warn(
                 (
                     f"Instrument '{self.instrument}' could not be found in '{self.facility}'. "
@@ -94,8 +97,8 @@ class DataSelectorState(BaseModel, validate_assignment=True):
 
     def get_facilities(self) -> List[str]:
         facilities = list(INSTRUMENTS.keys())
-        if self.show_user_directories:
-            facilities.append("User Directory")
+        if self.allow_custom_directories:
+            facilities.append(CUSTOM_DIRECTORIES_LABEL)
         return facilities
 
     def get_instruments(self) -> List[str]:
@@ -106,23 +109,23 @@ class DataSelectorModel:
     """Manages file system interactions for the DataSelector widget."""
 
     def __init__(
-        self, facility: str, instrument: str, extensions: List[str], prefix: str, show_user_directories: bool
+        self, facility: str, instrument: str, extensions: List[str], prefix: str, allow_custom_directories: bool
     ) -> None:
         self.state = DataSelectorState()
         self.state.facility = facility
         self.state.instrument = instrument
         self.state.extensions = extensions
         self.state.prefix = prefix
-        self.state.show_user_directories = show_user_directories
+        self.state.allow_custom_directories = allow_custom_directories
 
     def get_facilities(self) -> List[str]:
-        return sorted(self.state.get_facilities())
+        return natsorted(self.state.get_facilities())
 
     def get_instrument_dir(self) -> str:
         return INSTRUMENTS.get(self.state.facility, {}).get(self.state.instrument, "")
 
     def get_instruments(self) -> List[str]:
-        return sorted(self.state.get_instruments())
+        return natsorted(self.state.get_instruments())
 
     def get_experiments(self) -> List[str]:
         experiments = []
@@ -135,11 +138,11 @@ class DataSelectorModel:
         except OSError:
             pass
 
-        return sorted(experiments)
+        return natsorted(experiments)
 
     def sort_directories(self, directories: List[Any]) -> List[Any]:
         # Sort the current level of dictionaries
-        sorted_dirs = sorted(directories, key=lambda x: x["title"])
+        sorted_dirs = natsorted(directories, key=lambda x: x["title"])
 
         # Process each sorted item to sort their children
         for item in sorted_dirs:
@@ -154,15 +157,17 @@ class DataSelectorModel:
 
         return Path("/") / self.state.facility / self.get_instrument_dir() / self.state.experiment
 
-    def get_user_directory_path(self) -> Optional[Path]:
-        if not self.state.user_directory:
+    def get_custom_directory_path(self) -> Optional[Path]:
+        # Don't expose the full file system
+        if not self.state.custom_directory:
             return None
 
-        return Path("/SNS/users") / self.state.user_directory
+        return Path(self.state.custom_directory)
 
     def get_directories(self) -> List[str]:
-        if self.state.facility == "User Directory":
-            base_path = self.get_user_directory_path()
+        using_custom_directory = self.state.facility == CUSTOM_DIRECTORIES_LABEL
+        if using_custom_directory:
+            base_path = self.get_custom_directory_path()
         else:
             base_path = self.get_experiment_directory_path()
 
@@ -171,28 +176,34 @@ class DataSelectorModel:
 
         directories = []
         try:
-            for dirpath, _, _ in os.walk(base_path):
-                # Get the relative path from the start path
-                path_parts = os.path.relpath(dirpath, base_path).split(os.sep)
+            if using_custom_directory:
+                for entry in os.listdir(base_path):
+                    path = base_path / entry
+                    if os.path.isdir(path):
+                        directories.append({"path": str(path), "title": entry})
+            else:
+                for dirpath, _, _ in os.walk(base_path):
+                    # Get the relative path from the start path
+                    path_parts = os.path.relpath(dirpath, base_path).split(os.sep)
 
-                # Only create a new entry for top-level directories
-                if len(path_parts) == 1 and path_parts[0] != ".":  # This indicates a top-level directory
-                    current_dir = {"path": dirpath, "title": path_parts[0]}
-                    directories.append(current_dir)
+                    # Only create a new entry for top-level directories
+                    if len(path_parts) == 1 and path_parts[0] != ".":  # This indicates a top-level directory
+                        current_dir = {"path": dirpath, "title": path_parts[0]}
+                        directories.append(current_dir)
 
-                # Add subdirectories to the corresponding parent directory
-                elif len(path_parts) > 1:
-                    current_level: Any = directories
-                    for part in path_parts[:-1]:  # Parent directories
-                        for item in current_level:
-                            if item["title"] == part:
-                                if "children" not in item:
-                                    item["children"] = []
-                                current_level = item["children"]
-                                break
+                    # Add subdirectories to the corresponding parent directory
+                    elif len(path_parts) > 1:
+                        current_level: Any = directories
+                        for part in path_parts[:-1]:  # Parent directories
+                            for item in current_level:
+                                if item["title"] == part:
+                                    if "children" not in item:
+                                        item["children"] = []
+                                    current_level = item["children"]
+                                    break
 
-                    # Add the last part (current directory) as a child
-                    current_level.append({"path": dirpath, "title": path_parts[-1]})
+                        # Add the last part (current directory) as a child
+                        current_level.append({"path": dirpath, "title": path_parts[-1]})
         except OSError:
             pass
 
@@ -224,7 +235,7 @@ class DataSelectorModel:
         except OSError:
             pass
 
-        return sorted(datafiles)
+        return natsorted(datafiles)
 
     def set_directory(self, directory_path: str) -> None:
         self.state.directory = directory_path

@@ -6,7 +6,7 @@ Changelog = "https://code.ornl.gov/ndip/public-packages/nova-trame/blob/main/CHA
 
 [tool.poetry]
 name = "nova-trame"
-version = "0.20.2"
+version = "0.20.3"
 description = "A Python Package for injecting curated themes and custom components into Trame applications"
 authors = ["Duggan, John <dugganjw@ornl.gov>"]
 readme = "README.md"
@@ -22,6 +22,7 @@ python = ">=3.10,<4.0"
 tomli = "*"
 tornado = "*"
 trame = "*"
+trame-datagrid = "*"
 trame-matplotlib = "*"
 trame-plotly = "*"
 trame-vega = "*"
@@ -30,6 +31,7 @@ nova-mvvm = "*"
 pydantic = "*"
 nova-common = ">=0.2.0"
 blinker = "^1.9.0"
+natsort = "^8.4.0"
 
 [build-system]
 requires = ["poetry-core"]

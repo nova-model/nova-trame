@@ -1,3 +1,11 @@
+### nova-trame, 0.20.3
+
+* Performance of the DataSelector for large numbers of files should be improved (thanks to John Duggan).
+
+### nova-trame, 0.20.2
+
+* Matplotlib figure will no longer raise a TypeError when running on Python >= 3.11 (thanks to John Duggan).
+
 ### nova-trame, 0.20.1
 
 * DataSelector now supports a `show_user_directories` flag that will allow users to choose datafiles from user directories (thanks to John Duggan).

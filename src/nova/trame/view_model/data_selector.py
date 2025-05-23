@@ -1,7 +1,7 @@
 """View model implementation for the DataSelector widget."""
 
 import os
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 from nova.mvvm.interface import BindingInterface
 from nova.trame.model.data_selector import DataSelectorModel
@@ -12,6 +12,8 @@ class DataSelectorViewModel:
 
     def __init__(self, model: DataSelectorModel, binding: BindingInterface) -> None:
         self.model = model
+
+        self.datafiles: List[Dict[str, Any]] = []
 
         self.state_bind = binding.new_bind(self.model.state, callback_after_update=self.on_state_updated)
         self.facilities_bind = binding.new_bind()
@@ -44,7 +46,7 @@ class DataSelectorViewModel:
                     self.reset()
                 case "experiment":
                     self.reset()
-                case "user_directory":
+                case "custom_directory":
                     self.reset()
         self.update_view()
 
@@ -55,6 +57,7 @@ class DataSelectorViewModel:
         self.experiments_bind.update_in_view(self.model.get_experiments())
         self.directories_bind.update_in_view(self.model.get_directories())
 
-        datafile_paths = self.model.get_datafiles()
-        datafile_options = [{"path": datafile, "title": os.path.basename(datafile)} for datafile in datafile_paths]
-        self.datafiles_bind.update_in_view(datafile_options)
+        self.datafiles = [
+            {"path": datafile, "title": os.path.basename(datafile)} for datafile in self.model.get_datafiles()
+        ]
+        self.datafiles_bind.update_in_view(self.datafiles)
