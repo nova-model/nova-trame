@@ -45,6 +45,32 @@ class ProgressBar:
             v_show=(f"{self.id}.show_progress",),
         ):
             html.H5(v_text=f"{self.id}.details")
+            with vuetify.VMenu(
+                max_width=900,
+                location="bottom",
+                no_click_animation=True,
+                close_on_content_click=False,
+                open_on_hover=True,
+                v_show=False,
+            ):
+                with vuetify.Template(v_slot_activator="{ props }"):
+                    vuetify.VBtn(
+                        icon="mdi-information",
+                        density="compact",
+                        classes="ml-2",
+                        size="small",
+                        v_bind="props",
+                        v_show=f"{self.id}.show_full_details",
+                    )
+                vuetify.VTextarea(
+                    v_model=f"{self.id}.full_details",
+                    width=500,
+                    no_resize=True,
+                    readonly=True,
+                    auto_grow=False,
+                    bg_color="grey",
+                )
+
         with vuetify.VProgressLinear(
             height="25",
             model_value="100",
