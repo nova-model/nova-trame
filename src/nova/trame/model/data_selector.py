@@ -212,17 +212,18 @@ class DataSelectorModel:
     def get_datafiles(self) -> List[str]:
         datafiles = []
 
+        if self.state.experiment:
+            base_path = Path("/") / self.state.facility / self.get_instrument_dir() / self.state.experiment
+        elif self.state.custom_directory:
+            base_path = Path(self.state.custom_directory)
+        else:
+            return []
+
         try:
             if self.state.prefix:
-                datafile_path = str(
-                    Path("/")
-                    / self.state.facility
-                    / self.get_instrument_dir()
-                    / self.state.experiment
-                    / self.state.prefix
-                )
+                datafile_path = str(base_path / self.state.prefix)
             else:
-                datafile_path = self.state.directory
+                datafile_path = str(base_path / self.state.directory)
 
             for entry in os.scandir(datafile_path):
                 if entry.is_file():
