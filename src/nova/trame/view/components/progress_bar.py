@@ -59,7 +59,7 @@ class ProgressBar:
                         v_show=f"{self.id}.show_full_details",
                         v_bind="props",
                         classes="ml-2",
-                        color="primary"
+                        color="primary",
                     )
 
                 with vuetify.VCard(classes="bg-grey"):
