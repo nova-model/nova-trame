@@ -2,6 +2,10 @@
 
 * ProgressBar component now displays detailed job status (thanks to Sergey Yakubov).
 
+### nova-trame, 0.20.5
+
+* DataSelector should now properly display files at the root of the selected directory (thanks to John Duggan).
+
 ### nova-trame, 0.20.4
 
 * The Tornado dependency is now pinned to >=6.5 to address a DoS vulnerability (thanks to John Duggan).
