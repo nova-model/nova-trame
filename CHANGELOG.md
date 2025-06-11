@@ -1,3 +1,7 @@
+### nova-trame, 0.21.0
+
+* ProgressBar component now displays detailed job status (thanks to Sergey Yakubov).
+
 ### nova-trame, 0.20.4
 
 * The Tornado dependency is now pinned to >=6.5 to address a DoS vulnerability (thanks to John Duggan).
