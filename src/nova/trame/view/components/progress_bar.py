@@ -54,22 +54,16 @@ class ProgressBar:
                 v_show=False,
             ):
                 with vuetify.Template(v_slot_activator="{ props }"):
-                    vuetify.VBtn(
-                        icon="mdi-information",
-                        density="compact",
-                        classes="ml-2",
-                        size="small",
-                        v_bind="props",
+                    vuetify.VIcon(
+                        "mdi-information",
                         v_show=f"{self.id}.show_full_details",
+                        v_bind="props",
+                        classes="ml-2",
+                        color="primary"
                     )
-                vuetify.VTextarea(
-                    v_model=f"{self.id}.full_details",
-                    width=500,
-                    no_resize=True,
-                    readonly=True,
-                    auto_grow=False,
-                    bg_color="grey",
-                )
+
+                with vuetify.VCard(classes="bg-grey"):
+                    vuetify.VCardText(f"{{{{ {self.id}.full_details }}}}", classes="display-linebreaks")
 
         with vuetify.VProgressLinear(
             height="25",
