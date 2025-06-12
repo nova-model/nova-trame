@@ -19,8 +19,8 @@ from trame_server.core import Server
 from trame_server.state import State
 
 from nova.mvvm.pydantic_utils import validate_pydantic_parameter
-from nova.trame.view.utilities.local_storage import LocalStorageManager
 from nova.trame.view.theme.lifecycle_components import ExitButton
+from nova.trame.view.utilities.local_storage import LocalStorageManager
 
 THEME_PATH = Path(__file__).parent
 

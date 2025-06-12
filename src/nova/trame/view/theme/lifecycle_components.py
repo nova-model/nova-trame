@@ -1,12 +1,15 @@
-import blinker
+"""Components used to control the lifecycle of a Themed Application."""
 
+import blinker
 from trame.app import get_server
 from trame.widgets import vuetify3 as vuetify
 from trame_client.widgets import html
 
 from nova.common.signals import Signal
 
+
 class ExitButton:
+    """Exit button for Trame Applications."""
 
     def __init__(self) -> None:
         self.create_ui()
@@ -14,13 +17,12 @@ class ExitButton:
         self.server.state.nova_kill_jobs_on_exit = True
         self.server.state.nova_show_exit_dialog = False
 
-
     def create_ui(self) -> None:
         with vuetify.VBtn(
             "Exit",
             prepend_icon="mdi-close-box",
             classes="mr-4 bg-error",
-            id=f"shutdown_app_theme_button",
+            id="shutdown_app_theme_button",
             color="white",
             click=self.open_exit_dialog,
         ):
@@ -44,18 +46,15 @@ class ExitButton:
                             click=self.close_exit_dialog,
                         )
 
-
-
-    def open_exit_dialog(self):
+    def open_exit_dialog(self) -> None:
         self.server.state.nova_show_exit_dialog = True
 
-    def close_exit_dialog(self):
+    def close_exit_dialog(self) -> None:
         self.server.state.nova_show_exit_dialog = False
 
-    async def exit_application(self):
+    async def exit_application(self) -> None:
         print(f"Closing App. Killing jobs: {self.server.state.nova_kill_jobs_on_exit}")
         if self.server.state.nova_kill_jobs_on_exit:
             stop_signal = blinker.signal(Signal.EXIT_SIGNAL)
             await stop_signal.send_async("nova-trame-exit")
         await self.server.stop()
-
