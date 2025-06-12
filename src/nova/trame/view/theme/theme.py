@@ -20,6 +20,7 @@ from trame_server.state import State
 
 from nova.mvvm.pydantic_utils import validate_pydantic_parameter
 from nova.trame.view.utilities.local_storage import LocalStorageManager
+from nova.trame.view.theme.lifecycle_components import ExitButton
 
 THEME_PATH = Path(__file__).parent
 
@@ -227,6 +228,7 @@ class ThemedApp:
                                                 "Selected",
                                                 v_if=f"nova__theme === '{theme['value']}'",
                                             )
+                            ExitButton()
 
                     with vuetify.VMain(classes="align-stretch d-flex flex-column h-screen"):
                         # [slot override example]
