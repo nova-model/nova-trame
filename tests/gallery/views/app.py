@@ -139,14 +139,22 @@ class App(ThemedApp):
         outputs_signal = blinker.signal(get_signal_id("test", Signal.OUTPUTS))
 
         if command == ToolCommand.START:
-            await progress_signal.send_async("test_sender", state=WorkState.RUNNING, details="")
+            await progress_signal.send_async(
+                "test_sender",
+                state=WorkState.RUNNING,
+                details={
+                    "message": "",
+                    "original_dict": {
+                        "test": "longstring longstring longstring longstring longstring",
+                        "test2": "value2",
+                    },
+                },
+            )
             await outputs_signal.send_async(
                 "test_sender", outputs=ToolOutputs(stdout="test_output", stderr="test_error")
             )
-
-            await progress_signal.send_async("test_sender", state=WorkState.RUNNING, details="")
         else:
-            await progress_signal.send_async("test_sender", state=WorkState.FINISHED, details="")
+            await progress_signal.send_async("test_sender", state=WorkState.FINISHED, details={})
 
     def create_state(self) -> None:
         binding = TrameBinding(self.state)

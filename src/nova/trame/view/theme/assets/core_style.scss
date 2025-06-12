@@ -16,6 +16,10 @@ html {
     display: none !important;
 }
 
+.display-linebreaks {
+    white-space: pre-wrap;
+}
+
 .nova-data-selector revo-grid {
     font-family: 'Roboto', sans-serif;
     font-size: 0.75rem !important;
@@ -209,3 +213,6 @@ html {
         }
     }
 }
+
+
+.v-progress-linear__content { pointer-events: all !important; }
