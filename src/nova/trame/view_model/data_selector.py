@@ -1,6 +1,7 @@
 """View model implementation for the DataSelector widget."""
 
 import os
+from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from nova.mvvm.interface import BindingInterface
@@ -14,6 +15,8 @@ class DataSelectorViewModel:
         self.model = model
 
         self.datafiles: List[Dict[str, Any]] = []
+        self.directories: List[Dict[str, Any]] = []
+        self.expanded: List[str] = []
 
         self.state_bind = binding.new_bind(self.model.state, callback_after_update=self.on_state_updated)
         self.facilities_bind = binding.new_bind()
@@ -22,6 +25,25 @@ class DataSelectorViewModel:
         self.directories_bind = binding.new_bind()
         self.datafiles_bind = binding.new_bind()
         self.reset_bind = binding.new_bind()
+
+    def expand_directory(self, paths: List[str]) -> None:
+        if paths[-1] in self.expanded:
+            return
+
+        # TODO: refactor/clean this up as it's confusing
+        new_directories = self.model.get_directories(Path(paths[-1]))
+        current_level: Any = self.directories
+        for current_path in paths:
+            if isinstance(current_level, Dict):
+                current_level = current_level["children"]
+
+            for entry in current_level:
+                if current_path == entry["path"]:
+                    current_level = entry
+                    break
+        current_level["children"] = new_directories
+        self.expanded.append(paths[-1])
+        self.directories_bind.update_in_view(self.directories)
 
     def set_directory(self, directory_path: str = "") -> None:
         self.model.set_directory(directory_path)
@@ -33,6 +55,7 @@ class DataSelectorViewModel:
 
     def reset(self) -> None:
         self.model.set_directory("")
+        self.directories = self.model.get_directories()
         self.reset_bind.update_in_view(None)
 
     def on_state_updated(self, results: Dict[str, Any]) -> None:
@@ -55,7 +78,7 @@ class DataSelectorViewModel:
         self.facilities_bind.update_in_view(self.model.get_facilities())
         self.instruments_bind.update_in_view(self.model.get_instruments())
         self.experiments_bind.update_in_view(self.model.get_experiments())
-        self.directories_bind.update_in_view(self.model.get_directories())
+        self.directories_bind.update_in_view(self.directories)
 
         self.datafiles = [
             {"path": datafile, "title": os.path.basename(datafile)} for datafile in self.model.get_datafiles()
