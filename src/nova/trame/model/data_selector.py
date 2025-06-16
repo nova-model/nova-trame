@@ -2,7 +2,7 @@
 
 import os
 from pathlib import Path
-from typing import Any, List, Optional
+from typing import Any, Dict, List, Optional
 from warnings import warn
 
 from natsort import natsorted
@@ -140,7 +140,7 @@ class DataSelectorModel:
 
         return natsorted(experiments)
 
-    def sort_directories(self, directories: List[Any]) -> List[Any]:
+    def sort_directories(self, directories: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         # Sort the current level of dictionaries
         sorted_dirs = natsorted(directories, key=lambda x: x["title"])
 
@@ -164,9 +164,11 @@ class DataSelectorModel:
 
         return Path(self.state.custom_directory)
 
-    def get_directories(self) -> List[str]:
+    def get_directories(self, base_path: Optional[Path] = None) -> List[Dict[str, Any]]:
         using_custom_directory = self.state.facility == CUSTOM_DIRECTORIES_LABEL
-        if using_custom_directory:
+        if base_path:
+            pass
+        elif using_custom_directory:
             base_path = self.get_custom_directory_path()
         else:
             base_path = self.get_experiment_directory_path()
@@ -176,34 +178,31 @@ class DataSelectorModel:
 
         directories = []
         try:
-            if using_custom_directory:
-                for entry in os.listdir(base_path):
-                    path = base_path / entry
-                    if os.path.isdir(path):
-                        directories.append({"path": str(path), "title": entry})
-            else:
-                for dirpath, _, _ in os.walk(base_path):
-                    # Get the relative path from the start path
-                    path_parts = os.path.relpath(dirpath, base_path).split(os.sep)
+            for dirpath, dirs, _ in os.walk(base_path):
+                # Get the relative path from the start path
+                path_parts = os.path.relpath(dirpath, base_path).split(os.sep)
 
-                    # Only create a new entry for top-level directories
-                    if len(path_parts) == 1 and path_parts[0] != ".":  # This indicates a top-level directory
-                        current_dir = {"path": dirpath, "title": path_parts[0]}
-                        directories.append(current_dir)
+                if len(path_parts) > 1:
+                    dirs.clear()
 
-                    # Add subdirectories to the corresponding parent directory
-                    elif len(path_parts) > 1:
-                        current_level: Any = directories
-                        for part in path_parts[:-1]:  # Parent directories
-                            for item in current_level:
-                                if item["title"] == part:
-                                    if "children" not in item:
-                                        item["children"] = []
-                                    current_level = item["children"]
-                                    break
+                # Only create a new entry for top-level directories
+                if len(path_parts) == 1 and path_parts[0] != ".":  # This indicates a top-level directory
+                    current_dir = {"path": dirpath, "title": path_parts[0]}
+                    directories.append(current_dir)
 
-                        # Add the last part (current directory) as a child
-                        current_level.append({"path": dirpath, "title": path_parts[-1]})
+                # Add subdirectories to the corresponding parent directory
+                elif len(path_parts) > 1:
+                    current_level: Any = directories
+                    for part in path_parts[:-1]:  # Parent directories
+                        for item in current_level:
+                            if item["title"] == part:
+                                if "children" not in item:
+                                    item["children"] = []
+                                current_level = item["children"]
+                                break
+
+                    # Add the last part (current directory) as a child
+                    current_level.append({"path": dirpath, "title": path_parts[-1]})
         except OSError:
             pass
 

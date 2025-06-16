@@ -20,6 +20,14 @@ html {
     white-space: pre-wrap;
 }
 
+.nova-data-selector {
+    .v-list-group {
+        .v-treeview-item {
+            --indent-padding: 1em !important;
+        }
+    }
+}
+
 .nova-data-selector revo-grid {
     font-family: 'Roboto', sans-serif;
     font-size: 0.75rem !important;
