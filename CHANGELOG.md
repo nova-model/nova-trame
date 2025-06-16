@@ -1,3 +1,7 @@
+### nova-trame, 0.22.0
+
+* DataSelector queries subdirectories on demand, which should improve performance for large directory trees (thanks to John Duggan).
+
 ### nova-trame, 0.21.0
 
 * ProgressBar component now displays detailed job status (thanks to Sergey Yakubov).
