@@ -20,8 +20,9 @@ class DataSelectorState(BaseModel, validate_assignment=True):
 class DataSelectorModel:
     """Manages file system interactions for the DataSelector widget."""
 
-    def __init__(self, directory: str, extensions: List[str], prefix: str) -> None:
-        self.state = DataSelectorState()
+    def __init__(self, state: DataSelectorState, directory: str, extensions: List[str], prefix: str) -> None:
+        self.state: DataSelectorState = state
+
         self.state.directory = directory
         self.state.extensions = extensions
         self.state.prefix = prefix
@@ -37,15 +38,7 @@ class DataSelectorModel:
 
         return sorted_dirs
 
-    def get_directories(self, base_path: Optional[Path] = None) -> List[Dict[str, Any]]:
-        if base_path:
-            pass
-        else:
-            base_path = Path(self.state.directory)
-
-        if not base_path:
-            return []
-
+    def get_directories_from_path(self, base_path: Path) -> List[Dict[str, Any]]:
         directories = []
         try:
             for dirpath, dirs, _ in os.walk(base_path):
@@ -78,10 +71,19 @@ class DataSelectorModel:
 
         return self.sort_directories(directories)
 
-    def get_datafiles(self) -> List[str]:
-        datafiles = []
+    def get_directories(self, base_path: Optional[Path] = None) -> List[Dict[str, Any]]:
+        if base_path:
+            pass
+        else:
+            base_path = Path(self.state.directory)
 
-        base_path = Path(self.state.directory)
+        if not base_path:
+            return []
+
+        return self.get_directories_from_path(base_path)
+
+    def get_datafiles_from_path(self, base_path: Path) -> List[str]:
+        datafiles = []
         try:
             if self.state.prefix:
                 datafile_path = base_path / self.state.prefix
@@ -100,6 +102,11 @@ class DataSelectorModel:
             pass
 
         return natsorted(datafiles)
+
+    def get_datafiles(self) -> List[str]:
+        base_path = Path(self.state.directory)
+
+        return self.get_datafiles_from_path(base_path)
 
     def set_subdirectory(self, subdirectory_path: str) -> None:
         self.state.subdirectory = subdirectory_path

@@ -8,7 +8,11 @@ from trame.widgets import client, datagrid, html
 from trame.widgets import vuetify3 as vuetify
 
 from nova.mvvm.trame_binding import TrameBinding
-from nova.trame.model.ornl.neutron_data_selector import CUSTOM_DIRECTORIES_LABEL, NeutronDataSelectorModel
+from nova.trame.model.ornl.neutron_data_selector import (
+    CUSTOM_DIRECTORIES_LABEL,
+    NeutronDataSelectorModel,
+    NeutronDataSelectorState,
+)
 from nova.trame.view.layouts import GridLayout, VBoxLayout
 from nova.trame.view_model.ornl.neutron_data_selector import NeutronDataSelectorViewModel
 
@@ -137,7 +141,7 @@ class NeutronDataSelector(datagrid.VGrid):
                             item_value="path",
                             items=(self._directories_name,),
                             click_open=(self._vm.expand_directory, "[$event.path]"),
-                            update_activated=(self._vm.set_directory, "$event"),
+                            update_activated=(self._vm.set_subdirectory, "$event"),
                         )
                         vuetify.VListItem("No directories found", classes="flex-0-1 text-center", v_else=True)
 
@@ -199,8 +203,9 @@ class NeutronDataSelector(datagrid.VGrid):
                     )
 
     def create_model(self, facility: str, instrument: str) -> None:
+        state = NeutronDataSelectorState()
         self._model = NeutronDataSelectorModel(
-            facility, instrument, self._extensions, self._prefix, self._allow_custom_directories
+            state, facility, instrument, self._extensions, self._prefix, self._allow_custom_directories
         )
 
     def create_viewmodel(self) -> None:

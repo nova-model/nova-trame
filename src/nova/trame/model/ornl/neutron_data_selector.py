@@ -6,8 +6,10 @@ from typing import Any, Dict, List, Optional
 from warnings import warn
 
 from natsort import natsorted
-from pydantic import BaseModel, Field, field_validator, model_validator
+from pydantic import Field, field_validator, model_validator
 from typing_extensions import Self
+
+from ..data_selector import DataSelectorModel, DataSelectorState
 
 CUSTOM_DIRECTORIES_LABEL = "Custom Directory"
 
@@ -57,7 +59,7 @@ INSTRUMENTS = {
 }
 
 
-class NeutronDataSelectorState(BaseModel, validate_assignment=True):
+class NeutronDataSelectorState(DataSelectorState):
     """Selection state for identifying datafiles."""
 
     allow_custom_directories: bool = Field(default=False)
@@ -65,9 +67,6 @@ class NeutronDataSelectorState(BaseModel, validate_assignment=True):
     instrument: str = Field(default="", title="Instrument")
     experiment: str = Field(default="", title="Experiment")
     custom_directory: str = Field(default="", title="Custom Directory")
-    directory: str = Field(default="")
-    extensions: List[str] = Field(default=[])
-    prefix: str = Field(default="")
 
     @field_validator("experiment", mode="after")
     @classmethod
@@ -105,13 +104,21 @@ class NeutronDataSelectorState(BaseModel, validate_assignment=True):
         return list(INSTRUMENTS.get(self.facility, {}).keys())
 
 
-class NeutronDataSelectorModel:
+class NeutronDataSelectorModel(DataSelectorModel):
     """Manages file system interactions for the DataSelector widget."""
 
     def __init__(
-        self, facility: str, instrument: str, extensions: List[str], prefix: str, allow_custom_directories: bool
+        self,
+        state: NeutronDataSelectorState,
+        facility: str,
+        instrument: str,
+        extensions: List[str],
+        prefix: str,
+        allow_custom_directories: bool,
     ) -> None:
-        self.state = NeutronDataSelectorState()
+        super().__init__(state, "", extensions, prefix)
+        self.state: NeutronDataSelectorState = state
+
         self.state.facility = facility
         self.state.instrument = instrument
         self.state.extensions = extensions
@@ -140,17 +147,6 @@ class NeutronDataSelectorModel:
 
         return natsorted(experiments)
 
-    def sort_directories(self, directories: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-        # Sort the current level of dictionaries
-        sorted_dirs = natsorted(directories, key=lambda x: x["title"])
-
-        # Process each sorted item to sort their children
-        for item in sorted_dirs:
-            if "children" in item and isinstance(item["children"], list):
-                item["children"] = self.sort_directories(item["children"])
-
-        return sorted_dirs
-
     def get_experiment_directory_path(self) -> Optional[Path]:
         if not self.state.experiment:
             return None
@@ -176,41 +172,9 @@ class NeutronDataSelectorModel:
         if not base_path:
             return []
 
-        directories = []
-        try:
-            for dirpath, dirs, _ in os.walk(base_path):
-                # Get the relative path from the start path
-                path_parts = os.path.relpath(dirpath, base_path).split(os.sep)
-
-                if len(path_parts) > 1:
-                    dirs.clear()
-
-                # Only create a new entry for top-level directories
-                if len(path_parts) == 1 and path_parts[0] != ".":  # This indicates a top-level directory
-                    current_dir = {"path": dirpath, "title": path_parts[0]}
-                    directories.append(current_dir)
-
-                # Add subdirectories to the corresponding parent directory
-                elif len(path_parts) > 1:
-                    current_level: Any = directories
-                    for part in path_parts[:-1]:  # Parent directories
-                        for item in current_level:
-                            if item["title"] == part:
-                                if "children" not in item:
-                                    item["children"] = []
-                                current_level = item["children"]
-                                break
-
-                    # Add the last part (current directory) as a child
-                    current_level.append({"path": dirpath, "title": path_parts[-1]})
-        except OSError:
-            pass
-
-        return self.sort_directories(directories)
+        return self.get_directories_from_path(base_path)
 
     def get_datafiles(self) -> List[str]:
-        datafiles = []
-
         if self.state.experiment:
             base_path = Path("/") / self.state.facility / self.get_instrument_dir() / self.state.experiment
         elif self.state.custom_directory:
@@ -218,27 +182,7 @@ class NeutronDataSelectorModel:
         else:
             return []
 
-        try:
-            if self.state.prefix:
-                datafile_path = str(base_path / self.state.prefix)
-            else:
-                datafile_path = str(base_path / self.state.directory)
-
-            for entry in os.scandir(datafile_path):
-                if entry.is_file():
-                    if self.state.extensions:
-                        for extension in self.state.extensions:
-                            if entry.path.lower().endswith(extension):
-                                datafiles.append(entry.path)
-                    else:
-                        datafiles.append(entry.path)
-        except OSError:
-            pass
-
-        return natsorted(datafiles)
-
-    def set_directory(self, directory_path: str) -> None:
-        self.state.directory = directory_path
+        return self.get_datafiles_from_path(base_path)
 
     def set_state(self, facility: Optional[str], instrument: Optional[str], experiment: Optional[str]) -> None:
         if facility is not None:

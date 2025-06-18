@@ -7,7 +7,7 @@ from trame.widgets import client, datagrid, html
 from trame.widgets import vuetify3 as vuetify
 
 from nova.mvvm.trame_binding import TrameBinding
-from nova.trame.model.data_selector import DataSelectorModel
+from nova.trame.model.data_selector import DataSelectorModel, DataSelectorState
 from nova.trame.view.layouts import GridLayout, VBoxLayout
 from nova.trame.view_model.data_selector import DataSelectorViewModel
 
@@ -163,7 +163,8 @@ class DataSelector(datagrid.VGrid):
                     )
 
     def create_model(self, directory: str) -> None:
-        self._model = DataSelectorModel(directory, self._extensions, self._prefix)
+        state = DataSelectorState()
+        self._model = DataSelectorModel(state, directory, self._extensions, self._prefix)
 
     def create_viewmodel(self) -> None:
         server = get_server(None, client_type="vue3")

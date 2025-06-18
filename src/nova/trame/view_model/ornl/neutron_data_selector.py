@@ -50,8 +50,8 @@ class NeutronDataSelectorViewModel:
         self.expanded.append(paths[-1])
         self.directories_bind.update_in_view(self.directories)
 
-    def set_directory(self, directory_path: str = "") -> None:
-        self.model.set_directory(directory_path)
+    def set_subdirectory(self, subdirectory_path: str = "") -> None:
+        self.model.set_subdirectory(subdirectory_path)
         self.update_view()
 
     def set_state(self, facility: Optional[str], instrument: Optional[str], experiment: Optional[str]) -> None:
@@ -59,7 +59,7 @@ class NeutronDataSelectorViewModel:
         self.update_view()
 
     def reset(self) -> None:
-        self.model.set_directory("")
+        self.model.set_subdirectory("")
         self.directories = self.model.get_directories()
         self.expanded = []
         self.reset_bind.update_in_view(None)
