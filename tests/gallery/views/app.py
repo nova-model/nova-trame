@@ -349,7 +349,7 @@ class App(ThemedApp):
 
                     vuetify.VCardTitle("Data Selection Widgets")
                     with html.Div(classes="border-md text-left", style="height: 650px; width: 400px;"):
-                        DataSelector(v_model="data_selector.selected_files", allow_custom_directories=True, chips=True)
+                        DataSelector(v_model="data_selector.selected_files", chips=True, directory="/")
 
                     vuetify.VCardTitle("Form Inputs & Controls")
                     with GridLayout(columns=3, valign="center"):
