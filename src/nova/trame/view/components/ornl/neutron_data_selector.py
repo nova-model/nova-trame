@@ -79,13 +79,13 @@ class NeutronDataSelector(datagrid.VGrid):
         self._prefix = prefix
         self._select_strategy = select_strategy
 
-        self._revogrid_id = f"nova__dataselector_{self._next_id}_rv"
-        self._state_name = f"nova__dataselector_{self._next_id}_state"
-        self._facilities_name = f"nova__dataselector_{self._next_id}_facilities"
-        self._instruments_name = f"nova__dataselector_{self._next_id}_instruments"
-        self._experiments_name = f"nova__dataselector_{self._next_id}_experiments"
-        self._directories_name = f"nova__dataselector_{self._next_id}_directories"
-        self._datafiles_name = f"nova__dataselector_{self._next_id}_datafiles"
+        self._revogrid_id = f"nova__neutrondataselector_{self._next_id}_rv"
+        self._state_name = f"nova__neutrondataselector_{self._next_id}_state"
+        self._facilities_name = f"nova__neutrondataselector_{self._next_id}_facilities"
+        self._instruments_name = f"nova__neutrondataselector_{self._next_id}_instruments"
+        self._experiments_name = f"nova__neutrondataselector_{self._next_id}_experiments"
+        self._directories_name = f"nova__neutrondataselector_{self._next_id}_directories"
+        self._datafiles_name = f"nova__neutrondataselector_{self._next_id}_datafiles"
 
         self._flush_state = f"flushState('{self._v_model_name_in_state}');"
         self._reset_rv_grid = client.JSEval(

@@ -26,6 +26,7 @@ from nova.mvvm.trame_binding import TrameBinding
 from nova.trame import ThemedApp
 from nova.trame.view.components import DataSelector, FileUpload, InputField, RemoteFileInput
 from nova.trame.view.components.execution_buttons import ExecutionButtons
+from nova.trame.view.components.ornl import NeutronDataSelector
 from nova.trame.view.components.progress_bar import ProgressBar
 from nova.trame.view.components.tool_outputs import ToolOutputWindows
 from nova.trame.view.components.visualization import Interactive2DPlot, MatplotlibFigure
@@ -348,8 +349,12 @@ class App(ThemedApp):
                             vuetify.VTab("Tab 3")
 
                     vuetify.VCardTitle("Data Selection Widgets")
-                    with html.Div(classes="border-md text-left", style="height: 650px; width: 400px;"):
+                    with html.Div(classes="border-md text-left", style="height: 650px; width: 600px;"):
                         DataSelector(v_model="data_selector.selected_files", chips=True, directory="/")
+                    with html.Div(classes="border-md text-left", style="height: 650px; width: 600px;"):
+                        NeutronDataSelector(
+                            v_model="data_selector.selected_neutron_files", allow_custom_directories=True, chips=True
+                        )
 
                     vuetify.VCardTitle("Form Inputs & Controls")
                     with GridLayout(columns=3, valign="center"):
