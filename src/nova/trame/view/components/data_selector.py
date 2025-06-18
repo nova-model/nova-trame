@@ -26,6 +26,7 @@ class DataSelector(datagrid.VGrid):
         extensions: Optional[List[str]] = None,
         prefix: str = "",
         select_strategy: str = "all",
+        skip_init: bool = False,
         **kwargs: Any,
     ) -> None:
         """Constructor for DataSelector.
@@ -64,6 +65,7 @@ class DataSelector(datagrid.VGrid):
 
         self._v_model = v_model
         self._v_model_name_in_state = v_model.split(".")[0]
+        self._directory = directory
         self._extensions = extensions if extensions is not None else []
         self._prefix = prefix
         self._select_strategy = select_strategy
@@ -79,14 +81,17 @@ class DataSelector(datagrid.VGrid):
         ).exec
         self._reset_state = client.JSEval(exec=f"{self._v_model} = []; {self._flush_state}").exec
 
-        self.create_model(directory)
+        if skip_init:
+            return
+
+        self.create_model()
         self.create_viewmodel()
 
         self.create_ui(**kwargs)
 
-    def create_ui(self, **kwargs: Any) -> None:
+    def create_ui(self, *args: Any, **kwargs: Any) -> None:
         with VBoxLayout(classes="nova-data-selector", height="100%") as self._layout:
-            self._layout.directory_filter = None
+            self._layout.filter = html.Div()
 
             with GridLayout(columns=2, classes="flex-1-0 h-0", valign="start"):
                 if not self._prefix:
@@ -162,9 +167,9 @@ class DataSelector(datagrid.VGrid):
                         f"(+{{{{ {self._v_model}.length - 2 }}}} others)", v_if="index === 2", classes="text-caption"
                     )
 
-    def create_model(self, directory: str) -> None:
+    def create_model(self) -> None:
         state = DataSelectorState()
-        self._model = DataSelectorModel(state, directory, self._extensions, self._prefix)
+        self._model = DataSelectorModel(state, self._directory, self._extensions, self._prefix)
 
     def create_viewmodel(self) -> None:
         server = get_server(None, client_type="vue3")

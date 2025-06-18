@@ -12,16 +12,13 @@ class DataSelectorViewModel:
     """Manages the view state of the DataSelector widget."""
 
     def __init__(self, model: DataSelectorModel, binding: BindingInterface) -> None:
-        self.model = model
+        self.model: DataSelectorModel = model
 
         self.datafiles: List[Dict[str, Any]] = []
         self.directories: List[Dict[str, Any]] = []
         self.expanded: List[str] = []
 
-        self.state_bind = binding.new_bind(self.model.state)
-        self.facilities_bind = binding.new_bind()
-        self.instruments_bind = binding.new_bind()
-        self.experiments_bind = binding.new_bind()
+        self.state_bind = binding.new_bind(self.model.state, callback_after_update=self.on_state_updated)
         self.directories_bind = binding.new_bind()
         self.datafiles_bind = binding.new_bind()
         self.reset_bind = binding.new_bind()
@@ -49,6 +46,9 @@ class DataSelectorViewModel:
         # Mark this directory as expanded and display the new content
         self.expanded.append(paths[-1])
         self.directories_bind.update_in_view(self.directories)
+
+    def on_state_updated(self, results: Dict[str, Any]) -> None:
+        pass
 
     def set_subdirectory(self, subdirectory_path: str = "") -> None:
         self.model.set_subdirectory(subdirectory_path)
