@@ -26,7 +26,6 @@ class DataSelector(datagrid.VGrid):
         extensions: Optional[List[str]] = None,
         prefix: str = "",
         select_strategy: str = "all",
-        skip_init: bool = False,
         **kwargs: Any,
     ) -> None:
         """Constructor for DataSelector.
@@ -80,9 +79,6 @@ class DataSelector(datagrid.VGrid):
             exec=f"window.grid_manager.get('{self._revogrid_id}').updateCheckboxes()"
         ).exec
         self._reset_state = client.JSEval(exec=f"{self._v_model} = []; {self._flush_state}").exec
-
-        if skip_init:
-            return
 
         self.create_model()
         self.create_viewmodel()

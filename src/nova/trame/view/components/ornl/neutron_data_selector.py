@@ -65,8 +65,6 @@ class NeutronDataSelector(DataSelector):
         -------
         None
         """
-        super().__init__(v_model, "", extensions, prefix, select_strategy, skip_init=True, **kwargs)
-
         if facility and allow_custom_directories:
             warn("allow_custom_directories will be ignored since the facility parameter is set.", stacklevel=1)
 
@@ -78,22 +76,19 @@ class NeutronDataSelector(DataSelector):
         self._instruments_name = f"nova__neutrondataselector_{self._next_id}_instruments"
         self._experiments_name = f"nova__neutrondataselector_{self._next_id}_experiments"
 
-        self.create_model()
-        self.create_viewmodel()
+        super().__init__(v_model, "", extensions, prefix, select_strategy, **kwargs)
 
-        self.create_ui(facility, instrument, **kwargs)
-
-    def create_ui(self, facility: str, instrument: str, **kwargs: Any) -> None:
+    def create_ui(self, **kwargs: Any) -> None:
         super().create_ui(**kwargs)
         with self._layout.filter:
             with GridLayout(columns=3):
                 columns = 3
-                if facility == "":
+                if self._facility == "":
                     columns -= 1
                     InputField(
                         v_model=f"{self._state_name}.facility", items=(self._facilities_name,), type="autocomplete"
                     )
-                if instrument == "":
+                if self._instrument == "":
                     columns -= 1
                     InputField(
                         v_if=f"{self._state_name}.facility !== '{CUSTOM_DIRECTORIES_LABEL}'",
