@@ -1,12 +1,15 @@
 """Implementation of ThemedApp."""
 
+import asyncio
 import json
 import logging
+import sys
 from asyncio import create_task
 from functools import partial
 from pathlib import Path
 from typing import Optional
 
+import blinker
 import sass
 from mergedeep import Strategy, merge
 from trame.app import get_server
@@ -18,6 +21,7 @@ from trame_client.widgets import html
 from trame_server.core import Server
 from trame_server.state import State
 
+from nova.common.signals import Signal
 from nova.mvvm.pydantic_utils import validate_pydantic_parameter
 from nova.trame.view.theme.lifecycle_components import ExitButton
 from nova.trame.view.utilities.local_storage import LocalStorageManager
@@ -139,6 +143,28 @@ class ThemedApp:
     async def init_theme(self) -> None:
         create_task(self._init_theme())
 
+    async def get_jobs_callback(self) -> None:
+        get_tools_signal = blinker.signal(Signal.GET_ALL_TOOLS)
+        response = get_tools_signal.send()
+        try:
+            self.server.state.nova_running_jobs = [tool.id for tool in response[0][1]]
+            if len(self.server.state.nova_running_jobs) > 0:
+                self.server.state.nova_show_stop_jobs_on_exit_checkbox = True
+                self.server.state.nova_kill_jobs_on_exit = True
+            else:
+                self.server.state.nova_show_stop_jobs_on_exit_checkbox = False
+        except Exception as e:
+            logger.warning(f"Issue getting running jobs: {e}")
+
+    async def exit_callback(self) -> None:
+        logger.info(f"Closing App. Killing jobs: {self.server.state.nova_kill_jobs_on_exit}")
+        if self.server.state.nova_kill_jobs_on_exit:
+            self.server.state.nova_show_exit_progress = True
+            await asyncio.sleep(2)
+            stop_signal = blinker.signal(Signal.EXIT_SIGNAL)
+            stop_signal.send()
+        sys.exit(0)
+
     def set_theme(self, theme: Optional[str], force: bool = True) -> None:
         """Sets the theme of the application.
 
@@ -228,7 +254,7 @@ class ThemedApp:
                                                 "Selected",
                                                 v_if=f"nova__theme === '{theme['value']}'",
                                             )
-                            ExitButton()
+                            ExitButton(self.exit_callback, self.get_jobs_callback)
 
                     with vuetify.VMain(classes="align-stretch d-flex flex-column h-screen"):
                         # [slot override example]
