@@ -6,7 +6,7 @@ Changelog = "https://code.ornl.gov/ndip/public-packages/nova-trame/blob/main/CHA
 
 [tool.poetry]
 name = "nova-trame"
-version = "0.20.3"
+version = "0.22.0"
 description = "A Python Package for injecting curated themes and custom components into Trame applications"
 authors = ["Duggan, John <dugganjw@ornl.gov>"]
 readme = "README.md"
@@ -20,7 +20,7 @@ libsass = "*"
 mergedeep = "*"
 python = ">=3.10,<4.0"
 tomli = "*"
-tornado = "*"
+tornado = ">=6.5.0"
 trame = "*"
 trame-datagrid = "*"
 trame-matplotlib = "*"

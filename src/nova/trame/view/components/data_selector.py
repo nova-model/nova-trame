@@ -133,8 +133,10 @@ class DataSelector(datagrid.VGrid):
                             activatable=True,
                             active_strategy="single-independent",
                             classes="flex-1-0 h-0 overflow-y-auto",
+                            fluid=True,
                             item_value="path",
                             items=(self._directories_name,),
+                            click_open=(self._vm.expand_directory, "[$event.path]"),
                             update_activated=(self._vm.set_directory, "$event"),
                         )
                         vuetify.VListItem("No directories found", classes="flex-0-1 text-center", v_else=True)
