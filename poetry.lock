@@ -1588,13 +1588,13 @@ files = [
 
 [[package]]
 name = "nova-common"
-version = "0.2.2"
+version = "0.2.3"
 description = "NOVA Common Project"
 optional = false
 python-versions = "<4.0,>=3.10"
 groups = ["main"]
 files = [
-    {file = "nova_common-0.2.2-py3-none-any.whl", hash = "sha256:f306b846e487dda2d914c4d93dd949cc86a99242ba16602e7b94e9c44d7e4964"},
+    {file = "nova_common-0.2.3-py3-none-any.whl", hash = "sha256:68089eee23e1dd292639d017bdd46aa556ee11793cff9aef8f11c470b46ff683"},
 ]
 
 [package.dependencies]
