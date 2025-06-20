@@ -23,7 +23,7 @@ from trame_server.state import State
 
 from nova.common.signals import Signal
 from nova.mvvm.pydantic_utils import validate_pydantic_parameter
-from nova.trame.view.theme.lifecycle_components import ExitButton
+from nova.trame.view.theme.exit_button import ExitButton
 from nova.trame.view.utilities.local_storage import LocalStorageManager
 
 THEME_PATH = Path(__file__).parent
@@ -146,15 +146,16 @@ class ThemedApp:
     async def get_jobs_callback(self) -> None:
         get_tools_signal = blinker.signal(Signal.GET_ALL_TOOLS)
         response = get_tools_signal.send()
-        try:
-            self.server.state.nova_running_jobs = [tool.id for tool in response[0][1]]
-            if len(self.server.state.nova_running_jobs) > 0:
-                self.server.state.nova_show_stop_jobs_on_exit_checkbox = True
-                self.server.state.nova_kill_jobs_on_exit = True
-            else:
-                self.server.state.nova_show_stop_jobs_on_exit_checkbox = False
-        except Exception as e:
-            logger.warning(f"Issue getting running jobs: {e}")
+        if response and len(response[0]) > 1:  # Make sure that the callback had a return value
+            try:
+                self.server.state.nova_running_jobs = [tool.id for tool in response[0][1]]
+                if len(self.server.state.nova_running_jobs) > 0:
+                    self.server.state.nova_show_stop_jobs_on_exit_checkbox = True
+                    self.server.state.nova_kill_jobs_on_exit = True
+                else:
+                    self.server.state.nova_show_stop_jobs_on_exit_checkbox = False
+            except Exception as e:
+                logger.warning(f"Issue getting running jobs: {e}")
 
     async def exit_callback(self) -> None:
         logger.info(f"Closing App. Killing jobs: {self.server.state.nova_kill_jobs_on_exit}")
