@@ -1,3 +1,7 @@
+### nova-trame, 0.22.1
+
+* Themed app now has an Exit Button by default which closes the application and can stop any running jobs (thanks to Gregory Cage).
+
 ### nova-trame, 0.22.0
 
 * DataSelector queries subdirectories on demand, which should improve performance for large directory trees (thanks to John Duggan).
