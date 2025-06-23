@@ -22,8 +22,14 @@ html {
 
 .nova-data-selector {
     .v-list-group {
-        .v-treeview-item {
-            --indent-padding: 1em !important;
+        --prepend-width: 12px !important;
+    }
+
+    .v-treeview.v-list {
+        --indent-padding: 0px !important;
+
+        & > .v-list-group > .v-list-item {
+            padding-left: 0 !important;
         }
     }
 }
