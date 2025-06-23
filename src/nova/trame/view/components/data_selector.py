@@ -218,6 +218,9 @@ class DataSelector(datagrid.VGrid):
 
         self._vm.update_view()
 
+    def refresh_file_list(self) -> None:
+        self._vm.update_view()
+
     def reset(self, _: Any = None) -> None:
         self._reset_state()
         self._reset_rv_grid()
