@@ -1,5 +1,6 @@
 """View Implementation for DataSelector."""
 
+from asyncio import ensure_future, sleep
 from typing import Any, List, Optional, cast
 from warnings import warn
 
@@ -9,7 +10,7 @@ from trame.widgets import vuetify3 as vuetify
 
 from nova.mvvm.trame_binding import TrameBinding
 from nova.trame.model.data_selector import CUSTOM_DIRECTORIES_LABEL, DataSelectorModel
-from nova.trame.view.layouts import GridLayout, VBoxLayout
+from nova.trame.view.layouts import GridLayout, HBoxLayout, VBoxLayout
 from nova.trame.view_model.data_selector import DataSelectorViewModel
 
 from .input_field import InputField
@@ -19,6 +20,8 @@ vuetify.enable_lab()
 
 class DataSelector(datagrid.VGrid):
     """Allows the user to select datafiles from an IPTS experiment."""
+
+    REFRESH_RATE = 30
 
     def __init__(
         self,
@@ -98,31 +101,39 @@ class DataSelector(datagrid.VGrid):
 
         self.create_ui(facility, instrument, **kwargs)
 
+        ensure_future(self._refresh_loop())
+
     def create_ui(self, facility: str, instrument: str, **kwargs: Any) -> None:
         with VBoxLayout(classes="nova-data-selector", height="100%"):
-            with GridLayout(columns=3):
-                columns = 3
-                if facility == "":
-                    columns -= 1
-                    InputField(
-                        v_model=f"{self._state_name}.facility", items=(self._facilities_name,), type="autocomplete"
-                    )
-                if instrument == "":
-                    columns -= 1
+            with HBoxLayout(valign="center"):
+                with GridLayout(classes="flex-1-1", columns=3):
+                    columns = 3
+                    if facility == "":
+                        columns -= 1
+                        InputField(
+                            v_model=f"{self._state_name}.facility", items=(self._facilities_name,), type="autocomplete"
+                        )
+                    if instrument == "":
+                        columns -= 1
+                        InputField(
+                            v_if=f"{self._state_name}.facility !== '{CUSTOM_DIRECTORIES_LABEL}'",
+                            v_model=f"{self._state_name}.instrument",
+                            items=(self._instruments_name,),
+                            type="autocomplete",
+                        )
                     InputField(
                         v_if=f"{self._state_name}.facility !== '{CUSTOM_DIRECTORIES_LABEL}'",
-                        v_model=f"{self._state_name}.instrument",
-                        items=(self._instruments_name,),
+                        v_model=f"{self._state_name}.experiment",
+                        column_span=columns,
+                        items=(self._experiments_name,),
                         type="autocomplete",
                     )
-                InputField(
-                    v_if=f"{self._state_name}.facility !== '{CUSTOM_DIRECTORIES_LABEL}'",
-                    v_model=f"{self._state_name}.experiment",
-                    column_span=columns,
-                    items=(self._experiments_name,),
-                    type="autocomplete",
-                )
-                InputField(v_else=True, v_model=f"{self._state_name}.custom_directory", column_span=2)
+                    InputField(v_else=True, v_model=f"{self._state_name}.custom_directory", column_span=2)
+                with vuetify.VBtn(
+                    classes="mx-1", density="compact", icon=True, variant="text", click=self.refresh_file_list
+                ):
+                    vuetify.VIcon("mdi-refresh")
+                    vuetify.VTooltip("Refresh file list", activator="parent")
 
             with GridLayout(columns=2, classes="flex-1-0 h-0", valign="start"):
                 if not self._prefix:
@@ -248,3 +259,9 @@ class DataSelector(datagrid.VGrid):
         None
         """
         self._vm.set_state(facility, instrument, experiment)
+
+    async def _refresh_loop(self) -> None:
+        while True:
+            await sleep(self.REFRESH_RATE)
+            self.refresh_file_list()
+            self.state.dirty(self._datafiles_name)
