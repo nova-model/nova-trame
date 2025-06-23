@@ -2,6 +2,10 @@
 
 * The existing DataSelector component has been renamed to NeutronDataSelector and moved to nova.trame.view.components.ornl.NeutronDataSelector (thanks to John Duggan).
 
+### nova-trame, 0.22.1
+
+* ThemedApp now has an Exit Button by default which closes the application and can stop any running jobs (thanks to Gregory Cage).
+
 ### nova-trame, 0.22.0
 
 * DataSelector queries subdirectories on demand, which should improve performance for large directory trees (thanks to John Duggan).

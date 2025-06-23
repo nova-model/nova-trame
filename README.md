@@ -9,6 +9,6 @@ You can install this package directly with
 pip install nova-trame
 ```
 
-A user guide, examples, and a full API for this package can be found at https://nova-application-development.readthedocs.io/en/stable/.
+A user guide, examples, and a full API for this package can be found at [https://nova-application-development.readthedocs.io/en/stable/](https://nova-application-development.readthedocs.io/projects/nova-trame/en/stable/).
 
 Developers: please read [this document](DEVELOPMENT.md)

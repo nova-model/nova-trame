@@ -33,7 +33,7 @@ trame-vega = "*"
 trame-vuetify = "*"
 nova-mvvm = "*"
 pydantic = "*"
-nova-common = ">=0.2.0"
+nova-common = ">=0.2.2"
 blinker = "^1.9.0"
 natsort = "^8.4.0"
 
