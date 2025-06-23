@@ -18,7 +18,7 @@ copyright = "2025, ORNL"
 author = "John Duggan"
 with open("../pyproject.toml", "rb") as toml_file:
     toml_dict = tomli.load(toml_file)
-    release = toml_dict["tool"]["poetry"]["version"]
+    release = toml_dict["project"]["version"]
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration

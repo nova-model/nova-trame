@@ -54,6 +54,12 @@ class DataSelector(datagrid.VGrid):
         -------
         None
         """
+        if "allow_custom_directory" in kwargs or "facility" in kwargs or "instrument" in kwargs:
+            raise TypeError(
+                "The old DataSelector component has been renamed to NeutronDataSelector. Please import it from "
+                "`nova.trame.view.components.ornl`."
+            )
+
         if "items" in kwargs:
             raise AttributeError("The items parameter is not allowed on DataSelector widget.")
 
@@ -182,3 +188,9 @@ class DataSelector(datagrid.VGrid):
     def reset(self, _: Any = None) -> None:
         self._reset_state()
         self._reset_rv_grid()
+
+    def set_state(self, *args: Any, **kwargs: Any) -> None:
+        raise TypeError(
+            "The old DataSelector component has been renamed to NeutronDataSelector. Please import it from "
+            "`nova.trame.view.components.ornl`."
+        )
