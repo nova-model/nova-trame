@@ -1,17 +1,19 @@
 """View Implementation for DataSelector."""
 
-from typing import Any, List, Optional
+from typing import Any, List, Literal, Optional
 from warnings import warn
 
 from trame.app import get_server
 from trame.widgets import vuetify3 as vuetify
 
 from nova.mvvm.trame_binding import TrameBinding
-from nova.trame.model.ornl.neutron_data_selector import (
+from nova.trame.model.ornl.analysis_data_selector import (
     CUSTOM_DIRECTORIES_LABEL,
-    NeutronDataSelectorModel,
-    NeutronDataSelectorState,
+    AnalysisDataSelectorModel,
+    AnalysisDataSelectorState,
 )
+from nova.trame.model.ornl.neutron_data_selector import NeutronDataSelectorModel
+from nova.trame.model.ornl.oncat_data_selector import ONCatDataSelectorModel, ONCatDataSelectorState
 from nova.trame.view.layouts import GridLayout
 from nova.trame.view_model.ornl.neutron_data_selector import NeutronDataSelectorViewModel
 
@@ -28,6 +30,7 @@ class NeutronDataSelector(DataSelector):
         self,
         v_model: str,
         allow_custom_directories: bool = False,
+        data_source: Literal["filesystem", "oncat"] = "filesystem",
         facility: str = "",
         instrument: str = "",
         extensions: Optional[List[str]] = None,
@@ -45,6 +48,9 @@ class NeutronDataSelector(DataSelector):
         allow_custom_directories : bool, optional
             Whether or not to allow users to provide their own directories to search for datafiles in. Ignored if the
             facility parameter is set.
+        data_source : Literal["filesystem", "oncat"], optional
+            The source from which to pull datafiles. Defaults to "filesystem". If using ONCat, you will need to set the
+            following environment variables for local development: `ONCAT_CLIENT_ID` and `ONCAT_CLIENT_SECRET`.
         facility : str, optional
             The facility to restrict data selection to. Options: HFIR, SNS
         instrument : str, optional
@@ -65,12 +71,22 @@ class NeutronDataSelector(DataSelector):
         -------
         None
         """
+        if data_source == "oncat" and allow_custom_directories:
+            warn("allow_custom_directories will be ignored since data will be pulled from ONCat.", stacklevel=1)
+
+        if data_source == "oncat" and extensions:
+            warn("extensions will be ignored since data will be pulled from ONCat.", stacklevel=1)
+
+        if data_source == "oncat" and prefix:
+            warn("prefix will be ignored since data will be pulled from ONCat.", stacklevel=1)
+
         if facility and allow_custom_directories:
             warn("allow_custom_directories will be ignored since the facility parameter is set.", stacklevel=1)
 
         self._facility = facility
         self._instrument = instrument
         self._allow_custom_directories = allow_custom_directories
+        self._data_source = data_source
 
         self._facilities_name = f"nova__neutrondataselector_{self._next_id}_facilities"
         self._instruments_name = f"nova__neutrondataselector_{self._next_id}_instruments"
@@ -106,10 +122,26 @@ class NeutronDataSelector(DataSelector):
                 InputField(v_else=True, v_model=f"{self._state_name}.custom_directory", column_span=2)
 
     def create_model(self) -> None:
-        state = NeutronDataSelectorState()
-        self._model: NeutronDataSelectorModel = NeutronDataSelectorModel(
-            state, self._facility, self._instrument, self._extensions, self._prefix, self._allow_custom_directories
-        )
+        # TODO: remove unnecessary model params
+        self._model: NeutronDataSelectorModel
+        if self._data_source == "oncat":
+            self._model = ONCatDataSelectorModel(
+                ONCatDataSelectorState(),
+                self._facility,
+                self._instrument,
+                self._extensions,
+                self._prefix,
+                self._allow_custom_directories,
+            )
+        else:
+            self._model = AnalysisDataSelectorModel(
+                AnalysisDataSelectorState(),
+                self._facility,
+                self._instrument,
+                self._extensions,
+                self._prefix,
+                self._allow_custom_directories,
+            )
 
     def create_viewmodel(self) -> None:
         server = get_server(None, client_type="vue3")

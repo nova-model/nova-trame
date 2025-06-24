@@ -9,4 +9,5 @@ class DataSelectorState(BaseModel):
     """Model for MVVM demo of DataSelector."""
 
     selected_files: List[str] = Field(default=[], title="Selected Files")
-    selected_neutron_files: List[str] = Field(default=[], title="Selected Neutron Datafiles")
+    selected_analysis_files: List[str] = Field(default=[], title="Selected Analysis Cluster Datafiles")
+    selected_oncat_files: List[str] = Field(default=[], title="Selected ONCat Datafiles")
