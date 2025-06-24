@@ -353,7 +353,11 @@ class App(ThemedApp):
                         DataSelector(v_model="data_selector.selected_files", chips=True, directory="/", refresh_rate=0)
                     with html.Div(classes="border-md text-left", style="height: 650px; width: 600px;"):
                         NeutronDataSelector(
-                            v_model="data_selector.selected_neutron_files", allow_custom_directories=True, chips=True
+                            v_model="data_selector.selected_analysis_files", allow_custom_directories=True, chips=True
+                        )
+                    with html.Div(classes="border-md text-left", style="height: 650px; width: 600px;"):
+                        NeutronDataSelector(
+                            v_model="data_selector.selected_oncat_files", data_source="oncat", chips=True
                         )
 
                     vuetify.VCardTitle("Form Inputs & Controls")
