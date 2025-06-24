@@ -50,6 +50,7 @@ requests = "^2.32.4"
 sphinx = "*"
 sphinx-rtd-theme = "^3.0.2"
 sphinxcontrib-napoleon ="*"
+urllib3 = "^2.5.0"
 
 [tool.poetry.scripts]
 app = "tests.gallery:main"
