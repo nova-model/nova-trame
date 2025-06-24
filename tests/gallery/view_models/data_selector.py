@@ -15,3 +15,4 @@ class DataSelectorVM:
 
     def on_update(self, data: Dict[str, Any]) -> None:
         print("selected files:", self.model.selected_files)
+        print("selected neutron datafiles:", self.model.selected_neutron_files)
