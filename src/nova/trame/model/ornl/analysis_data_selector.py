@@ -43,7 +43,8 @@ INSTRUMENTS = {
         "BL-14B": "HYS",
         "BL-11B": "MANDI",
         "BL-1B": "NOM",
-        "NOW-G": "NOWG",
+        "NOW-B": "NOWB",
+        "NOW-D": "NOWD",
         "BL-15": "NSE",
         "BL-11A": "PG3",
         "BL-4B": "REF_L",
@@ -96,6 +97,20 @@ class AnalysisDataSelectorState(NeutronDataSelectorState):
 
 class AnalysisDataSelectorModel(NeutronDataSelectorModel):
     """Analysis cluster filesystem backend for NeutronDataSelector."""
+
+    def __init__(
+        self,
+        state: AnalysisDataSelectorState,
+        facility: str,
+        instrument: str,
+        extensions: List[str],
+        prefix: str,
+        allow_custom_directories: bool,
+    ) -> None:
+        super().__init__(state, facility, instrument, extensions, prefix)
+
+        self.state: AnalysisDataSelectorState
+        self.state.allow_custom_directories = allow_custom_directories
 
     def get_custom_directory_path(self) -> Optional[Path]:
         # Don't expose the full file system

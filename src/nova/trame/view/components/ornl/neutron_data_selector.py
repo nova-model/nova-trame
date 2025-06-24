@@ -74,9 +74,6 @@ class NeutronDataSelector(DataSelector):
         if data_source == "oncat" and allow_custom_directories:
             warn("allow_custom_directories will be ignored since data will be pulled from ONCat.", stacklevel=1)
 
-        if data_source == "oncat" and extensions:
-            warn("extensions will be ignored since data will be pulled from ONCat.", stacklevel=1)
-
         if data_source == "oncat" and prefix:
             warn("prefix will be ignored since data will be pulled from ONCat.", stacklevel=1)
 
@@ -92,10 +89,13 @@ class NeutronDataSelector(DataSelector):
         self._instruments_name = f"nova__neutrondataselector_{self._next_id}_instruments"
         self._experiments_name = f"nova__neutrondataselector_{self._next_id}_experiments"
 
-        super().__init__(v_model, "", extensions, prefix, select_strategy, **kwargs)
+        super().__init__(
+            v_model, "", extensions, prefix if data_source == "filesystem" else "oncat", select_strategy, **kwargs
+        )
 
     def create_ui(self, **kwargs: Any) -> None:
         super().create_ui(**kwargs)
+
         with self._layout.filter:
             with GridLayout(columns=3):
                 columns = 3
@@ -126,12 +126,7 @@ class NeutronDataSelector(DataSelector):
         self._model: NeutronDataSelectorModel
         if self._data_source == "oncat":
             self._model = ONCatDataSelectorModel(
-                ONCatDataSelectorState(),
-                self._facility,
-                self._instrument,
-                self._extensions,
-                self._prefix,
-                self._allow_custom_directories,
+                ONCatDataSelectorState(), self._facility, self._instrument, self._extensions
             )
         else:
             self._model = AnalysisDataSelectorModel(

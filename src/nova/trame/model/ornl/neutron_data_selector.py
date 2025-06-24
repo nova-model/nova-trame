@@ -12,11 +12,9 @@ from ..data_selector import DataSelectorModel, DataSelectorState
 class NeutronDataSelectorState(DataSelectorState):
     """Selection state for identifying datafiles."""
 
-    allow_custom_directories: bool = Field(default=False)
     facility: str = Field(default="", title="Facility")
     instrument: str = Field(default="", title="Instrument")
     experiment: str = Field(default="", title="Experiment")
-    custom_directory: str = Field(default="", title="Custom Directory")
 
     @field_validator("experiment", mode="after")
     @classmethod
@@ -41,8 +39,7 @@ class NeutronDataSelectorModel(DataSelectorModel):
         facility: str,
         instrument: str,
         extensions: List[str],
-        prefix: str,
-        allow_custom_directories: bool,
+        prefix: str = "",
     ) -> None:
         super().__init__(state, "", extensions, prefix)
         self.state: NeutronDataSelectorState = state
@@ -51,7 +48,6 @@ class NeutronDataSelectorModel(DataSelectorModel):
         self.state.instrument = instrument
         self.state.extensions = extensions
         self.state.prefix = prefix
-        self.state.allow_custom_directories = allow_custom_directories
 
     def get_facilities(self) -> List[str]:
         return natsorted(self.state.get_facilities())
