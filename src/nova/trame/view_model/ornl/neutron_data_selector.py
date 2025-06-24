@@ -43,9 +43,9 @@ class NeutronDataSelectorViewModel(DataSelectorViewModel):
                     self.reset()
         self.update_view()
 
-    def update_view(self) -> None:
+    def update_view(self, refresh_directories: bool = False) -> None:
         self.facilities_bind.update_in_view(self.model.get_facilities())
         self.instruments_bind.update_in_view(self.model.get_instruments())
         self.experiments_bind.update_in_view(self.model.get_experiments())
 
-        super().update_view()
+        super().update_view(refresh_directories)

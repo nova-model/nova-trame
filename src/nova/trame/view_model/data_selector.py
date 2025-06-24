@@ -16,7 +16,7 @@ class DataSelectorViewModel:
 
         self.datafiles: List[Dict[str, Any]] = []
         self.directories: List[Dict[str, Any]] = []
-        self.expanded: List[str] = []
+        self.expanded: Dict[str, List[str]] = {}
 
         self.state_bind = binding.new_bind(self.model.state, callback_after_update=self.on_state_updated)
         self.directories_bind = binding.new_bind()
@@ -44,8 +44,15 @@ class DataSelectorViewModel:
         current_level["children"] = new_directories
 
         # Mark this directory as expanded and display the new content
-        self.expanded.append(paths[-1])
+        self.expanded[paths[-1]] = paths
         self.directories_bind.update_in_view(self.directories)
+
+    def reexpand_directories(self) -> None:
+        paths_to_expand = self.expanded.values()
+        self.expanded = {}
+
+        for paths in paths_to_expand:
+            self.expand_directory(paths)
 
     def on_state_updated(self, results: Dict[str, Any]) -> None:
         pass
@@ -54,10 +61,11 @@ class DataSelectorViewModel:
         self.model.set_subdirectory(subdirectory_path)
         self.update_view()
 
-    def update_view(self) -> None:
+    def update_view(self, refresh_directories: bool = False) -> None:
         self.state_bind.update_in_view(self.model.state)
-        if not self.directories:
+        if not self.directories or refresh_directories:
             self.directories = self.model.get_directories()
+            self.reexpand_directories()
         self.directories_bind.update_in_view(self.directories)
 
         self.datafiles = [

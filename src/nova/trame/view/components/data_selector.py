@@ -101,10 +101,10 @@ class DataSelector(datagrid.VGrid):
             with HBoxLayout(valign="center"):
                 self._layout.filter = html.Div(classes="flex-1-1")
                 with vuetify.VBtn(
-                    classes="mx-1", density="compact", icon=True, variant="text", click=self.refresh_file_list
+                    classes="mx-1", density="compact", icon=True, variant="text", click=self.refresh_contents
                 ):
                     vuetify.VIcon("mdi-refresh")
-                    vuetify.VTooltip("Refresh file list", activator="parent")
+                    vuetify.VTooltip("Refresh Contents", activator="parent")
 
             with GridLayout(columns=2, classes="flex-1-0 h-0", valign="start"):
                 if not self._prefix:
@@ -196,8 +196,8 @@ class DataSelector(datagrid.VGrid):
 
         self._vm.update_view()
 
-    def refresh_file_list(self) -> None:
-        self._vm.update_view()
+    def refresh_contents(self) -> None:
+        self._vm.update_view(refresh_directories=True)
 
     def reset(self, _: Any = None) -> None:
         self._reset_state()
@@ -212,5 +212,6 @@ class DataSelector(datagrid.VGrid):
     async def _refresh_loop(self) -> None:
         while True:
             await sleep(self.REFRESH_RATE)
-            self.refresh_file_list()
+
+            self.refresh_contents()
             self.state.dirty(self._datafiles_name)
