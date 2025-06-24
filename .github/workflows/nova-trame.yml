@@ -4,17 +4,17 @@ on:
   workflow_dispatch:
   #push:
      #branches:
-  
+
 concurrency:
   group: "${{ github.ref }}"
   cancel-in-progress: true
-  
+
 env:
   TAG_PUSH_TOKEN: "${{ secrets.TAG_PUSH_TOKEN }}"
   READTHEDOCS_WEBHOOK_URL: "${{ secrets.READTHEDOCS_WEBHOOK_URL }}"
   READTHEDOCS_WEBHOOK_SECRET: "${{ secrets.READTHEDOCS_WEBHOOK_SECRET }}"
   PYPI_API_TOKEN: "${{ secrets.PYPI_API_TOKEN }}"
-  
+
 jobs:
   lint-check:
     runs-on: ubuntu-latest
@@ -44,7 +44,7 @@ jobs:
       if: always()
     - run: func_rse_docker_cleanup
       if: always()
-      
+
   unit-tests:
     needs: lint-check
     runs-on: ubuntu-latest
@@ -99,7 +99,7 @@ jobs:
       if: always()
     - run: func_rse_docker_cleanup
       if: always()
-      
+
   tag-release:
     needs:
     - unit-tests
@@ -135,7 +135,7 @@ jobs:
       if: always()
     - run: func_rse_docker_cleanup
       if: always()
-      
+
   package-build:
     needs: tag-release
     runs-on: ubuntu-latest
@@ -162,7 +162,7 @@ jobs:
       if: always()
     - run: func_rse_docker_cleanup
       if: always()
-      
+
   docs-publish:
     needs: tag-release
     runs-on: ubuntu-latest

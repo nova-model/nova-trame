@@ -3,8 +3,18 @@ nova-trame API
 ================
 
 ---------------
-View Components
+Theme Component
 ---------------
+
+.. _api_theme:
+
+.. autoclass:: nova.trame.ThemedApp
+    :members:
+    :special-members: __init__
+
+-----------------
+Layout Components
+-----------------
 
 .. _api_layouts:
 
@@ -20,11 +30,9 @@ View Components
     :members:
     :special-members: __init__
 
-.. _api_theme:
-
-.. autoclass:: nova.trame.ThemedApp
-    :members:
-    :special-members: __init__
+--------------------------
+General Purpose Components
+--------------------------
 
 .. _api_components:
 
@@ -44,6 +52,14 @@ View Components
     :members:
     :special-members: __init__
 
+.. autoclass:: nova.trame.view.utilities.local_storage.LocalStorageManager
+    :members:
+    :special-members: __init__
+
+-------------------------
+Job Management Components
+-------------------------
+
 .. autoclass:: nova.trame.view.components.ExecutionButtons
     :members:
     :special-members: __init__
@@ -56,6 +72,10 @@ View Components
     :members:
     :special-members: __init__
 
+------------------------
+Visualization Components
+------------------------
+
 .. _api_interactive2dplot:
 
 .. autoclass:: nova.trame.view.components.visualization.Interactive2DPlot
@@ -66,6 +86,10 @@ View Components
     :members:
     :special-members: __init__
 
-.. autoclass:: nova.trame.view.utilities.local_storage.LocalStorageManager
+--------------------
+ORNL-only components
+--------------------
+
+.. autoclass:: nova.trame.view.components.ornl.NeutronDataSelector
     :members:
     :special-members: __init__
