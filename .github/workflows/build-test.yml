@@ -4,16 +4,16 @@ on:
   workflow_dispatch:
   #push:
      #branches:
-  
+
 concurrency:
   group: "${{ github.ref }}"
   cancel-in-progress: true
-  
+
 env:
   NDIP_DOCKER_USER: "${{ secrets.NDIP_DOCKER_USER }}"
   NDIP_DOCKER_PASSWORD: "${{ secrets.NDIP_DOCKER_PASSWORD }}"
   NDIP_DOCKER_REPOSITORY: "${{ secrets.NDIP_DOCKER_REPOSITORY }}"
-  
+
 jobs:
   lint-check:
     runs-on: ubuntu-latest
@@ -43,7 +43,7 @@ jobs:
       if: always()
     - run: func_rse_docker_cleanup
       if: always()
-      
+
   unit-tests:
     needs: lint-check
     runs-on: ubuntu-latest
