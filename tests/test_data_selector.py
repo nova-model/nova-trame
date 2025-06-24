@@ -5,7 +5,7 @@ from warnings import catch_warnings
 from trame.app import get_server
 from trame_server.core import Server
 
-from nova.trame.view.components import DataSelector
+from nova.trame.view.components.ornl import NeutronDataSelector
 from nova.trame.view.theme import ThemedApp
 
 
@@ -19,7 +19,7 @@ def test_data_selector() -> None:
         def create_ui(self) -> None:
             with super().create_ui() as layout:
                 with layout.content:
-                    input = DataSelector(v_model="test", extensions=[".tiff"])
+                    input = NeutronDataSelector(v_model="test", extensions=[".tiff"])
                     assert input.v_model == "test"
                     assert input._extensions == [".tiff"]
                     assert input._model.state.facility == ""
@@ -36,11 +36,11 @@ def test_data_selector() -> None:
                         assert str(captured_warnings[0].message).startswith("Facility 'NSS' could not be found.")
 
                     with catch_warnings(record=True) as captured_warnings:
-                        DataSelector(v_model="test", facility="HIFR")
+                        NeutronDataSelector(v_model="test", facility="HIFR")
                         assert str(captured_warnings[0].message).startswith("Facility 'HIFR' could not be found.")
 
                     with catch_warnings(record=True) as captured_warnings:
-                        DataSelector(v_model="test", facility="SNS", instrument="BL1B")
+                        NeutronDataSelector(v_model="test", facility="SNS", instrument="BL1B")
                         assert str(captured_warnings[0].message).startswith(
                             "Instrument 'BL1B' could not be found in 'SNS'."
                         )
