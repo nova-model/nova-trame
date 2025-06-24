@@ -357,7 +357,10 @@ class App(ThemedApp):
                         )
                     with html.Div(classes="border-md text-left", style="height: 650px; width: 600px;"):
                         NeutronDataSelector(
-                            v_model="data_selector.selected_oncat_files", data_source="oncat", chips=True
+                            v_model="data_selector.selected_oncat_files",
+                            data_source="oncat",
+                            extensions=[".nxs"],
+                            chips=True,
                         )
 
                     vuetify.VCardTitle("Form Inputs & Controls")

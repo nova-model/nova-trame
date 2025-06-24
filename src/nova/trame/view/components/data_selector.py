@@ -110,7 +110,9 @@ class DataSelector(datagrid.VGrid):
                     vuetify.VTooltip("Refresh Contents", activator="parent")
 
             with GridLayout(columns=2, classes="flex-1-0 h-0", valign="start"):
+                column_span = 2
                 if not self._prefix:
+                    column_span -= 1
                     with html.Div(classes="d-flex flex-column h-100 overflow-hidden"):
                         vuetify.VListSubheader("Available Directories", classes="flex-0-1 justify-center px-0")
                         vuetify.VTreeview(
@@ -129,6 +131,7 @@ class DataSelector(datagrid.VGrid):
                 super().__init__(
                     v_model=self._v_model,
                     can_focus=False,
+                    column_span=column_span,
                     columns=(
                         "[{"
                         "    cellTemplate: (createElement, props) =>"
