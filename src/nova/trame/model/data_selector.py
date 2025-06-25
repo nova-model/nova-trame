@@ -47,6 +47,10 @@ class DataSelectorModel:
 
                 if len(path_parts) > 1:
                     dirs.clear()
+                elif path_parts != ["."]:
+                    # Subdirectories are fully queried upon being opened, so we only need to query one item to determine
+                    # if the target directory has any children.
+                    dirs[:] = dirs[:1]
 
                 # Only create a new entry for top-level directories
                 if len(path_parts) == 1 and path_parts[0] != ".":  # This indicates a top-level directory
