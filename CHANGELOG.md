@@ -1,3 +1,7 @@
+### nova-trame, 0.23.1
+
+* Added support for refreshing the file list in DataSelector and its subclasses (thanks to Yuanpeng Zhang and John Duggan).
+
 ### nova-trame, 0.23.0
 
 * The existing DataSelector component has been renamed to NeutronDataSelector and moved to nova.trame.view.components.ornl.NeutronDataSelector (thanks to John Duggan).

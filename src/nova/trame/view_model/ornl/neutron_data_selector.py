@@ -25,7 +25,7 @@ class NeutronDataSelectorViewModel(DataSelectorViewModel):
     def reset(self) -> None:
         self.model.set_subdirectory("")
         self.directories = self.model.get_directories()
-        self.expanded = []
+        self.expanded = {}
         self.reset_bind.update_in_view(None)
 
     def on_state_updated(self, results: Dict[str, Any]) -> None:
@@ -43,9 +43,9 @@ class NeutronDataSelectorViewModel(DataSelectorViewModel):
                     self.reset()
         self.update_view()
 
-    def update_view(self) -> None:
+    def update_view(self, refresh_directories: bool = False) -> None:
         self.facilities_bind.update_in_view(self.model.get_facilities())
         self.instruments_bind.update_in_view(self.model.get_instruments())
         self.experiments_bind.update_in_view(self.model.get_experiments())
 
-        super().update_view()
+        super().update_view(refresh_directories)
