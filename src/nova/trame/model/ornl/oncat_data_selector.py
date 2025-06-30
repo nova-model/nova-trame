@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from natsort import natsorted
+from pydantic import Field
 from pyoncat import CLIENT_CREDENTIALS_FLOW, ONCat
 
 from .neutron_data_selector import NeutronDataSelectorModel, NeutronDataSelectorState
@@ -13,14 +14,25 @@ from .neutron_data_selector import NeutronDataSelectorModel, NeutronDataSelector
 class ONCatDataSelectorState(NeutronDataSelectorState):
     """Selection state for identifying datafiles."""
 
-    pass
+    projection: List[str] = Field(default=[])
 
 
 class ONCatDataSelectorModel(NeutronDataSelectorModel):
     """ONCat backend for NeutronDataSelector."""
 
-    def __init__(self, state: ONCatDataSelectorState, facility: str, instrument: str, extensions: List[str]) -> None:
+    def __init__(
+        self,
+        state: ONCatDataSelectorState,
+        facility: str,
+        instrument: str,
+        extensions: List[str],
+        projection: Optional[List[str]],
+    ) -> None:
         super().__init__(state, facility, instrument, extensions)
+        self.state: ONCatDataSelectorState
+
+        if projection:
+            self.state.projection = projection
 
         # TODO: use proxy server
         self.oncat_client = ONCat(
@@ -59,16 +71,18 @@ class ONCatDataSelectorModel(NeutronDataSelectorModel):
     def get_directories(self, _: Optional[Path] = None) -> List[Dict[str, Any]]:
         return []
 
-    def get_datafiles(self) -> List[str]:
+    def get_datafiles(self, *args: Any, **kwargs: Any) -> List[str]:
         if not self.state.facility or not self.state.instrument or not self.state.experiment:
             return []
+
+        projection = ["location"] + self.state.projection
 
         datafiles = []
         for datafile_data in self.oncat_client.Datafile.list(
             facility=self.state.facility,
             instrument=self.state.instrument,
             experiment=self.state.experiment,
-            projection=["location"],
+            projection=projection,
         ):
             path = datafile_data.location
             if self.state.extensions:

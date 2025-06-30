@@ -358,9 +358,17 @@ class App(ThemedApp):
                     with html.Div(classes="border-md text-left", style="height: 650px; width: 600px;"):
                         NeutronDataSelector(
                             v_model="data_selector.selected_oncat_files",
+                            chips=True,
                             data_source="oncat",
                             extensions=[".nxs"],
-                            chips=True,
+                            projection=[
+                                "indexed.run_number",
+                                "metadata.entry.daslogs.attenuator",
+                                "metadata.entry.daslogs.sample_detector_distance",
+                                "metadata.entry.daslogs.sample_thickness",
+                                "metadata.entry.daslogs.wavelength",
+                                "metadata.entry.title",
+                            ],
                         )
 
                     vuetify.VCardTitle("Form Inputs & Controls")

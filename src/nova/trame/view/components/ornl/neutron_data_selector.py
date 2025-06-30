@@ -35,6 +35,7 @@ class NeutronDataSelector(DataSelector):
         instrument: str = "",
         extensions: Optional[List[str]] = None,
         prefix: str = "",
+        projection: Optional[List[str]] = None,
         refresh_rate: int = 30,
         select_strategy: str = "all",
         **kwargs: Any,
@@ -60,7 +61,11 @@ class NeutronDataSelector(DataSelector):
             A list of file extensions to restrict selection to. If unset, then all files will be shown.
         prefix : str, optional
             A subdirectory within the user's chosen experiment to show files. If not specified, the user will be shown a
-            folder browser and will be able to see all files in the experiment that they have access to.
+            folder browser and will be able to see all files in the experiment that they have access to. This should
+            only be used with `data_source="filesystem"`.
+        projection : List[str], optional
+            Sets the projection argument when pulling data files via pyoncat. Please refer to the ONCat documentation
+            for how to use this. This should only be used with `data_source="oncat"`.
         refresh_rate : int, optional
             The number of seconds between attempts to automatically refresh the file list. Set to zero to disable this
             feature. Defaults to 30 seconds.
@@ -88,6 +93,7 @@ class NeutronDataSelector(DataSelector):
         self._instrument = instrument
         self._allow_custom_directories = allow_custom_directories
         self._data_source = data_source
+        self._projection = projection
 
         self._facilities_name = f"nova__neutrondataselector_{self._next_id}_facilities"
         self._instruments_name = f"nova__neutrondataselector_{self._next_id}_instruments"
@@ -97,7 +103,7 @@ class NeutronDataSelector(DataSelector):
             v_model,
             "",
             extensions,
-            prefix if data_source == "filesystem" else "",
+            prefix if data_source == "filesystem" else "oncat",
             refresh_rate,
             select_strategy,
             **kwargs,
@@ -136,7 +142,7 @@ class NeutronDataSelector(DataSelector):
         self._model: NeutronDataSelectorModel
         if self._data_source == "oncat":
             self._model = ONCatDataSelectorModel(
-                ONCatDataSelectorState(), self._facility, self._instrument, self._extensions
+                ONCatDataSelectorState(), self._facility, self._instrument, self._extensions, self._projection
             )
         else:
             self._model = AnalysisDataSelectorModel(
