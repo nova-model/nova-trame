@@ -32,6 +32,7 @@ class NeutronDataSelector(DataSelector):
         instrument: str = "",
         extensions: Optional[List[str]] = None,
         prefix: str = "",
+        refresh_rate: int = 30,
         select_strategy: str = "all",
         **kwargs: Any,
     ) -> None:
@@ -54,6 +55,9 @@ class NeutronDataSelector(DataSelector):
         prefix : str, optional
             A subdirectory within the user's chosen experiment to show files. If not specified, the user will be shown a
             folder browser and will be able to see all files in the experiment that they have access to.
+        refresh_rate : int, optional
+            The number of seconds between attempts to automatically refresh the file list. Set to zero to disable this
+            feature. Defaults to 30 seconds.
         select_strategy : str, optional
             The selection strategy to pass to the `VDataTable component <https://trame.readthedocs.io/en/latest/trame.widgets.vuetify3.html#trame.widgets.vuetify3.VDataTable>`__.
             If unset, the `all` strategy will be used.
@@ -76,7 +80,7 @@ class NeutronDataSelector(DataSelector):
         self._instruments_name = f"nova__neutrondataselector_{self._next_id}_instruments"
         self._experiments_name = f"nova__neutrondataselector_{self._next_id}_experiments"
 
-        super().__init__(v_model, "", extensions, prefix, select_strategy, **kwargs)
+        super().__init__(v_model, "", extensions, prefix, refresh_rate, select_strategy, **kwargs)
 
     def create_ui(self, **kwargs: Any) -> None:
         super().create_ui(**kwargs)

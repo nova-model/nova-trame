@@ -1,5 +1,6 @@
 """View Implementation for DataSelector."""
 
+from asyncio import ensure_future, sleep
 from typing import Any, List, Optional, cast
 
 from trame.app import get_server
@@ -8,7 +9,7 @@ from trame.widgets import vuetify3 as vuetify
 
 from nova.mvvm.trame_binding import TrameBinding
 from nova.trame.model.data_selector import DataSelectorModel, DataSelectorState
-from nova.trame.view.layouts import GridLayout, VBoxLayout
+from nova.trame.view.layouts import GridLayout, HBoxLayout, VBoxLayout
 from nova.trame.view_model.data_selector import DataSelectorViewModel
 
 from .input_field import InputField
@@ -25,6 +26,7 @@ class DataSelector(datagrid.VGrid):
         directory: str,
         extensions: Optional[List[str]] = None,
         prefix: str = "",
+        refresh_rate: int = 30,
         select_strategy: str = "all",
         **kwargs: Any,
     ) -> None:
@@ -43,6 +45,9 @@ class DataSelector(datagrid.VGrid):
         prefix : str, optional
             A subdirectory within the selected top-level folder to show files. If not specified, the user will be shown
             a folder browser and will be able to see all files in the selected top-level folder.
+        refresh_rate : int, optional
+            The number of seconds between attempts to automatically refresh the file list. Set to zero to disable this
+            feature. Defaults to 30 seconds.
         select_strategy : str, optional
             The selection strategy to pass to the `VDataTable component <https://trame.readthedocs.io/en/latest/trame.widgets.vuetify3.html#trame.widgets.vuetify3.VDataTable>`__.
             If unset, the `all` strategy will be used.
@@ -73,6 +78,7 @@ class DataSelector(datagrid.VGrid):
         self._directory = directory
         self._extensions = extensions if extensions is not None else []
         self._prefix = prefix
+        self._refresh_rate = refresh_rate
         self._select_strategy = select_strategy
 
         self._revogrid_id = f"nova__dataselector_{self._next_id}_rv"
@@ -91,9 +97,17 @@ class DataSelector(datagrid.VGrid):
 
         self.create_ui(**kwargs)
 
+        ensure_future(self._refresh_loop())
+
     def create_ui(self, *args: Any, **kwargs: Any) -> None:
         with VBoxLayout(classes="nova-data-selector", height="100%") as self._layout:
-            self._layout.filter = html.Div()
+            with HBoxLayout(valign="center"):
+                self._layout.filter = html.Div(classes="flex-1-1")
+                with vuetify.VBtn(
+                    classes="mx-1", density="compact", icon=True, variant="text", click=self.refresh_contents
+                ):
+                    vuetify.VIcon("mdi-refresh")
+                    vuetify.VTooltip("Refresh Contents", activator="parent")
 
             with GridLayout(columns=2, classes="flex-1-0 h-0", valign="start"):
                 if not self._prefix:
@@ -185,6 +199,9 @@ class DataSelector(datagrid.VGrid):
 
         self._vm.update_view()
 
+    def refresh_contents(self) -> None:
+        self._vm.update_view(refresh_directories=True)
+
     def reset(self, _: Any = None) -> None:
         self._reset_state()
         self._reset_rv_grid()
@@ -194,3 +211,11 @@ class DataSelector(datagrid.VGrid):
             "The old DataSelector component has been renamed to NeutronDataSelector. Please import it from "
             "`nova.trame.view.components.ornl`."
         )
+
+    async def _refresh_loop(self) -> None:
+        if self._refresh_rate > 0:
+            while True:
+                await sleep(self._refresh_rate)
+
+                self.refresh_contents()
+                self.state.dirty(self._datafiles_name)
