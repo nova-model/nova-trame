@@ -350,7 +350,7 @@ class App(ThemedApp):
 
                     vuetify.VCardTitle("Data Selection Widgets")
                     with html.Div(classes="border-md text-left", style="height: 650px; width: 600px;"):
-                        DataSelector(v_model="data_selector.selected_files", chips=True, directory="/")
+                        DataSelector(v_model="data_selector.selected_files", chips=True, directory="/", refresh_rate=0)
                     with html.Div(classes="border-md text-left", style="height: 650px; width: 600px;"):
                         NeutronDataSelector(
                             v_model="data_selector.selected_neutron_files", allow_custom_directories=True, chips=True

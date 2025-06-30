@@ -20,14 +20,13 @@ vuetify.enable_lab()
 class DataSelector(datagrid.VGrid):
     """Allows the user to select datafiles from the server."""
 
-    REFRESH_RATE = 30
-
     def __init__(
         self,
         v_model: str,
         directory: str,
         extensions: Optional[List[str]] = None,
         prefix: str = "",
+        refresh_rate: int = 30,
         select_strategy: str = "all",
         **kwargs: Any,
     ) -> None:
@@ -46,6 +45,9 @@ class DataSelector(datagrid.VGrid):
         prefix : str, optional
             A subdirectory within the selected top-level folder to show files. If not specified, the user will be shown
             a folder browser and will be able to see all files in the selected top-level folder.
+        refresh_rate : int, optional
+            The number of seconds between attempts to automatically refresh the file list. Set to zero to disable this
+            feature. Defaults to 30 seconds.
         select_strategy : str, optional
             The selection strategy to pass to the `VDataTable component <https://trame.readthedocs.io/en/latest/trame.widgets.vuetify3.html#trame.widgets.vuetify3.VDataTable>`__.
             If unset, the `all` strategy will be used.
@@ -76,6 +78,7 @@ class DataSelector(datagrid.VGrid):
         self._directory = directory
         self._extensions = extensions if extensions is not None else []
         self._prefix = prefix
+        self._refresh_rate = refresh_rate
         self._select_strategy = select_strategy
 
         self._revogrid_id = f"nova__dataselector_{self._next_id}_rv"
@@ -210,8 +213,9 @@ class DataSelector(datagrid.VGrid):
         )
 
     async def _refresh_loop(self) -> None:
-        while True:
-            await sleep(self.REFRESH_RATE)
+        if self._refresh_rate > 0:
+            while True:
+                await sleep(self._refresh_rate)
 
-            self.refresh_contents()
-            self.state.dirty(self._datafiles_name)
+                self.refresh_contents()
+                self.state.dirty(self._datafiles_name)
