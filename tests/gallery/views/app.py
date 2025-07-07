@@ -363,10 +363,6 @@ class App(ThemedApp):
                             extensions=[".nxs"],
                             projection=[
                                 "indexed.run_number",
-                                "metadata.entry.daslogs.attenuator",
-                                "metadata.entry.daslogs.sample_detector_distance",
-                                "metadata.entry.daslogs.sample_thickness",
-                                "metadata.entry.daslogs.wavelength",
                                 "metadata.entry.title",
                             ],
                         )

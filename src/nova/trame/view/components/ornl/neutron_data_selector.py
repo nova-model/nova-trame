@@ -110,18 +110,38 @@ class NeutronDataSelector(DataSelector):
         )
 
     def create_ui(self, **kwargs: Any) -> None:
-        super().create_ui(**kwargs)
+        if self._data_source == "oncat":
+            columns = (
+                "["
+                "  {"
+                "    autoSize: true,"
+                "    cellTemplate: (createElement, props) =>"
+                f"     window.grid_manager.get('{self._revogrid_id}').cellTemplate(createElement, props),"
+                "    columnTemplate: (createElement) =>"
+                f"     window.grid_manager.get('{self._revogrid_id}').columnTemplate(createElement),"
+                "    name: 'Available Datafiles',"
+                "    prop: 'title',"
+                "  },"
+            )
+            if self._projection:
+                for key in self._projection:
+                    columns += f"{{autoSize: true, name: '{key}', prop: '{key}'}},"
+            columns += "]"
+
+            super().create_ui(auto_size_column=True, columns=(columns,), resize=True, **kwargs)
+        else:
+            super().create_ui(**kwargs)
 
         with self._layout.filter:
             with GridLayout(columns=3):
-                columns = 3
+                column_span = 3
                 if self._facility == "":
-                    columns -= 1
+                    column_span -= 1
                     InputField(
                         v_model=f"{self._state_name}.facility", items=(self._facilities_name,), type="autocomplete"
                     )
                 if self._instrument == "":
-                    columns -= 1
+                    column_span -= 1
                     InputField(
                         v_if=f"{self._state_name}.facility !== '{CUSTOM_DIRECTORIES_LABEL}'",
                         v_model=f"{self._state_name}.instrument",
@@ -131,7 +151,7 @@ class NeutronDataSelector(DataSelector):
                 InputField(
                     v_if=f"{self._state_name}.facility !== '{CUSTOM_DIRECTORIES_LABEL}'",
                     v_model=f"{self._state_name}.experiment",
-                    column_span=columns,
+                    column_span=column_span,
                     items=(self._experiments_name,),
                     type="autocomplete",
                 )

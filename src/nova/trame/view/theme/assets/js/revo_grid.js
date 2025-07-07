@@ -36,6 +36,10 @@ class RevoGrid {
         rowCheckboxes.forEach((element) => {
             const input = element.querySelector('input')
 
+            if (input === null) {
+                return
+            }
+
             const rowIndex = element.dataset.rgrow
             input.checked = modelValue.includes(availableData[rowIndex].path)
         })

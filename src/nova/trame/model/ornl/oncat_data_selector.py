@@ -71,7 +71,23 @@ class ONCatDataSelectorModel(NeutronDataSelectorModel):
     def get_directories(self, _: Optional[Path] = None) -> List[Dict[str, Any]]:
         return []
 
-    def get_datafiles(self, *args: Any, **kwargs: Any) -> List[str]:
+    def create_datafile_obj(self, data: Dict[str, Any], projection: List[str]) -> Dict[str, str]:
+        new_obj = {"path": data["location"]}
+
+        for key in projection:
+            value = data
+
+            if key == "location":
+                continue
+
+            for part in key.split("."):
+                value = value[part]
+
+            new_obj[key] = value
+
+        return new_obj
+
+    def get_datafiles(self, *args: Any, **kwargs: Any) -> List[Any]:
         if not self.state.facility or not self.state.instrument or not self.state.experiment:
             return []
 
@@ -88,7 +104,7 @@ class ONCatDataSelectorModel(NeutronDataSelectorModel):
             if self.state.extensions:
                 for extension in self.state.extensions:
                     if path.lower().endswith(extension):
-                        datafiles.append(path)
+                        datafiles.append(self.create_datafile_obj(datafile_data, projection))
             else:
-                datafiles.append(path)
-        return natsorted(datafiles)
+                datafiles.append(self.create_datafile_obj(datafile_data, projection))
+        return natsorted(datafiles, key=lambda d: d["path"])

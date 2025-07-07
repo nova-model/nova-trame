@@ -128,11 +128,10 @@ class DataSelector(datagrid.VGrid):
                         )
                         vuetify.VListItem("No directories found", classes="flex-0-1 text-center", v_else=True)
 
-                super().__init__(
-                    v_model=self._v_model,
-                    can_focus=False,
-                    column_span=column_span,
-                    columns=(
+                if "columns" in kwargs:
+                    columns = kwargs.pop("columns")
+                else:
+                    columns = (
                         "[{"
                         "    cellTemplate: (createElement, props) =>"
                         f"       window.grid_manager.get('{self._revogrid_id}').cellTemplate(createElement, props),"
@@ -141,7 +140,13 @@ class DataSelector(datagrid.VGrid):
                         "    name: 'Available Datafiles',"
                         "    prop: 'title',"
                         "}]",
-                    ),
+                    )
+
+                super().__init__(
+                    v_model=self._v_model,
+                    can_focus=False,
+                    column_span=column_span,
+                    columns=columns,
                     frame_size=10,
                     hide_attribution=True,
                     id=self._revogrid_id,

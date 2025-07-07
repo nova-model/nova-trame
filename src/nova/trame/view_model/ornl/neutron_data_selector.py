@@ -1,6 +1,7 @@
 """View model implementation for the DataSelector widget."""
 
-from typing import Any, Dict, Optional
+import os
+from typing import Any, Dict, List, Optional
 
 from nova.mvvm.interface import BindingInterface
 from nova.trame.model.ornl.neutron_data_selector import NeutronDataSelectorModel
@@ -44,6 +45,10 @@ class NeutronDataSelectorViewModel(DataSelectorViewModel):
 
         if results.get("updated", []):
             self.update_view()
+
+    def transform_datafiles(self, datafiles: List[Any]) -> List[Dict[str, str]]:
+        return [{"title": os.path.basename(datafile["path"]), **datafile} for datafile in datafiles]
+        return super().transform_datafiles(datafiles)
 
     def update_view(self, refresh_directories: bool = False) -> None:
         self.facilities_bind.update_in_view(self.model.get_facilities())
