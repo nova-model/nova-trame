@@ -109,26 +109,29 @@ class NeutronDataSelector(DataSelector):
             **kwargs,
         )
 
+    def create_projection_column_title(self, key: str) -> str:
+        return key.split(".")[-1].replace("_", " ").title()
+
     def create_ui(self, **kwargs: Any) -> None:
         if self._data_source == "oncat":
             columns = (
                 "["
                 "  {"
-                "    autoSize: true,"
                 "    cellTemplate: (createElement, props) =>"
                 f"     window.grid_manager.get('{self._revogrid_id}').cellTemplate(createElement, props),"
                 "    columnTemplate: (createElement) =>"
                 f"     window.grid_manager.get('{self._revogrid_id}').columnTemplate(createElement),"
                 "    name: 'Available Datafiles',"
                 "    prop: 'title',"
+                "    size: 150,"
                 "  },"
             )
             if self._projection:
                 for key in self._projection:
-                    columns += f"{{autoSize: true, name: '{key}', prop: '{key}'}},"
+                    columns += f"{{name: '{self.create_projection_column_title(key)}', prop: '{key}', size: 150}},"
             columns += "]"
 
-            super().create_ui(auto_size_column=True, columns=(columns,), resize=True, **kwargs)
+            super().create_ui(columns=(columns,), resize=True, **kwargs)
         else:
             super().create_ui(**kwargs)
 
