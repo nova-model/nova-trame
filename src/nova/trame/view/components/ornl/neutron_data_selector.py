@@ -1,6 +1,6 @@
 """View Implementation for DataSelector."""
 
-from typing import Any, List, Optional
+from typing import Any, List, Optional, Tuple, Union
 from warnings import warn
 
 from trame.app import get_server
@@ -26,39 +26,45 @@ class NeutronDataSelector(DataSelector):
 
     def __init__(
         self,
-        v_model: str,
-        allow_custom_directories: bool = False,
-        facility: str = "",
-        instrument: str = "",
-        extensions: Optional[List[str]] = None,
-        prefix: str = "",
-        refresh_rate: int = 30,
-        select_strategy: str = "all",
+        v_model: Union[str, Tuple],
+        allow_custom_directories: Union[bool, Tuple] = False,
+        facility: Union[str, Tuple] = "",
+        instrument: Union[str, Tuple] = "",
+        experiment: Union[str, Tuple] = "",
+        selected_directory: Union[str, Tuple] = "",
+        extensions: Union[List[str], Tuple, None] = None,
+        prefix: Union[str, Tuple] = "",
+        refresh_rate: Union[int, Tuple] = 30,
+        select_strategy: Union[str, Tuple] = "all",
         **kwargs: Any,
     ) -> None:
         """Constructor for DataSelector.
 
         Parameters
         ----------
-        v_model : str
+        v_model : Union[str, Tuple]
             The name of the state variable to bind to this widget. The state variable will contain a list of the files
             selected by the user.
-        allow_custom_directories : bool, optional
+        allow_custom_directories : Union[bool, Tuple], optional
             Whether or not to allow users to provide their own directories to search for datafiles in. Ignored if the
             facility parameter is set.
-        facility : str, optional
+        facility : Union[str, Tuple], optional
             The facility to restrict data selection to. Options: HFIR, SNS
-        instrument : str, optional
+        instrument : Union[str, Tuple], optional
             The instrument to restrict data selection to. Please use the instrument acronym (e.g. CG-2).
-        extensions : List[str], optional
+        experiment : Union[str, Tuple], optional
+            The experiment to restrict data selection to.
+        selected_directory : Union[str, Tuple], optional
+            The directory containing the visible datafiles.
+        extensions : Union[List[str], Tuple], optional
             A list of file extensions to restrict selection to. If unset, then all files will be shown.
-        prefix : str, optional
+        prefix : Union[str, Tuple], optional
             A subdirectory within the user's chosen experiment to show files. If not specified, the user will be shown a
             folder browser and will be able to see all files in the experiment that they have access to.
-        refresh_rate : int, optional
+        refresh_rate : Union[str, Tuple], optional
             The number of seconds between attempts to automatically refresh the file list. Set to zero to disable this
             feature. Defaults to 30 seconds.
-        select_strategy : str, optional
+        select_strategy : Union[str, Tuple], optional
             The selection strategy to pass to the `VDataTable component <https://trame.readthedocs.io/en/latest/trame.widgets.vuetify3.html#trame.widgets.vuetify3.VDataTable>`__.
             If unset, the `all` strategy will be used.
         **kwargs

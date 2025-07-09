@@ -12,7 +12,6 @@ class DataSelectorState(BaseModel, validate_assignment=True):
     """Selection state for identifying datafiles."""
 
     directory: str = Field(default="")
-    subdirectory: str = Field(default="")
     extensions: List[str] = Field(default=[])
     prefix: str = Field(default="")
 
@@ -20,9 +19,10 @@ class DataSelectorState(BaseModel, validate_assignment=True):
 class DataSelectorModel:
     """Manages file system interactions for the DataSelector widget."""
 
-    def __init__(self, state: DataSelectorState, directory: str, extensions: List[str], prefix: str) -> None:
+    def __init__(self, state: DataSelectorState) -> None:
         self.state: DataSelectorState = state
 
+    def set_binding_parameters(self, directory: str, extensions: List[str], prefix: str) -> None:
         self.state.directory = directory
         self.state.extensions = extensions
         self.state.prefix = prefix
@@ -89,10 +89,7 @@ class DataSelectorModel:
     def get_datafiles_from_path(self, base_path: Path) -> List[str]:
         datafiles = []
         try:
-            if self.state.prefix:
-                datafile_path = base_path / self.state.prefix
-            else:
-                datafile_path = base_path / self.state.subdirectory
+            datafile_path = base_path / self.state.prefix
 
             for entry in os.scandir(datafile_path):
                 if entry.is_file():
@@ -113,4 +110,4 @@ class DataSelectorModel:
         return self.get_datafiles_from_path(base_path)
 
     def set_subdirectory(self, subdirectory_path: str) -> None:
-        self.state.subdirectory = subdirectory_path
+        self.state.prefix = subdirectory_path

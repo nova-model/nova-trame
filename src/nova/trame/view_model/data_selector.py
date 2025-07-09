@@ -57,6 +57,10 @@ class DataSelectorViewModel:
     def on_state_updated(self, results: Dict[str, Any]) -> None:
         pass
 
+    def set_binding_parameters(self, directory: str, extensions: List[str], prefix: str) -> None:
+        self.model.set_binding_parameters(directory, extensions, prefix)
+        self.update_view()
+
     def set_subdirectory(self, subdirectory_path: str = "") -> None:
         self.model.set_subdirectory(subdirectory_path)
         self.update_view()

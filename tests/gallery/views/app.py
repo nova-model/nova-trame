@@ -162,6 +162,7 @@ class App(ThemedApp):
 
         self.data_selector_vm = DataSelectorVM(binding)
         self.data_selector_vm.model_bind.connect("data_selector")
+        self.data_selector_vm.parameter_bind.connect("ds_params")
 
         self.file_upload_vm = FileUploadVM(binding)
         self.file_upload_vm.model_bind.connect("file_upload")
@@ -350,11 +351,18 @@ class App(ThemedApp):
 
                     vuetify.VCardTitle("Data Selection Widgets")
                     with html.Div(classes="border-md text-left", style="height: 650px; width: 600px;"):
-                        DataSelector(v_model="data_selector.selected_files", chips=True, directory="/", refresh_rate=0)
-                    with html.Div(classes="border-md text-left", style="height: 650px; width: 600px;"):
-                        NeutronDataSelector(
-                            v_model="data_selector.selected_neutron_files", allow_custom_directories=True, chips=True
+                        DataSelector(
+                            v_model="data_selector.selected_files",
+                            chips=True,
+                            directory="/",
+                            prefix=("ds_params.prefix",),
+                            refresh_rate=0,
                         )
+                    with html.Div(classes="border-md text-left", style="height: 650px; width: 600px;"):
+                        pass
+                        # NeutronDataSelector(
+                        #     v_model="data_selector.selected_neutron_files", allow_custom_directories=True, chips=True
+                        # )
 
                     vuetify.VCardTitle("Form Inputs & Controls")
                     with GridLayout(columns=3, valign="center"):

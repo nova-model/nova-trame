@@ -1,12 +1,15 @@
 """View Implementation for DataSelector."""
 
 from asyncio import ensure_future, sleep
-from typing import Any, List, Optional, cast
+from pathlib import Path
+from typing import Any, List, Tuple, Union, cast
 
 from trame.app import get_server
 from trame.widgets import client, datagrid, html
 from trame.widgets import vuetify3 as vuetify
+from trame_server.core import State
 
+from nova.mvvm._internal.utils import rgetdictvalue, rsetdictvalue
 from nova.mvvm.trame_binding import TrameBinding
 from nova.trame.model.data_selector import DataSelectorModel, DataSelectorState
 from nova.trame.view.layouts import GridLayout, HBoxLayout, VBoxLayout
@@ -17,38 +20,58 @@ from .input_field import InputField
 vuetify.enable_lab()
 
 
+# TODO: refactor
+def get_state_param(state: State, value: Union[Any, Tuple]) -> Any:
+    if isinstance(value, tuple):
+        return rgetdictvalue(state, value[0])
+
+    return value
+
+
+def set_state_param(state: State, value: Union[Any, Tuple], new_value: Any = None) -> Any:
+    with state:
+        if isinstance(value, tuple):
+            if new_value is not None:
+                rsetdictvalue(state, value[0], new_value)
+            elif len(value) > 1:
+                rsetdictvalue(state, value[0], value[1])
+            state.dirty(value[0].split(".")[0])
+
+    return get_state_param(state, value)
+
+
 class DataSelector(datagrid.VGrid):
     """Allows the user to select datafiles from the server."""
 
     def __init__(
         self,
-        v_model: str,
-        directory: str,
-        extensions: Optional[List[str]] = None,
-        prefix: str = "",
-        refresh_rate: int = 30,
-        select_strategy: str = "all",
+        v_model: Union[str, Tuple],
+        directory: Union[str, Tuple],
+        extensions: Union[List[str], Tuple, None] = None,
+        prefix: Union[str, Tuple] = "",
+        refresh_rate: Union[int, Tuple] = 30,
+        select_strategy: Union[str, Tuple] = "all",
         **kwargs: Any,
     ) -> None:
         """Constructor for DataSelector.
 
         Parameters
         ----------
-        v_model : str
+        v_model : Union[str, Tuple]
             The name of the state variable to bind to this widget. The state variable will contain a list of the files
             selected by the user.
-        directory : str
+        directory : Union[str, Tuple]
             The top-level folder to expose to users. Only contents of this directory and its children will be exposed to
             users.
-        extensions : List[str], optional
+        extensions : Union[List[str], Tuple], optional
             A list of file extensions to restrict selection to. If unset, then all files will be shown.
-        prefix : str, optional
+        prefix : Union[str, Tuple], optional
             A subdirectory within the selected top-level folder to show files. If not specified, the user will be shown
             a folder browser and will be able to see all files in the selected top-level folder.
-        refresh_rate : int, optional
+        refresh_rate : Union[int, Tuple], optional
             The number of seconds between attempts to automatically refresh the file list. Set to zero to disable this
             feature. Defaults to 30 seconds.
-        select_strategy : str, optional
+        select_strategy : Union[str, Tuple], optional
             The selection strategy to pass to the `VDataTable component <https://trame.readthedocs.io/en/latest/trame.widgets.vuetify3.html#trame.widgets.vuetify3.VDataTable>`__.
             If unset, the `all` strategy will be used.
         **kwargs
@@ -74,7 +97,10 @@ class DataSelector(datagrid.VGrid):
             self._label = None
 
         self._v_model = v_model
-        self._v_model_name_in_state = v_model.split(".")[0]
+        if isinstance(v_model, str):
+            self._v_model_name_in_state = v_model.split(".")[0]
+        else:
+            self._v_model_name_in_state = v_model[0].split(".")[0]
         self._directory = directory
         self._extensions = extensions if extensions is not None else []
         self._prefix = prefix
@@ -94,10 +120,16 @@ class DataSelector(datagrid.VGrid):
 
         self.create_model()
         self.create_viewmodel()
+        self.setup_binding_listeners()
+        self._vm.update_view()
 
         self.create_ui(**kwargs)
 
         ensure_future(self._refresh_loop())
+
+    @property
+    def state(self) -> State:
+        return get_server(None, client_type="vue3").state
 
     def create_ui(self, *args: Any, **kwargs: Any) -> None:
         with VBoxLayout(classes="nova-data-selector", height="100%") as self._layout:
@@ -110,7 +142,13 @@ class DataSelector(datagrid.VGrid):
                     vuetify.VTooltip("Refresh Contents", activator="parent")
 
             with GridLayout(columns=2, classes="flex-1-0 h-0", valign="start"):
-                if not self._prefix:
+                if isinstance(self._prefix, tuple) or not self._prefix:
+                    if self._prefix:
+                        initial_prefix = str(
+                            Path(get_state_param(self.state, self._directory))
+                            / get_state_param(self.state, self._prefix)
+                        )
+                        print(initial_prefix)
                     with html.Div(classes="d-flex flex-column h-100 overflow-hidden"):
                         vuetify.VListSubheader("Available Directories", classes="flex-0-1 justify-center px-0")
                         vuetify.VTreeview(
@@ -122,7 +160,7 @@ class DataSelector(datagrid.VGrid):
                             item_value="path",
                             items=(self._directories_name,),
                             click_open=(self._vm.expand_directory, "[$event.path]"),
-                            update_activated=(self._vm.set_subdirectory, "$event"),
+                            update_activated=(self.set_subdirectory, "$event"),
                         )
                         vuetify.VListItem("No directories found", classes="flex-0-1 text-center", v_else=True)
 
@@ -185,7 +223,7 @@ class DataSelector(datagrid.VGrid):
 
     def create_model(self) -> None:
         state = DataSelectorState()
-        self._model = DataSelectorModel(state, self._directory, self._extensions, self._prefix)
+        self._model = DataSelectorModel(state)
 
     def create_viewmodel(self) -> None:
         server = get_server(None, client_type="vue3")
@@ -197,8 +235,6 @@ class DataSelector(datagrid.VGrid):
         self._vm.datafiles_bind.connect(self._datafiles_name)
         self._vm.reset_bind.connect(self.reset)
 
-        self._vm.update_view()
-
     def refresh_contents(self) -> None:
         self._vm.update_view(refresh_directories=True)
 
@@ -206,16 +242,67 @@ class DataSelector(datagrid.VGrid):
         self._reset_state()
         self._reset_rv_grid()
 
+    def set_subdirectory(self, subdirectory_path: str = "") -> None:
+        set_state_param(self.state, self._prefix, subdirectory_path)
+        self._vm.set_subdirectory(subdirectory_path)
+
     def set_state(self, *args: Any, **kwargs: Any) -> None:
         raise TypeError(
             "The old DataSelector component has been renamed to NeutronDataSelector. Please import it from "
             "`nova.trame.view.components.ornl`."
         )
 
+    def setup_binding_listeners(self) -> None:
+        set_state_param(self.state, self._directory)
+        set_state_param(self.state, self._extensions)
+        set_state_param(self.state, self._prefix)
+
+        self._vm.set_binding_parameters(
+            get_state_param(self.state, self._directory),
+            get_state_param(self.state, self._extensions),
+            get_state_param(self.state, self._prefix),
+        )
+        if isinstance(self._prefix, tuple):
+            self._prefix = (self._prefix[0],)
+
+        if isinstance(self._directory, tuple):
+
+            @self.state.change(self._directory[0])
+            def on_directory_change(*args: Any, **kwargs: Any) -> None:
+                self._vm.set_binding_parameters(
+                    get_state_param(self.state, self._directory),
+                    get_state_param(self.state, self._extensions),
+                    get_state_param(self.state, self._prefix),
+                )
+
+        if isinstance(self._extensions, tuple):
+
+            @self.state.change(self._extensions[0])
+            def on_extensions_change(*args: Any, **kwargs: Any) -> None:
+                self._vm.set_binding_parameters(
+                    get_state_param(self.state, self._directory),
+                    get_state_param(self.state, self._extensions),
+                    get_state_param(self.state, self._prefix),
+                )
+
+        if isinstance(self._prefix, tuple):
+
+            @self.state.change(self._prefix[0])
+            def on_prefix_change(*args: Any, **kwargs: Any) -> None:
+                self._vm.set_binding_parameters(
+                    get_state_param(self.state, self._directory),
+                    get_state_param(self.state, self._extensions),
+                    get_state_param(self.state, self._prefix),
+                )
+
     async def _refresh_loop(self) -> None:
-        if self._refresh_rate > 0:
+        refresh_rate: int = set_state_param(self.state, self._refresh_rate)
+
+        if refresh_rate > 0:
             while True:
-                await sleep(self._refresh_rate)
+                await sleep(refresh_rate)
 
                 self.refresh_contents()
                 self.state.dirty(self._datafiles_name)
+
+                refresh_rate = get_state_param(self.state, self._refresh_rate)

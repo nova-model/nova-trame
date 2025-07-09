@@ -5,6 +5,12 @@ from typing import List
 from pydantic import BaseModel, Field
 
 
+class DataSelectorBindingTest(BaseModel):
+    """Model for testing binding parameters for DataSelector."""
+
+    prefix: str = Field(default="")
+
+
 class DataSelectorState(BaseModel):
     """Model for MVVM demo of DataSelector."""
 
