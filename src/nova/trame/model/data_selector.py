@@ -13,7 +13,7 @@ class DataSelectorState(BaseModel, validate_assignment=True):
 
     directory: str = Field(default="")
     extensions: List[str] = Field(default=[])
-    prefix: str = Field(default="")
+    subdirectory: str = Field(default="")
 
 
 class DataSelectorModel:
@@ -22,10 +22,10 @@ class DataSelectorModel:
     def __init__(self, state: DataSelectorState) -> None:
         self.state: DataSelectorState = state
 
-    def set_binding_parameters(self, directory: str, extensions: List[str], prefix: str) -> None:
+    def set_binding_parameters(self, directory: str, extensions: List[str], subdirectory: str) -> None:
         self.state.directory = directory
         self.state.extensions = extensions
-        self.state.prefix = prefix
+        self.state.subdirectory = subdirectory
 
     def sort_directories(self, directories: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         # Sort the current level of dictionaries
@@ -89,7 +89,7 @@ class DataSelectorModel:
     def get_datafiles_from_path(self, base_path: Path) -> List[str]:
         datafiles = []
         try:
-            datafile_path = base_path / self.state.prefix
+            datafile_path = base_path / self.state.subdirectory
 
             for entry in os.scandir(datafile_path):
                 if entry.is_file():
@@ -110,4 +110,4 @@ class DataSelectorModel:
         return self.get_datafiles_from_path(base_path)
 
     def set_subdirectory(self, subdirectory_path: str) -> None:
-        self.state.prefix = subdirectory_path
+        self.state.subdirectory = subdirectory_path

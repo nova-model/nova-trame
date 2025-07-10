@@ -358,6 +358,7 @@ class App(ThemedApp):
                             v_model="data_selector.selected_files",
                             chips=True,
                             directory=("ds_params.directory", "/"),
+                            subdirectory=("ds_params.subdirectory",),
                             refresh_rate=("ds_params.refresh_rate", 15),
                         )
                     with html.Div(classes="border-md text-left", style="height: 650px; width: 600px;"):

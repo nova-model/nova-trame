@@ -3,6 +3,7 @@
 from asyncio import ensure_future, sleep
 from pathlib import Path
 from typing import Any, List, Tuple, Union, cast
+from warnings import warn
 
 from trame.app import get_server
 from trame.widgets import client, datagrid, html
@@ -49,6 +50,7 @@ class DataSelector(datagrid.VGrid):
         directory: Union[str, Tuple],
         extensions: Union[List[str], Tuple, None] = None,
         prefix: Union[str, Tuple] = "",
+        subdirectory: Union[str, Tuple] = "",
         refresh_rate: Union[int, Tuple] = 30,
         select_strategy: Union[str, Tuple] = "all",
         **kwargs: Any,
@@ -66,8 +68,10 @@ class DataSelector(datagrid.VGrid):
         extensions : Union[List[str], Tuple], optional
             A list of file extensions to restrict selection to. If unset, then all files will be shown.
         prefix : Union[str, Tuple], optional
-            A subdirectory within the selected top-level folder to show files. If not specified, the user will be shown
-            a folder browser and will be able to see all files in the selected top-level folder.
+            Deprecated. Please refer to the `subdirectory` parameter.
+        subdirectory : Union[str, Tuple], optional
+            A subdirectory within the selected top-level folder to show files. If not specified as a string, the user
+            will be shown a folder browser and will be able to see all files in the selected top-level folder.
         refresh_rate : Union[int, Tuple], optional
             The number of seconds between attempts to automatically refresh the file list. Set to zero to disable this
             feature. Defaults to 30 seconds.
@@ -96,6 +100,16 @@ class DataSelector(datagrid.VGrid):
         else:
             self._label = None
 
+        if prefix:
+            warn(
+                "The prefix parameter has been deprecated. Please switch to using the subdirectory parameter.",
+                category=DeprecationWarning,
+                stacklevel=1,
+            )
+
+            if not subdirectory:
+                subdirectory = prefix
+
         self._v_model = v_model
         if isinstance(v_model, str):
             self._v_model_name_in_state = v_model.split(".")[0]
@@ -106,8 +120,8 @@ class DataSelector(datagrid.VGrid):
         self._last_directory = self._directory
         self._extensions = extensions if extensions is not None else []
         self._last_extensions = self._extensions
-        self._prefix = prefix
-        self._last_prefix = self._prefix
+        self._subdirectory = subdirectory
+        self._last_subdirectory = self._subdirectory
         self._refresh_rate = refresh_rate
         self._select_strategy = select_strategy
 
@@ -146,13 +160,13 @@ class DataSelector(datagrid.VGrid):
                     vuetify.VTooltip("Refresh Contents", activator="parent")
 
             with GridLayout(columns=2, classes="flex-1-0 h-0", valign="start"):
-                if isinstance(self._prefix, tuple) or not self._prefix:
-                    if self._prefix:
-                        initial_prefix = str(
+                if isinstance(self._subdirectory, tuple) or not self._subdirectory:
+                    if self._subdirectory:
+                        initial_subdirectory = str(
                             Path(get_state_param(self.state, self._directory))
-                            / get_state_param(self.state, self._prefix)
+                            / get_state_param(self.state, self._subdirectory)
                         )
-                        print(initial_prefix)
+                        print(initial_subdirectory)
                     with html.Div(classes="d-flex flex-column h-100 overflow-hidden"):
                         vuetify.VListSubheader("Available Directories", classes="flex-0-1 justify-center px-0")
                         vuetify.VTreeview(
@@ -247,7 +261,7 @@ class DataSelector(datagrid.VGrid):
         self._reset_rv_grid()
 
     def set_subdirectory(self, subdirectory_path: str = "") -> None:
-        set_state_param(self.state, self._prefix, subdirectory_path)
+        set_state_param(self.state, self._subdirectory, subdirectory_path)
         self._vm.set_subdirectory(subdirectory_path)
 
     def set_state(self, *args: Any, **kwargs: Any) -> None:
@@ -259,15 +273,15 @@ class DataSelector(datagrid.VGrid):
     def setup_binding_listeners(self) -> None:
         set_state_param(self.state, self._directory)
         set_state_param(self.state, self._extensions)
-        set_state_param(self.state, self._prefix)
+        set_state_param(self.state, self._subdirectory)
 
         self._vm.set_binding_parameters(
             get_state_param(self.state, self._directory),
             get_state_param(self.state, self._extensions),
-            get_state_param(self.state, self._prefix),
+            get_state_param(self.state, self._subdirectory),
         )
-        if isinstance(self._prefix, tuple):
-            self._prefix = (self._prefix[0],)
+        if isinstance(self._subdirectory, tuple):
+            self._subdirectory = (self._subdirectory[0],)
 
         if isinstance(self._directory, tuple):
 
@@ -279,7 +293,7 @@ class DataSelector(datagrid.VGrid):
                     self._vm.set_binding_parameters(
                         get_state_param(self.state, self._directory),
                         get_state_param(self.state, self._extensions),
-                        get_state_param(self.state, self._prefix),
+                        get_state_param(self.state, self._subdirectory),
                     )
 
         if isinstance(self._extensions, tuple):
@@ -292,20 +306,20 @@ class DataSelector(datagrid.VGrid):
                     self._vm.set_binding_parameters(
                         get_state_param(self.state, self._directory),
                         get_state_param(self.state, self._extensions),
-                        get_state_param(self.state, self._prefix),
+                        get_state_param(self.state, self._subdirectory),
                     )
 
-        if isinstance(self._prefix, tuple):
+        if isinstance(self._subdirectory, tuple):
 
-            @self.state.change(self._prefix[0].split(".")[0])
-            def on_prefix_change(**kwargs: Any) -> None:
-                prefix = rgetdictvalue(kwargs, self._prefix)
-                if prefix != self._last_prefix:
-                    self._last_prefix = prefix
+            @self.state.change(self._subdirectory[0].split(".")[0])
+            def on_subdirectory_change(**kwargs: Any) -> None:
+                subdirectory = rgetdictvalue(kwargs, self._subdirectory[0])
+                if subdirectory != self._last_subdirectory:
+                    self._last_subdirectory = subdirectory
                     self._vm.set_binding_parameters(
                         get_state_param(self.state, self._directory),
                         get_state_param(self.state, self._extensions),
-                        get_state_param(self.state, self._prefix),
+                        get_state_param(self.state, self._subdirectory),
                     )
 
     async def _refresh_loop(self) -> None:

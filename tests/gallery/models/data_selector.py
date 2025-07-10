@@ -10,6 +10,7 @@ class DataSelectorBindingTest(BaseModel):
 
     directory: str = Field(default="")
     refresh_rate: int = Field(default=0)
+    subdirectory: str = Field(default="")
 
 
 class DataSelectorState(BaseModel):
