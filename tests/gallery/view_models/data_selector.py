@@ -17,8 +17,7 @@ class DataSelectorVM:
         self.parameter_bind = binding.new_bind(self.binding_test, callback_after_update=self.on_parameter_update)
 
     def on_update(self, data: Dict[str, Any]) -> None:
-        print("selected files:", self.model.selected_files)
-        print("selected neutron datafiles:", self.model.selected_neutron_files)
+        print(data, self.model)
 
     def on_parameter_update(self, data: Dict[str, Any]) -> None:
         print(data, self.binding_test)

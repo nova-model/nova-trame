@@ -8,7 +8,8 @@ from pydantic import BaseModel, Field
 class DataSelectorBindingTest(BaseModel):
     """Model for testing binding parameters for DataSelector."""
 
-    prefix: str = Field(default="")
+    directory: str = Field(default="")
+    refresh_rate: int = Field(default=0)
 
 
 class DataSelectorState(BaseModel):

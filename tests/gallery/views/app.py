@@ -343,20 +343,22 @@ class App(ThemedApp):
                                 vuetify.VBtn("Tooltip", v_bind="props")
 
                     vuetify.VCardTitle("Navigation Components")
-                    with GridLayout(classes="mb-4", columns=1, halign="center", valign="center"):
+                    with GridLayout(classes="mb-4", columns=1, valign="center"):
                         with vuetify.VTabs():
                             vuetify.VTab("Tab 1")
                             vuetify.VTab("Tab 2")
                             vuetify.VTab("Tab 3")
 
                     vuetify.VCardTitle("Data Selection Widgets")
+                    with GridLayout(classes="mb-1", columns=2, valign="center", width=600):
+                        InputField(v_model="ds_params.directory")
+                        InputField(v_model="ds_params.refresh_rate")
                     with html.Div(classes="border-md text-left", style="height: 650px; width: 600px;"):
                         DataSelector(
                             v_model="data_selector.selected_files",
                             chips=True,
-                            directory="/",
-                            prefix=("ds_params.prefix",),
-                            refresh_rate=0,
+                            directory=("ds_params.directory", "/"),
+                            refresh_rate=("ds_params.refresh_rate", 15),
                         )
                     with html.Div(classes="border-md text-left", style="height: 650px; width: 600px;"):
                         pass

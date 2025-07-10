@@ -101,9 +101,13 @@ class DataSelector(datagrid.VGrid):
             self._v_model_name_in_state = v_model.split(".")[0]
         else:
             self._v_model_name_in_state = v_model[0].split(".")[0]
+
         self._directory = directory
+        self._last_directory = self._directory
         self._extensions = extensions if extensions is not None else []
+        self._last_extensions = self._extensions
         self._prefix = prefix
+        self._last_prefix = self._prefix
         self._refresh_rate = refresh_rate
         self._select_strategy = select_strategy
 
@@ -267,42 +271,59 @@ class DataSelector(datagrid.VGrid):
 
         if isinstance(self._directory, tuple):
 
-            @self.state.change(self._directory[0])
-            def on_directory_change(*args: Any, **kwargs: Any) -> None:
-                self._vm.set_binding_parameters(
-                    get_state_param(self.state, self._directory),
-                    get_state_param(self.state, self._extensions),
-                    get_state_param(self.state, self._prefix),
-                )
+            @self.state.change(self._directory[0].split(".")[0])
+            def on_directory_change(**kwargs: Any) -> None:
+                directory = rgetdictvalue(kwargs, self._directory[0])
+                if directory != self._last_directory:
+                    self._last_directory = directory
+                    self._vm.set_binding_parameters(
+                        get_state_param(self.state, self._directory),
+                        get_state_param(self.state, self._extensions),
+                        get_state_param(self.state, self._prefix),
+                    )
 
         if isinstance(self._extensions, tuple):
 
-            @self.state.change(self._extensions[0])
-            def on_extensions_change(*args: Any, **kwargs: Any) -> None:
-                self._vm.set_binding_parameters(
-                    get_state_param(self.state, self._directory),
-                    get_state_param(self.state, self._extensions),
-                    get_state_param(self.state, self._prefix),
-                )
+            @self.state.change(self._extensions[0].split(".")[0])
+            def on_extensions_change(**kwargs: Any) -> None:
+                extensions = rgetdictvalue(kwargs, self._extensions[0])
+                if extensions != self._last_extensions:
+                    self._last_extensions = extensions
+                    self._vm.set_binding_parameters(
+                        get_state_param(self.state, self._directory),
+                        get_state_param(self.state, self._extensions),
+                        get_state_param(self.state, self._prefix),
+                    )
 
         if isinstance(self._prefix, tuple):
 
-            @self.state.change(self._prefix[0])
-            def on_prefix_change(*args: Any, **kwargs: Any) -> None:
-                self._vm.set_binding_parameters(
-                    get_state_param(self.state, self._directory),
-                    get_state_param(self.state, self._extensions),
-                    get_state_param(self.state, self._prefix),
-                )
+            @self.state.change(self._prefix[0].split(".")[0])
+            def on_prefix_change(**kwargs: Any) -> None:
+                prefix = rgetdictvalue(kwargs, self._prefix)
+                if prefix != self._last_prefix:
+                    self._last_prefix = prefix
+                    self._vm.set_binding_parameters(
+                        get_state_param(self.state, self._directory),
+                        get_state_param(self.state, self._extensions),
+                        get_state_param(self.state, self._prefix),
+                    )
 
     async def _refresh_loop(self) -> None:
         refresh_rate: int = set_state_param(self.state, self._refresh_rate)
+        skip = False
 
         if refresh_rate > 0:
             while True:
                 await sleep(refresh_rate)
+                if skip:
+                    continue
 
                 self.refresh_contents()
                 self.state.dirty(self._datafiles_name)
 
-                refresh_rate = get_state_param(self.state, self._refresh_rate)
+                try:
+                    refresh_rate = int(get_state_param(self.state, self._refresh_rate))
+                    skip = False
+                except TypeError:
+                    refresh_rate = 1
+                    skip = True
