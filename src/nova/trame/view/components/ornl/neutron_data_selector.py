@@ -131,6 +131,7 @@ class NeutronDataSelector(DataSelector):
                         v_model=self._selected_instrument_name,
                         items=(self._instruments_name,),
                         type="autocomplete",
+                        update_modelValue=(self.update_instrument, "[$event]"),
                     )
                 InputField(
                     v_if=f"{self._selected_facility_name} !== '{CUSTOM_DIRECTORIES_LABEL}'",
@@ -138,6 +139,7 @@ class NeutronDataSelector(DataSelector):
                     column_span=columns,
                     items=(self._experiments_name,),
                     type="autocomplete",
+                    update_modelValue=(self.update_experiment, "[$event]"),
                 )
                 InputField(v_else=True, v_model=f"{self._state_name}.custom_directory", column_span=2)
 
@@ -189,6 +191,7 @@ class NeutronDataSelector(DataSelector):
                 if facility != self._last_facility:
                     self._last_facility = facility
                     self._vm.set_binding_parameters(facility=set_state_param(self.state, self._facility, facility))
+                    self._vm.reset()
 
         if isinstance(self._instrument, tuple):
 
@@ -200,6 +203,7 @@ class NeutronDataSelector(DataSelector):
                     self._vm.set_binding_parameters(
                         instrument=set_state_param(self.state, self._instrument, instrument)
                     )
+                    self._vm.reset()
 
         if isinstance(self._experiment, tuple):
 
@@ -211,6 +215,7 @@ class NeutronDataSelector(DataSelector):
                     self._vm.set_binding_parameters(
                         experiment=set_state_param(self.state, self._experiment, experiment)
                     )
+                    self._vm.reset()
 
         if isinstance(self._allow_custom_directories, tuple):
 
@@ -228,14 +233,20 @@ class NeutronDataSelector(DataSelector):
     def update_facility(self, facility: str) -> None:
         self._vm.set_binding_parameters(
             facility=set_state_param(self.state, self._facility, facility),
+            instrument=set_state_param(self.state, self._instrument, ""),
+            experiment=set_state_param(self.state, self._experiment, ""),
         )
+        self._vm.reset()
 
     def update_instrument(self, instrument: str) -> None:
         self._vm.set_binding_parameters(
             instrument=set_state_param(self.state, self._instrument, instrument),
+            experiment=set_state_param(self.state, self._experiment, ""),
         )
+        self._vm.reset()
 
     def update_experiment(self, experiment: str) -> None:
         self._vm.set_binding_parameters(
             experiment=set_state_param(self.state, self._experiment, experiment),
         )
+        self._vm.reset()

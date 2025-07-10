@@ -29,7 +29,7 @@ class NeutronDataSelectorViewModel(DataSelectorViewModel):
             match update:
                 case "custom_directory":
                     self.reset()
-        self.update_view()
+                    self.update_view()
 
     def update_view(self, refresh_directories: bool = False) -> None:
         self.facilities_bind.update_in_view(self.model.get_facilities())

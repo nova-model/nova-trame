@@ -138,7 +138,6 @@ class DataSelector(datagrid.VGrid):
         self.create_model()
         self.create_viewmodel()
         self.setup_bindings()
-        self._vm.update_view()
 
         self.create_ui(**kwargs)
 
