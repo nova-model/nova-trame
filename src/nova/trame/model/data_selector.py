@@ -22,10 +22,13 @@ class DataSelectorModel:
     def __init__(self, state: DataSelectorState) -> None:
         self.state: DataSelectorState = state
 
-    def set_binding_parameters(self, directory: str, extensions: List[str], subdirectory: str) -> None:
-        self.state.directory = directory
-        self.state.extensions = extensions
-        self.state.subdirectory = subdirectory
+    def set_binding_parameters(self, **kwargs: Any) -> None:
+        if "directory" in kwargs:
+            self.state.directory = kwargs["directory"]
+        if "extensions" in kwargs:
+            self.state.extensions = kwargs["extensions"]
+        if "subdirectory" in kwargs:
+            self.state.subdirectory = kwargs["subdirectory"]
 
     def sort_directories(self, directories: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         # Sort the current level of dictionaries

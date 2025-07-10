@@ -1,6 +1,6 @@
 """View model implementation for the DataSelector widget."""
 
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
 from nova.mvvm.interface import BindingInterface
 from nova.trame.model.ornl.neutron_data_selector import NeutronDataSelectorModel
@@ -18,10 +18,6 @@ class NeutronDataSelectorViewModel(DataSelectorViewModel):
         self.instruments_bind = binding.new_bind()
         self.experiments_bind = binding.new_bind()
 
-    def set_state(self, facility: Optional[str], instrument: Optional[str], experiment: Optional[str]) -> None:
-        self.model.set_state(facility, instrument, experiment)
-        self.update_view()
-
     def reset(self) -> None:
         self.model.set_subdirectory("")
         self.directories = self.model.get_directories()
@@ -31,14 +27,6 @@ class NeutronDataSelectorViewModel(DataSelectorViewModel):
     def on_state_updated(self, results: Dict[str, Any]) -> None:
         for update in results.get("updated", []):
             match update:
-                case "facility":
-                    self.model.set_state(facility=None, instrument="", experiment="")
-                    self.reset()
-                case "instrument":
-                    self.model.set_state(facility=None, instrument=None, experiment="")
-                    self.reset()
-                case "experiment":
-                    self.reset()
                 case "custom_directory":
                     self.reset()
         self.update_view()

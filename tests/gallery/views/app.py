@@ -34,6 +34,7 @@ from nova.trame.view.layouts import GridLayout, HBoxLayout, VBoxLayout
 
 from ..view_models.data_selector import DataSelectorVM
 from ..view_models.file_upload import FileUploadVM
+from ..view_models.neutron_data_selector import NeutronDataSelectorVM
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -163,6 +164,10 @@ class App(ThemedApp):
         self.data_selector_vm = DataSelectorVM(binding)
         self.data_selector_vm.model_bind.connect("data_selector")
         self.data_selector_vm.parameter_bind.connect("ds_params")
+
+        self.neutron_data_selector_vm = NeutronDataSelectorVM(binding)
+        self.neutron_data_selector_vm.model_bind.connect("neutron_data_selector")
+        self.neutron_data_selector_vm.parameter_bind.connect("nds_params")
 
         self.file_upload_vm = FileUploadVM(binding)
         self.file_upload_vm.model_bind.connect("file_upload")
@@ -361,11 +366,20 @@ class App(ThemedApp):
                             subdirectory=("ds_params.subdirectory",),
                             refresh_rate=("ds_params.refresh_rate", 15),
                         )
+                    with GridLayout(classes="mb-1", columns=4, valign="center", width=600):
+                        InputField(v_model="nds_params.facility")
+                        InputField(v_model="nds_params.instrument")
+                        InputField(v_model="nds_params.experiment")
+                        InputField(v_model="nds_params.allow_custom_directories", type="checkbox")
                     with html.Div(classes="border-md text-left", style="height: 650px; width: 600px;"):
-                        pass
-                        # NeutronDataSelector(
-                        #     v_model="data_selector.selected_neutron_files", allow_custom_directories=True, chips=True
-                        # )
+                        NeutronDataSelector(
+                            v_model="neutron_data_selector.selected_files",
+                            facility=("nds_params.facility", "SNS"),
+                            instrument=("nds_params.instrument", "BL-12"),
+                            experiment=("nds_params.experiment", "IPTS-12132"),
+                            allow_custom_directories=("nds_params.allow_custom_directories", True),
+                            chips=True,
+                        )
 
                     vuetify.VCardTitle("Form Inputs & Controls")
                     with GridLayout(columns=3, valign="center"):

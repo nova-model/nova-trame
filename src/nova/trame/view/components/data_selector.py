@@ -1,7 +1,6 @@
 """View Implementation for DataSelector."""
 
 from asyncio import ensure_future, sleep
-from pathlib import Path
 from typing import Any, List, Tuple, Union, cast
 from warnings import warn
 
@@ -117,11 +116,11 @@ class DataSelector(datagrid.VGrid):
             self._v_model_name_in_state = v_model[0].split(".")[0]
 
         self._directory = directory
-        self._last_directory = self._directory
+        self._last_directory = get_state_param(self.state, self._directory)
         self._extensions = extensions if extensions is not None else []
-        self._last_extensions = self._extensions
+        self._last_extensions = get_state_param(self.state, self._extensions)
         self._subdirectory = subdirectory
-        self._last_subdirectory = self._subdirectory
+        self._last_subdirectory = get_state_param(self.state, self._subdirectory)
         self._refresh_rate = refresh_rate
         self._select_strategy = select_strategy
 
@@ -138,7 +137,7 @@ class DataSelector(datagrid.VGrid):
 
         self.create_model()
         self.create_viewmodel()
-        self.setup_binding_listeners()
+        self.setup_bindings()
         self._vm.update_view()
 
         self.create_ui(**kwargs)
@@ -161,12 +160,6 @@ class DataSelector(datagrid.VGrid):
 
             with GridLayout(columns=2, classes="flex-1-0 h-0", valign="start"):
                 if isinstance(self._subdirectory, tuple) or not self._subdirectory:
-                    if self._subdirectory:
-                        initial_subdirectory = str(
-                            Path(get_state_param(self.state, self._directory))
-                            / get_state_param(self.state, self._subdirectory)
-                        )
-                        print(initial_subdirectory)
                     with html.Div(classes="d-flex flex-column h-100 overflow-hidden"):
                         vuetify.VListSubheader("Available Directories", classes="flex-0-1 justify-center px-0")
                         vuetify.VTreeview(
@@ -195,6 +188,7 @@ class DataSelector(datagrid.VGrid):
                         "    prop: 'title',"
                         "}]",
                     ),
+                    column_span=1 if isinstance(self._subdirectory, tuple) or not self._subdirectory else 2,
                     frame_size=10,
                     hide_attribution=True,
                     id=self._revogrid_id,
@@ -270,15 +264,15 @@ class DataSelector(datagrid.VGrid):
             "`nova.trame.view.components.ornl`."
         )
 
-    def setup_binding_listeners(self) -> None:
+    def setup_bindings(self) -> None:
         set_state_param(self.state, self._directory)
         set_state_param(self.state, self._extensions)
         set_state_param(self.state, self._subdirectory)
 
         self._vm.set_binding_parameters(
-            get_state_param(self.state, self._directory),
-            get_state_param(self.state, self._extensions),
-            get_state_param(self.state, self._subdirectory),
+            directory=get_state_param(self.state, self._directory),
+            extensions=get_state_param(self.state, self._extensions),
+            subdirectory=get_state_param(self.state, self._subdirectory),
         )
         if isinstance(self._subdirectory, tuple):
             self._subdirectory = (self._subdirectory[0],)
@@ -291,9 +285,7 @@ class DataSelector(datagrid.VGrid):
                 if directory != self._last_directory:
                     self._last_directory = directory
                     self._vm.set_binding_parameters(
-                        get_state_param(self.state, self._directory),
-                        get_state_param(self.state, self._extensions),
-                        get_state_param(self.state, self._subdirectory),
+                        directory=set_state_param(self.state, self._directory, directory),
                     )
 
         if isinstance(self._extensions, tuple):
@@ -304,9 +296,7 @@ class DataSelector(datagrid.VGrid):
                 if extensions != self._last_extensions:
                     self._last_extensions = extensions
                     self._vm.set_binding_parameters(
-                        get_state_param(self.state, self._directory),
-                        get_state_param(self.state, self._extensions),
-                        get_state_param(self.state, self._subdirectory),
+                        extensions=set_state_param(self.state, self._extensions, extensions),
                     )
 
         if isinstance(self._subdirectory, tuple):
@@ -317,9 +307,7 @@ class DataSelector(datagrid.VGrid):
                 if subdirectory != self._last_subdirectory:
                     self._last_subdirectory = subdirectory
                     self._vm.set_binding_parameters(
-                        get_state_param(self.state, self._directory),
-                        get_state_param(self.state, self._extensions),
-                        get_state_param(self.state, self._subdirectory),
+                        subdirectory=set_state_param(self.state, self._subdirectory, subdirectory),
                     )
 
     async def _refresh_loop(self) -> None:

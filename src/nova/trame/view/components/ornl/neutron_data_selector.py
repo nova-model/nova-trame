@@ -1,11 +1,12 @@
 """View Implementation for DataSelector."""
 
-from typing import Any, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Tuple, Union
 from warnings import warn
 
 from trame.app import get_server
 from trame.widgets import vuetify3 as vuetify
 
+from nova.mvvm._internal.utils import rgetdictvalue
 from nova.mvvm.trame_binding import TrameBinding
 from nova.trame.model.ornl.neutron_data_selector import (
     CUSTOM_DIRECTORIES_LABEL,
@@ -15,7 +16,7 @@ from nova.trame.model.ornl.neutron_data_selector import (
 from nova.trame.view.layouts import GridLayout
 from nova.trame.view_model.ornl.neutron_data_selector import NeutronDataSelectorViewModel
 
-from ..data_selector import DataSelector
+from ..data_selector import DataSelector, get_state_param, set_state_param
 from ..input_field import InputField
 
 vuetify.enable_lab()
@@ -31,9 +32,9 @@ class NeutronDataSelector(DataSelector):
         facility: Union[str, Tuple] = "",
         instrument: Union[str, Tuple] = "",
         experiment: Union[str, Tuple] = "",
-        selected_directory: Union[str, Tuple] = "",
         extensions: Union[List[str], Tuple, None] = None,
         prefix: Union[str, Tuple] = "",
+        subdirectory: Union[str, Tuple] = "",
         refresh_rate: Union[int, Tuple] = 30,
         select_strategy: Union[str, Tuple] = "all",
         **kwargs: Any,
@@ -54,13 +55,13 @@ class NeutronDataSelector(DataSelector):
             The instrument to restrict data selection to. Please use the instrument acronym (e.g. CG-2).
         experiment : Union[str, Tuple], optional
             The experiment to restrict data selection to.
-        selected_directory : Union[str, Tuple], optional
-            The directory containing the visible datafiles.
         extensions : Union[List[str], Tuple], optional
             A list of file extensions to restrict selection to. If unset, then all files will be shown.
         prefix : Union[str, Tuple], optional
-            A subdirectory within the user's chosen experiment to show files. If not specified, the user will be shown a
-            folder browser and will be able to see all files in the experiment that they have access to.
+            Deprecated. Please refer to the `subdirectory` parameter.
+        subdirectory : Union[str, Tuple], optional
+            A subdirectory within the user's chosen experiment to show files. If not specified as a string, the user
+            will be shown a folder browser and will be able to see all files in the experiment that they have access to.
         refresh_rate : Union[str, Tuple], optional
             The number of seconds between attempts to automatically refresh the file list. Set to zero to disable this
             feature. Defaults to 30 seconds.
@@ -75,40 +76,65 @@ class NeutronDataSelector(DataSelector):
         -------
         None
         """
-        if facility and allow_custom_directories:
-            warn("allow_custom_directories will be ignored since the facility parameter is set.", stacklevel=1)
+        if isinstance(facility, str) and allow_custom_directories:
+            warn("allow_custom_directories will be ignored since the facility parameter is fixed.", stacklevel=1)
 
         self._facility = facility
+        self._last_facility = get_state_param(self.state, self._facility)
         self._instrument = instrument
+        self._last_instrument = get_state_param(self.state, self._instrument)
+        self._experiment = experiment
+        self._last_experiment = get_state_param(self.state, self._experiment)
         self._allow_custom_directories = allow_custom_directories
+        self._last_allow_custom_directories = self._allow_custom_directories
 
         self._facilities_name = f"nova__neutrondataselector_{self._next_id}_facilities"
+        self._selected_facility_name = (
+            self._facility[0] if isinstance(self._facility, tuple) else f"{self._state_name}.facility"
+        )
         self._instruments_name = f"nova__neutrondataselector_{self._next_id}_instruments"
+        self._selected_instrument_name = (
+            self._instrument[0] if isinstance(self._instrument, tuple) else f"{self._state_name}.instrument"
+        )
         self._experiments_name = f"nova__neutrondataselector_{self._next_id}_experiments"
+        self._selected_experiment_name = (
+            self._experiment[0] if isinstance(self._experiment, tuple) else f"{self._state_name}.experiment"
+        )
 
-        super().__init__(v_model, "", extensions, prefix, refresh_rate, select_strategy, **kwargs)
+        super().__init__(
+            v_model,
+            "",
+            extensions=extensions,
+            subdirectory=subdirectory,
+            refresh_rate=refresh_rate,
+            select_strategy=select_strategy,
+            **kwargs,
+        )
 
     def create_ui(self, **kwargs: Any) -> None:
         super().create_ui(**kwargs)
         with self._layout.filter:
             with GridLayout(columns=3):
                 columns = 3
-                if self._facility == "":
+                if isinstance(self._facility, tuple) or not self._facility:
                     columns -= 1
                     InputField(
-                        v_model=f"{self._state_name}.facility", items=(self._facilities_name,), type="autocomplete"
+                        v_model=self._selected_facility_name,
+                        items=(self._facilities_name,),
+                        type="autocomplete",
+                        update_modelValue=(self.update_facility, "[$event]"),
                     )
-                if self._instrument == "":
+                if isinstance(self._instrument, tuple) or not self._instrument:
                     columns -= 1
                     InputField(
-                        v_if=f"{self._state_name}.facility !== '{CUSTOM_DIRECTORIES_LABEL}'",
-                        v_model=f"{self._state_name}.instrument",
+                        v_if=f"{self._selected_facility_name} !== '{CUSTOM_DIRECTORIES_LABEL}'",
+                        v_model=self._selected_instrument_name,
                         items=(self._instruments_name,),
                         type="autocomplete",
                     )
                 InputField(
-                    v_if=f"{self._state_name}.facility !== '{CUSTOM_DIRECTORIES_LABEL}'",
-                    v_model=f"{self._state_name}.experiment",
+                    v_if=f"{self._selected_facility_name} !== '{CUSTOM_DIRECTORIES_LABEL}'",
+                    v_model=self._selected_experiment_name,
                     column_span=columns,
                     items=(self._experiments_name,),
                     type="autocomplete",
@@ -117,9 +143,7 @@ class NeutronDataSelector(DataSelector):
 
     def create_model(self) -> None:
         state = NeutronDataSelectorState()
-        self._model: NeutronDataSelectorModel = NeutronDataSelectorModel(
-            state, self._facility, self._instrument, self._extensions, self._prefix, self._allow_custom_directories
-        )
+        self._model: NeutronDataSelectorModel = NeutronDataSelectorModel(state)
 
     def create_viewmodel(self) -> None:
         server = get_server(None, client_type="vue3")
@@ -136,26 +160,82 @@ class NeutronDataSelector(DataSelector):
 
         self._vm.update_view()
 
-    def set_state(
-        self, facility: Optional[str] = None, instrument: Optional[str] = None, experiment: Optional[str] = None
-    ) -> None:
-        """Programmatically set the facility, instrument, and/or experiment to restrict data selection to.
+    def on_update(self, results: Dict[str, Any]) -> None:
+        self._vm.set_binding_parameters(
+            facility=get_state_param(self.state, self._facility),
+            instrument=get_state_param(self.state, self._instrument),
+            experiment=get_state_param(self.state, self._experiment),
+            allow_custom_directories=get_state_param(self.state, self._allow_custom_directories),
+        )
 
-        If a parameter is None, then it will not be updated.
+    def setup_bindings(self) -> None:
+        set_state_param(self.state, self._facility)
+        set_state_param(self.state, self._instrument)
+        set_state_param(self.state, self._experiment)
+        set_state_param(self.state, self._allow_custom_directories)
 
-        Parameters
-        ----------
-        facility : str, optional
-            The facility to restrict data selection to. Options: HFIR, SNS
-        instrument : str, optional
-            The instrument to restrict data selection to. Must be at the selected facility.
-        experiment : str, optional
-            The experiment to restrict data selection to. Must begin with "IPTS-". It is your responsibility to validate
-            that the provided experiment exists within the instrument directory. If it doesn't then no datafiles will be
-            shown to the user.
+        self._vm.set_binding_parameters(
+            facility=get_state_param(self.state, self._facility),
+            instrument=get_state_param(self.state, self._instrument),
+            experiment=get_state_param(self.state, self._experiment),
+            allow_custom_directories=get_state_param(self.state, self._allow_custom_directories),
+        )
 
-        Returns
-        -------
-        None
-        """
-        self._vm.set_state(facility, instrument, experiment)
+        if isinstance(self._facility, tuple):
+
+            @self.state.change(self._facility[0].split(".")[0])
+            def on_facility_change(**kwargs: Any) -> None:
+                facility = rgetdictvalue(kwargs, self._facility[0])
+                if facility != self._last_facility:
+                    self._last_facility = facility
+                    self._vm.set_binding_parameters(facility=set_state_param(self.state, self._facility, facility))
+
+        if isinstance(self._instrument, tuple):
+
+            @self.state.change(self._instrument[0].split(".")[0])
+            def on_instrument_change(**kwargs: Any) -> None:
+                instrument = rgetdictvalue(kwargs, self._instrument[0])
+                if instrument != self._last_instrument:
+                    self._last_instrument = instrument
+                    self._vm.set_binding_parameters(
+                        instrument=set_state_param(self.state, self._instrument, instrument)
+                    )
+
+        if isinstance(self._experiment, tuple):
+
+            @self.state.change(self._experiment[0].split(".")[0])
+            def on_experiment_change(**kwargs: Any) -> None:
+                experiment = rgetdictvalue(kwargs, self._experiment[0])
+                if experiment != self._last_experiment:
+                    self._last_experiment = experiment
+                    self._vm.set_binding_parameters(
+                        experiment=set_state_param(self.state, self._experiment, experiment)
+                    )
+
+        if isinstance(self._allow_custom_directories, tuple):
+
+            @self.state.change(self._allow_custom_directories[0].split(".")[0])
+            def on_allow_custom_directories_change(**kwargs: Any) -> None:
+                allow_custom_directories = rgetdictvalue(kwargs, self._allow_custom_directories[0])  # type: ignore
+                if allow_custom_directories != self._last_allow_custom_directories:
+                    self._last_allow_custom_directories = allow_custom_directories
+                    self._vm.set_binding_parameters(
+                        allow_custom_directories=set_state_param(
+                            self.state, self._allow_custom_directories, allow_custom_directories
+                        )
+                    )
+
+    def update_facility(self, facility: str) -> None:
+        self._vm.set_binding_parameters(
+            facility=set_state_param(self.state, self._facility, facility),
+        )
+
+    def update_instrument(self, instrument: str) -> None:
+        self._vm.set_binding_parameters(
+            instrument=set_state_param(self.state, self._instrument, instrument),
+        )
+
+    def update_experiment(self, experiment: str) -> None:
+        self._vm.set_binding_parameters(
+            experiment=set_state_param(self.state, self._experiment, experiment),
+        )
