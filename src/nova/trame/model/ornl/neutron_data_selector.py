@@ -107,23 +107,21 @@ class NeutronDataSelectorState(DataSelectorState):
 class NeutronDataSelectorModel(DataSelectorModel):
     """Manages file system interactions for the DataSelector widget."""
 
-    def __init__(
-        self,
-        state: NeutronDataSelectorState,
-        facility: str,
-        instrument: str,
-        extensions: List[str],
-        prefix: str,
-        allow_custom_directories: bool,
-    ) -> None:
-        super().__init__(state, "", extensions, prefix)
+    def __init__(self, state: NeutronDataSelectorState) -> None:
+        super().__init__(state)
         self.state: NeutronDataSelectorState = state
 
-        self.state.facility = facility
-        self.state.instrument = instrument
-        self.state.extensions = extensions
-        self.state.prefix = prefix
-        self.state.allow_custom_directories = allow_custom_directories
+    def set_binding_parameters(self, **kwargs: Any) -> None:
+        super().set_binding_parameters(**kwargs)
+
+        if "facility" in kwargs:
+            self.state.facility = kwargs["facility"]
+        if "instrument" in kwargs:
+            self.state.instrument = kwargs["instrument"]
+        if "experiment" in kwargs:
+            self.state.experiment = kwargs["experiment"]
+        if "allow_custom_directories" in kwargs:
+            self.state.allow_custom_directories = kwargs["allow_custom_directories"]
 
     def get_facilities(self) -> List[str]:
         return natsorted(self.state.get_facilities())
@@ -183,11 +181,3 @@ class NeutronDataSelectorModel(DataSelectorModel):
             return []
 
         return self.get_datafiles_from_path(base_path)
-
-    def set_state(self, facility: Optional[str], instrument: Optional[str], experiment: Optional[str]) -> None:
-        if facility is not None:
-            self.state.facility = facility
-        if instrument is not None:
-            self.state.instrument = instrument
-        if experiment is not None:
-            self.state.experiment = experiment

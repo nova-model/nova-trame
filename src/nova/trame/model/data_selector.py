@@ -12,20 +12,23 @@ class DataSelectorState(BaseModel, validate_assignment=True):
     """Selection state for identifying datafiles."""
 
     directory: str = Field(default="")
-    subdirectory: str = Field(default="")
     extensions: List[str] = Field(default=[])
-    prefix: str = Field(default="")
+    subdirectory: str = Field(default="")
 
 
 class DataSelectorModel:
     """Manages file system interactions for the DataSelector widget."""
 
-    def __init__(self, state: DataSelectorState, directory: str, extensions: List[str], prefix: str) -> None:
+    def __init__(self, state: DataSelectorState) -> None:
         self.state: DataSelectorState = state
 
-        self.state.directory = directory
-        self.state.extensions = extensions
-        self.state.prefix = prefix
+    def set_binding_parameters(self, **kwargs: Any) -> None:
+        if "directory" in kwargs:
+            self.state.directory = kwargs["directory"]
+        if "extensions" in kwargs:
+            self.state.extensions = kwargs["extensions"]
+        if "subdirectory" in kwargs:
+            self.state.subdirectory = kwargs["subdirectory"]
 
     def sort_directories(self, directories: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         # Sort the current level of dictionaries
@@ -89,10 +92,7 @@ class DataSelectorModel:
     def get_datafiles_from_path(self, base_path: Path) -> List[str]:
         datafiles = []
         try:
-            if self.state.prefix:
-                datafile_path = base_path / self.state.prefix
-            else:
-                datafile_path = base_path / self.state.subdirectory
+            datafile_path = base_path / self.state.subdirectory
 
             for entry in os.scandir(datafile_path):
                 if entry.is_file():
