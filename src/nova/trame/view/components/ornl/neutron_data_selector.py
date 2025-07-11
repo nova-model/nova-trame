@@ -165,16 +165,18 @@ class NeutronDataSelector(DataSelector):
             allow_custom_directories=get_state_param(self.state, self._allow_custom_directories),
         )
 
+    # This method sets up Trame state change listeners for each binding parameter that can be changed directly by this
+    # component. This allows us to communicate the changes to the developer's bindings without requiring our own. We
+    # don't want bindings in the internal implementation as our callbacks could compete with the developer's.
     def setup_bindings(self) -> None:
+        # If the bindings were given initial values, write these to the state.
         set_state_param(self.state, self._facility)
         set_state_param(self.state, self._instrument)
         set_state_param(self.state, self._experiment)
         set_state_param(self.state, self._allow_custom_directories)
-
         self._last_facility = get_state_param(self.state, self._facility)
         self._last_instrument = get_state_param(self.state, self._instrument)
         self._last_experiment = get_state_param(self.state, self._experiment)
-
         self._vm.set_binding_parameters(
             facility=get_state_param(self.state, self._facility),
             instrument=get_state_param(self.state, self._instrument),
@@ -182,6 +184,8 @@ class NeutronDataSelector(DataSelector):
             allow_custom_directories=get_state_param(self.state, self._allow_custom_directories),
         )
 
+        # Now we set up the change listeners for all bound parameters. These are responsible for updating the component
+        # when other portions of the application manipulate these parameters.
         if isinstance(self._facility, tuple):
 
             @self.state.change(self._facility[0].split(".")[0])
@@ -231,18 +235,19 @@ class NeutronDataSelector(DataSelector):
                         )
                     )
 
+    # These update methods notify the rest of the application when the component changes bound parameters.
     def update_facility(self, facility: str) -> None:
         self._vm.set_binding_parameters(
             facility=set_state_param(self.state, (self._selected_facility_name,), facility),
-            instrument=set_state_param(self.state, (self._selected_instrument_name,), ""),
-            experiment=set_state_param(self.state, (self._selected_experiment_name,), ""),
+            instrument=set_state_param(self.state, (self._selected_instrument_name,), ""),  # Reset the instrument
+            experiment=set_state_param(self.state, (self._selected_experiment_name,), ""),  # Reset the experiment
         )
         self._vm.reset()
 
     def update_instrument(self, instrument: str) -> None:
         self._vm.set_binding_parameters(
             instrument=set_state_param(self.state, (self._selected_instrument_name,), instrument),
-            experiment=set_state_param(self.state, (self._selected_experiment_name,), ""),
+            experiment=set_state_param(self.state, (self._selected_experiment_name,), ""),  # Reset the experiment
         )
         self._vm.reset()
 

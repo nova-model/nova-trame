@@ -244,19 +244,27 @@ class DataSelector(datagrid.VGrid):
             "`nova.trame.view.components.ornl`."
         )
 
+    # This method sets up Trame state change listeners for each binding parameter that can be changed directly by this
+    # component. This allows us to communicate the changes to the developer's bindings without requiring our own. We
+    # don't want bindings in the internal implementation as our callbacks could compete with the developer's.
     def setup_bindings(self) -> None:
+        # If the bindings were given initial values, write these to the state.
         set_state_param(self.state, self._directory)
         set_state_param(self.state, self._extensions)
         set_state_param(self.state, self._subdirectory)
-
         self._vm.set_binding_parameters(
             directory=get_state_param(self.state, self._directory),
             extensions=get_state_param(self.state, self._extensions),
             subdirectory=get_state_param(self.state, self._subdirectory),
         )
+
+        # The component used by this parameter will attempt to set the initial value itself, which will trigger the
+        # below change listeners causing unpredictable behavior.
         if isinstance(self._subdirectory, tuple):
             self._subdirectory = (self._subdirectory[0],)
 
+        # Now we set up the change listeners for all bound parameters. These are responsible for updating the component
+        # when other portions of the application manipulate these parameters.
         if isinstance(self._directory, tuple):
 
             @self.state.change(self._directory[0].split(".")[0])

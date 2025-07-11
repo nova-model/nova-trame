@@ -7,6 +7,8 @@ from trame_server.core import State
 from nova.mvvm._internal.utils import rgetdictvalue, rsetdictvalue
 
 
+# Reads a state parameter from Trame. For internal use only, if you're using this in your application you're violating
+# the MVVM framework. :)
 def get_state_param(state: State, value: Union[Any, Tuple]) -> Any:
     if isinstance(value, tuple):
         return rgetdictvalue(state, value[0])
@@ -14,6 +16,8 @@ def get_state_param(state: State, value: Union[Any, Tuple]) -> Any:
     return value
 
 
+# Writes a state parameter to Trame. For internal use only, if you're using this in your application you're violating
+# the MVVM framework. :)
 def set_state_param(state: State, value: Union[Any, Tuple], new_value: Any = None) -> Any:
     with state:
         if isinstance(value, tuple):
