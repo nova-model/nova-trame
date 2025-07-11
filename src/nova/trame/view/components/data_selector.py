@@ -9,8 +9,9 @@ from trame.widgets import client, datagrid, html
 from trame.widgets import vuetify3 as vuetify
 from trame_server.core import State
 
-from nova.mvvm._internal.utils import rgetdictvalue, rsetdictvalue
+from nova.mvvm._internal.utils import rgetdictvalue
 from nova.mvvm.trame_binding import TrameBinding
+from nova.trame._internal.utils import get_state_param, set_state_param
 from nova.trame.model.data_selector import DataSelectorModel, DataSelectorState
 from nova.trame.view.layouts import GridLayout, HBoxLayout, VBoxLayout
 from nova.trame.view_model.data_selector import DataSelectorViewModel
@@ -18,26 +19,6 @@ from nova.trame.view_model.data_selector import DataSelectorViewModel
 from .input_field import InputField
 
 vuetify.enable_lab()
-
-
-# TODO: refactor
-def get_state_param(state: State, value: Union[Any, Tuple]) -> Any:
-    if isinstance(value, tuple):
-        return rgetdictvalue(state, value[0])
-
-    return value
-
-
-def set_state_param(state: State, value: Union[Any, Tuple], new_value: Any = None) -> Any:
-    with state:
-        if isinstance(value, tuple):
-            if new_value is not None:
-                rsetdictvalue(state, value[0], new_value)
-            elif len(value) > 1:
-                rsetdictvalue(state, value[0], value[1])
-            state.dirty(value[0].split(".")[0])
-
-    return get_state_param(state, value)
 
 
 class DataSelector(datagrid.VGrid):
