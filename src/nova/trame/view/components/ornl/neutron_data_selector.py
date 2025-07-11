@@ -1,6 +1,6 @@
 """View Implementation for DataSelector."""
 
-from typing import Any, Dict, List, Tuple, Union
+from typing import Any, List, Tuple, Union
 from warnings import warn
 
 from trame.app import get_server
@@ -156,14 +156,6 @@ class NeutronDataSelector(DataSelector):
         self._vm.reset_bind.connect(self.reset)
 
         self._vm.update_view()
-
-    def on_update(self, results: Dict[str, Any]) -> None:
-        self._vm.set_binding_parameters(
-            facility=get_state_param(self.state, self._selected_facility_name),
-            instrument=get_state_param(self.state, self._selected_instrument_name),
-            experiment=get_state_param(self.state, self._selected_experiment_name),
-            allow_custom_directories=get_state_param(self.state, self._allow_custom_directories),
-        )
 
     # This method sets up Trame state change listeners for each binding parameter that can be changed directly by this
     # component. This allows us to communicate the changes to the developer's bindings without requiring our own. We
