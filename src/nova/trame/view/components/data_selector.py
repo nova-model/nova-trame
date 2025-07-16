@@ -116,9 +116,9 @@ class DataSelector(datagrid.VGrid):
         ).exec
         self._reset_state = client.JSEval(exec=f"{self._v_model} = []; {self._flush_state}").exec
 
-        self.create_model()
-        self.create_viewmodel()
-        self.setup_bindings()
+        self._create_model()
+        self._create_viewmodel()
+        self._setup_bindings()
 
         self.create_ui(**kwargs)
 
@@ -213,11 +213,11 @@ class DataSelector(datagrid.VGrid):
                         f"(+{{{{ {self._v_model}.length - 2 }}}} others)", v_if="index === 2", classes="text-caption"
                     )
 
-    def create_model(self) -> None:
+    def _create_model(self) -> None:
         state = DataSelectorState()
         self._model = DataSelectorModel(state)
 
-    def create_viewmodel(self) -> None:
+    def _create_viewmodel(self) -> None:
         server = get_server(None, client_type="vue3")
         binding = TrameBinding(server.state)
 
@@ -247,7 +247,7 @@ class DataSelector(datagrid.VGrid):
     # This method sets up Trame state change listeners for each binding parameter that can be changed directly by this
     # component. This allows us to communicate the changes to the developer's bindings without requiring our own. We
     # don't want bindings in the internal implementation as our callbacks could compete with the developer's.
-    def setup_bindings(self) -> None:
+    def _setup_bindings(self) -> None:
         # If the bindings were given initial values, write these to the state.
         set_state_param(self.state, self._directory)
         set_state_param(self.state, self._extensions)

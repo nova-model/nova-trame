@@ -138,11 +138,11 @@ class NeutronDataSelector(DataSelector):
                 )
                 InputField(v_else=True, v_model=f"{self._state_name}.custom_directory", column_span=2)
 
-    def create_model(self) -> None:
+    def _create_model(self) -> None:
         state = NeutronDataSelectorState()
         self._model: NeutronDataSelectorModel = NeutronDataSelectorModel(state)
 
-    def create_viewmodel(self) -> None:
+    def _create_viewmodel(self) -> None:
         server = get_server(None, client_type="vue3")
         binding = TrameBinding(server.state)
 
@@ -160,7 +160,7 @@ class NeutronDataSelector(DataSelector):
     # This method sets up Trame state change listeners for each binding parameter that can be changed directly by this
     # component. This allows us to communicate the changes to the developer's bindings without requiring our own. We
     # don't want bindings in the internal implementation as our callbacks could compete with the developer's.
-    def setup_bindings(self) -> None:
+    def _setup_bindings(self) -> None:
         # If the bindings were given initial values, write these to the state.
         set_state_param(self.state, self._facility)
         set_state_param(self.state, self._instrument)
