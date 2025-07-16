@@ -1,3 +1,7 @@
+### nova-trame, 0.24.0
+
+* Parameters to DataSelector and NeutronDataSelector should now support bindings (thanks to John Duggan).
+
 ### nova-trame, 0.23.1
 
 * Added support for refreshing the file list in DataSelector and its subclasses (thanks to Yuanpeng Zhang and John Duggan).
