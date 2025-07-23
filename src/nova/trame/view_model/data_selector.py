@@ -65,6 +65,9 @@ class DataSelectorViewModel:
         self.model.set_subdirectory(subdirectory_path)
         self.update_view()
 
+    def transform_datafiles(self, datafiles: List[Any]) -> List[Dict[str, str]]:
+        return [{"path": datafile, "title": os.path.basename(datafile)} for datafile in datafiles]
+
     def update_view(self, refresh_directories: bool = False) -> None:
         self.state_bind.update_in_view(self.model.state)
         if not self.directories or refresh_directories:
@@ -72,7 +75,5 @@ class DataSelectorViewModel:
             self.reexpand_directories()
         self.directories_bind.update_in_view(self.directories)
 
-        self.datafiles = [
-            {"path": datafile, "title": os.path.basename(datafile)} for datafile in self.model.get_datafiles()
-        ]
+        self.datafiles = self.transform_datafiles(self.model.get_datafiles())
         self.datafiles_bind.update_in_view(self.datafiles)
