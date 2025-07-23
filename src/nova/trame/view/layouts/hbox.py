@@ -51,7 +51,7 @@ class HBoxLayout(html.Div):
 
         Example
         -------
-        .. literalinclude:: ../tests/gallery/app.py
+        .. literalinclude:: ../tests/gallery/views/app.py
             :start-after: setup hbox
             :end-before: setup hbox complete
             :dedent:

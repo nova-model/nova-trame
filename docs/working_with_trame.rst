@@ -42,7 +42,7 @@ If you want to customize a slot, you can either completely replace it or add chi
 
 If you want to add children to a slot, you can do the following:
 
-.. literalinclude:: ../tests/gallery/app.py
+.. literalinclude:: ../tests/gallery/views/app.py
     :start-after: slot child example
     :end-before: slot child example complete
     :dedent:
@@ -85,7 +85,7 @@ In order to use Vuetify helper classes in Trame, you can provide the `classes` a
 
 Example:
 
-.. literalinclude:: ../tests/gallery/app.py
+.. literalinclude:: ../tests/gallery/views/app.py
     :start-after: Vuetify class example start
     :end-before: Vuetify class example end
     :dedent:

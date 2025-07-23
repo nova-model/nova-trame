@@ -172,7 +172,7 @@ class InputField:
             The following example would set the auto_grow and label attributes on
             `VTextarea <https://trame.readthedocs.io/en/latest/trame.widgets.vuetify3.html#trame.widgets.vuetify3.VTextarea>`_:
 
-            .. literalinclude:: ../tests/gallery/app.py
+            .. literalinclude:: ../tests/gallery/views/app.py
                 :start-after: InputField kwargs example start
                 :end-before: InputField kwargs example end
                 :dedent:
