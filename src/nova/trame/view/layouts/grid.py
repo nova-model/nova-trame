@@ -53,7 +53,7 @@ class GridLayout(html.Div):
         --------
         Basic usage:
 
-        .. literalinclude:: ../tests/gallery/app.py
+        .. literalinclude:: ../tests/gallery/views/app.py
             :start-after: setup grid
             :end-before: setup grid complete
             :dedent:
@@ -133,7 +133,7 @@ class GridLayout(html.Div):
 
         Example
         -------
-        .. literalinclude:: ../tests/gallery/app.py
+        .. literalinclude:: ../tests/gallery/views/app.py
             :start-after: grid row and column span example
             :end-before: grid row and column span example end
             :dedent:
