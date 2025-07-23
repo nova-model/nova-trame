@@ -1,3 +1,7 @@
+### nova-trame, 0.24.1
+
+* Fixed literalinclude paths in the documentation (thanks to John Duggan).
+
 ### nova-trame, 0.24.0
 
 * Parameters to DataSelector and NeutronDataSelector should now support bindings (thanks to John Duggan).
