@@ -1,3 +1,7 @@
+### nova-trame, 0.25.0
+
+* The figure parameter to MatplotlibFigure should now support bindings (thanks to John Duggan).
+
 ### nova-trame, 0.24.1
 
 * Fixed literalinclude paths in the documentation (thanks to John Duggan).
