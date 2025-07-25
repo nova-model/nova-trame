@@ -1,3 +1,7 @@
+### nova-trame, 0.26.0
+
+* The figure parameter to MatplotlibFigure should now support bindings (thanks to John Duggan).
+
 ### nova-trame, 0.25.0
 
 * FileUpload now supports a return_contents parameter (thanks to John Duggan).

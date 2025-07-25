@@ -1,9 +1,12 @@
 """View implementation for Interactive2DPlot."""
 
-from typing import Any, Optional
+from typing import Any, Optional, Tuple, Union
 
 from altair import Chart
+from trame.app import get_server
 from trame.widgets import client, vega
+
+from nova.trame._internal.utils import get_state_name, get_state_param
 
 
 class Interactive2DPlot(vega.Figure):
@@ -25,12 +28,12 @@ class Interactive2DPlot(vega.Figure):
         :dedent:
     """
 
-    def __init__(self, figure: Optional[Chart] = None, **kwargs: Any) -> None:
+    def __init__(self, figure: Union[Chart, Tuple, None] = None, **kwargs: Any) -> None:
         """Constructor for Interactive2DPlot.
 
         Parameters
         ----------
-        figure : `altair.Chart <https://altair-viz.github.io/user_guide/generated/toplevel/altair.Chart.html#altair.Chart>`_
+        figure : Union[`altair.Chart <https://altair-viz.github.io/user_guide/generated/toplevel/altair.Chart.html#altair.Chart>`_, Tuple], optional
             Altair chart object
         kwargs
             Arguments to be passed to `AbstractElement <https://trame.readthedocs.io/en/latest/core.widget.html#trame_client.widgets.core.AbstractElement>`_
@@ -38,10 +41,20 @@ class Interactive2DPlot(vega.Figure):
         Returns
         -------
         None
-        """
+        """  # noqa: E501
+        if isinstance(figure, tuple):
+            self._server = get_server(None, client_type="vue3")
+            self._figure = get_state_param(self._server.state, figure)
+
+            @self._server.state.changed(get_state_name(figure[0]))
+            def on_change(**kwargs: Any) -> None:
+                self.update(get_state_param(self._server.state, figure))
+        else:
+            self._figure = figure
+
         self._initialized = False
 
-        super().__init__(figure=figure, **kwargs)
+        super().__init__(figure=self._figure, **kwargs)
         self.ref = f"nova__vega_{self._id}"
         self.server.state[self.ref] = {}
         self._start_update_handlers = client.JSEval(

@@ -8,7 +8,7 @@ from io import BytesIO
 from mimetypes import types_map
 from pathlib import Path
 from threading import Thread
-from typing import Any, Optional
+from typing import Any, Optional, Tuple, Union
 
 import tornado
 from aiohttp import ClientSession, WSMsgType, web
@@ -18,6 +18,8 @@ from matplotlib.figure import Figure
 from trame.app import get_server
 from trame.widgets import client, html, matplotlib
 from wslink.backends.aiohttp import WebAppServer
+
+from nova.trame._internal.utils import get_state_name, get_state_param
 
 
 class _MPLApplication(tornado.web.Application):
@@ -195,23 +197,35 @@ class MatplotlibFigure(matplotlib.Figure):
 
             return ws_server
 
-    def __init__(self, figure: Optional[Figure] = None, webagg: bool = False, **kwargs: Any) -> None:
+    def __init__(self, figure: Union[Figure, Tuple, None] = None, webagg: bool = False, **kwargs: Any) -> None:
         """Creates a Matplotlib figure in the Trame UI.
 
         Parameters
         ----------
-        figure : `altair.Chart <https://altair-viz.github.io/user_guide/generated/toplevel/altair.Chart.html#altair.Chart>`_
-            Altair chart object
-        webagg : bool
+        figure : Union[`altair.Chart <https://altair-viz.github.io/user_guide/generated/toplevel/altair.Chart.html#altair.Chart>`__, Tuple], optional
+            Altair chart object.
+        webagg : bool, optional
             If true, then the WebAgg backend for Matplotlib is used. If not, then the default Trame matplotlib plugin
-            is used.
+            is used. Note that this parameter does not supporting Trame bindings since the user experiences are
+            fundamentally different between the two options and toggling them is not considered a good idea by the
+            author of this component.
         kwargs
             Arguments to be passed to `AbstractElement <https://trame.readthedocs.io/en/latest/core.widget.html#trame_client.widgets.core.AbstractElement>`_
 
         Returns
         -------
         None
-        """
+        """  # noqa: E501
+        if isinstance(figure, tuple):
+            self._server = get_server(None, client_type="vue3")
+            self._figure = get_state_param(self._server.state, figure)
+
+            @self._server.state.change(get_state_name(figure[0]))
+            def on_change(**kwargs: Any) -> None:
+                self.update(get_state_param(self._server.state, figure))
+        else:
+            self._figure = figure
+
         self._webagg = webagg
         if webagg:
             self._port = MatplotlibFigure._get_free_port()
@@ -224,7 +238,6 @@ class MatplotlibFigure(matplotlib.Figure):
 
             self._server = get_server(None, client_type="vue3")
 
-            self._figure = figure
             self._initialized = False
 
             if not MatplotlibFigure.mpl_initialized:
@@ -233,7 +246,7 @@ class MatplotlibFigure(matplotlib.Figure):
 
             self.update()
         else:
-            super().__init__(figure, **kwargs)
+            super().__init__(self._figure, **kwargs)
 
     def update(self, figure: Optional[Figure] = None) -> None:
         if self._webagg:
