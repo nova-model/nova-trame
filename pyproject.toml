@@ -1,6 +1,6 @@
 [project]
 name = "nova-trame"
-version = "0.24.0"
+version = "0.25.0"
 description = "A Python Package for injecting curated themes and custom components into Trame applications"
 authors = [
     { name = "John Duggan", email = "dugganjw@ornl.gov" },
@@ -36,6 +36,7 @@ pydantic = "*"
 nova-common = ">=0.2.2"
 blinker = "^1.9.0"
 natsort = "^8.4.0"
+pyoncat = "^2.1"
 
 [tool.poetry.group.dev.dependencies]
 mypy = "^1.10.0"

@@ -1,3 +1,7 @@
+### nova-trame, 0.25.0
+
+* Added data_source and projection parameters to NeutronDataSelector to allow populating data files from ONCat (thanks to Andrew Ayres and John Duggan).
+
 ### nova-trame, 0.24.0
 
 * Parameters to DataSelector and NeutronDataSelector should now support bindings (thanks to John Duggan).
