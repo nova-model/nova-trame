@@ -71,16 +71,20 @@ class ExecutionButtons:
                 id=f"{self.id}_run",
                 click=self.run,
             )
-            vuetify.VBtn(
-                "Stop",
-                v_if=self.stop_btn,
-                disabled=(f"{self.id}.stop_disabled",),
-                loading=(f"{self.id}.stop_in_progress",),
-                classes="mr-4",
-                id=f"{self.id}_stop",
-                prepend_icon="mdi-stop",
-                click=self.stop,
-            )
+            if self.stop_btn:
+                extra_params = {}
+                if isinstance(self.stop_btn, tuple):
+                    extra_params["v_if"] = self.stop_btn
+                vuetify.VBtn(
+                    "Stop",
+                    disabled=(f"{self.id}.stop_disabled",),
+                    loading=(f"{self.id}.stop_in_progress",),
+                    classes="mr-4",
+                    id=f"{self.id}_stop",
+                    prepend_icon="mdi-stop",
+                    click=self.stop,
+                    **extra_params,
+                )
             vuetify.VBtn(
                 "Cancel",
                 disabled=(f"{self.id}.cancel_disabled",),
@@ -91,14 +95,18 @@ class ExecutionButtons:
                 id=f"{self.id}_cancel",
                 click=self.cancel,
             )
-            vuetify.VBtn(
-                "Download Results",
-                v_if=self.download_btn,
-                disabled=(f"{self.id}.download_disabled",),
-                loading=(f"{self.id}.download_in_progress",),
-                id=f"{self.id}.download",
-                click=self.download,
-            )
+            if self.download_btn:
+                extra_params = {}
+                if isinstance(self.download_btn, tuple):
+                    extra_params["v_if"] = self.download_btn
+                vuetify.VBtn(
+                    "Download Results",
+                    disabled=(f"{self.id}.download_disabled",),
+                    loading=(f"{self.id}.download_in_progress",),
+                    id=f"{self.id}.download",
+                    click=self.download,
+                    **extra_params,
+                )
 
     async def download(self) -> None:
         content = await self.view_model.prepare_results()

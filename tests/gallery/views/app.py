@@ -508,6 +508,7 @@ class App(ThemedApp):
 
                     ToolOutputWindows("test")
                     ExecutionButtons("test")
+                    ExecutionButtons("test_bindings", stop_btn=("true",), download_btn=False)
 
             with layout.post_content:
                 html.Div("Sticky Bottom Content", classes="text-center w-100")
