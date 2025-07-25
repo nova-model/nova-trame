@@ -1,3 +1,7 @@
+### nova-trame, 0.25.1
+
+* ExecutionButtons now supports binding to stop_btn and download_btn parameters (thanks to John Duggan).
+
 ### nova-trame, 0.25.0
 
 * FileUpload now supports a return_contents parameter (thanks to John Duggan).
