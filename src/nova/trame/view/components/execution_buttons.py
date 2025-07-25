@@ -1,5 +1,7 @@
 """Module for the Progress Tab."""
 
+from typing import Tuple, Union
+
 from trame.app import get_server
 from trame.widgets import client
 from trame.widgets import vuetify3 as vuetify
@@ -15,16 +17,17 @@ class ExecutionButtons:
     This is intended to be used with the `nova-galaxy ToolRunner <https://nova-application-development.readthedocs.io/projects/nova-galaxy/en/latest/core_concepts/tool_runner.html>`__.
     """
 
-    def __init__(self, id: str, stop_btn: bool = False, download_btn: bool = False) -> None:
+    def __init__(self, id: str, stop_btn: Union[bool, Tuple] = False, download_btn: Union[bool, Tuple] = False) -> None:
         """Constructor for ExecutionButtons.
 
         Parameters
         ----------
         id : str
-            Component id. Should be used consistently with ToolRunner and other components.
-        stop_btn: bool
+            Component id. Should be used consistently with ToolRunner and other components. Note that this parameter
+            does not support Trame bindings.
+        stop_btn: Union[bool, Tuple]
             Display stop button.
-        download_btn : bool
+        download_btn : Union[bool, Tuple]
             Display download button.
 
         Returns
@@ -68,16 +71,16 @@ class ExecutionButtons:
                 id=f"{self.id}_run",
                 click=self.run,
             )
-            if self.stop_btn:
-                vuetify.VBtn(
-                    "Stop",
-                    disabled=(f"{self.id}.stop_disabled",),
-                    loading=(f"{self.id}.stop_in_progress",),
-                    classes="mr-4",
-                    id=f"{self.id}_stop",
-                    prepend_icon="mdi-stop",
-                    click=self.stop,
-                )
+            vuetify.VBtn(
+                "Stop",
+                v_if=self.stop_btn,
+                disabled=(f"{self.id}.stop_disabled",),
+                loading=(f"{self.id}.stop_in_progress",),
+                classes="mr-4",
+                id=f"{self.id}_stop",
+                prepend_icon="mdi-stop",
+                click=self.stop,
+            )
             vuetify.VBtn(
                 "Cancel",
                 disabled=(f"{self.id}.cancel_disabled",),
@@ -88,14 +91,14 @@ class ExecutionButtons:
                 id=f"{self.id}_cancel",
                 click=self.cancel,
             )
-            if self.download_btn:
-                vuetify.VBtn(
-                    "Download Results",
-                    disabled=(f"{self.id}.download_disabled",),
-                    loading=(f"{self.id}.download_in_progress",),
-                    id=f"{self.id}.download",
-                    click=self.download,
-                )
+            vuetify.VBtn(
+                "Download Results",
+                v_if=self.download_btn,
+                disabled=(f"{self.id}.download_disabled",),
+                loading=(f"{self.id}.download_in_progress",),
+                id=f"{self.id}.download",
+                click=self.download,
+            )
 
     async def download(self) -> None:
         content = await self.view_model.prepare_results()
