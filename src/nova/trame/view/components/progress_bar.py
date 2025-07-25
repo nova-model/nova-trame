@@ -20,7 +20,8 @@ class ProgressBar:
         Parameters
         ----------
         id : str
-            Component id. Should be used consistently with ToolRunner and other components
+            Component id. Should be used consistently with ToolRunner and other components. Note that this parameter
+            does not support Trame bindings.
 
         Returns
         -------
