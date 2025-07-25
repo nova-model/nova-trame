@@ -40,6 +40,8 @@ General Purpose Components
     :members:
     :special-members: __new__
 
+.. _api_remotefileinput:
+
 .. autoclass:: nova.trame.view.components.RemoteFileInput
     :members:
     :special-members: __init__

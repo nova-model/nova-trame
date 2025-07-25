@@ -1,6 +1,14 @@
-### nova-trame, 0.25.0
+### nova-trame, 0.26.0
 
 * Added data_source and projection parameters to NeutronDataSelector to allow populating data files from ONCat (thanks to Andrew Ayres and John Duggan).
+
+### nova-trame, 0.25.0
+
+* FileUpload now supports a return_contents parameter (thanks to John Duggan).
+
+### nova-trame, 0.24.1
+
+* Fixed literalinclude paths in the documentation (thanks to John Duggan).
 
 ### nova-trame, 0.24.0
 

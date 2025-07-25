@@ -51,7 +51,7 @@ class VBoxLayout(html.Div):
 
         Example
         -------
-        .. literalinclude:: ../tests/gallery/app.py
+        .. literalinclude:: ../tests/gallery/views/app.py
             :start-after: setup vbox
             :end-before: setup vbox complete
             :dedent:
