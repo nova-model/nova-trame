@@ -1,6 +1,7 @@
 """View implementation for RemoteFileInput."""
 
 from functools import partial
+from tempfile import NamedTemporaryFile
 from typing import Any, Optional, Union, cast
 
 from trame.app import get_server
@@ -207,9 +208,15 @@ class RemoteFileInput:
         with open(file_path, mode="rb") as file:
             self.decode_file(file.read())
 
-    def decode_file(self, bytestream: bytes) -> None:
+    def decode_file(self, bytestream: bytes, set_contents: bool = False) -> None:
         decoded_content = bytestream.decode("latin1")
-        self.set_v_model(decoded_content)
+        if set_contents:
+            self.set_v_model(decoded_content)
+        else:
+            with NamedTemporaryFile(mode="w", delete=False, encoding="utf-8") as temp_file:
+                temp_file.write(decoded_content)
+                temp_file.flush()
+                self.set_v_model(temp_file.name)
 
     def select_file(self, value: str) -> None:
         """Programmatically set the v_model value."""

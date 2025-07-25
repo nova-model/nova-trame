@@ -10,7 +10,14 @@ from .remote_file_input import RemoteFileInput
 class FileUpload(vuetify.VBtn):
     """Component for uploading a file from either the user's filesystem or the server filesystem."""
 
-    def __init__(self, v_model: str, base_paths: Optional[List[str]] = None, label: str = "", **kwargs: Any) -> None:
+    def __init__(
+        self,
+        v_model: str,
+        base_paths: Optional[List[str]] = None,
+        label: str = "",
+        return_contents: bool = True,
+        **kwargs: Any,
+    ) -> None:
         """Constructor for FileUpload.
 
         Parameters
@@ -23,6 +30,9 @@ class FileUpload(vuetify.VBtn):
             Passed to :ref:`RemoteFileInput <api_remotefileinput>`.
         label : str, optional
             The text to display on the upload button.
+        return_contents : bool, optional
+            If true, the file contents will be stored in v_model. If false, a file path will be stored in v_model.
+            Defaults to true.
         **kwargs
             All other arguments will be passed to the underlying
             `Button component <https://trame.readthedocs.io/en/latest/trame.widgets.vuetify3.html#trame.widgets.vuetify3.VBtn>`_.
@@ -36,6 +46,7 @@ class FileUpload(vuetify.VBtn):
             self._base_paths = base_paths
         else:
             self._base_paths = ["/"]
+        self._return_contents = return_contents
         self._ref_name = f"nova__fileupload_{self._next_id}"
 
         super().__init__(label, **kwargs)
@@ -49,12 +60,15 @@ class FileUpload(vuetify.VBtn):
             # Serialize the content in a way that will work with nova-mvvm and then push it to the server.
             update_modelValue=(
                 f"{self._v_model}.arrayBuffer().then((contents) => {{"
-                f"trigger('decode_blob_{self._id}', [contents]); "
+                f"  trigger('decode_blob_{self._id}', [contents]); "
                 "});"
             ),
         )
         self.remote_file_input = RemoteFileInput(
-            v_model=self._v_model, base_paths=self._base_paths, input_props={"classes": "d-none"}, return_contents=True
+            v_model=self._v_model,
+            base_paths=self._base_paths,
+            input_props={"classes": "d-none"},
+            return_contents=self._return_contents,
         )
 
         with self:
@@ -65,7 +79,7 @@ class FileUpload(vuetify.VBtn):
 
         @self.server.controller.trigger(f"decode_blob_{self._id}")
         def _decode_blob(contents: bytes) -> None:
-            self.remote_file_input.decode_file(contents)
+            self.remote_file_input.decode_file(contents, self._return_contents)
 
     def select_file(self, value: str) -> None:
         """Programmatically set the RemoteFileInput path.
