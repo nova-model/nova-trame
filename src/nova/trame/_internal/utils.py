@@ -7,6 +7,13 @@ from trame_server.core import State
 from nova.mvvm._internal.utils import rgetdictvalue, rsetdictvalue
 
 
+# Trame state handlers don't work on nested properties. When writing Trame state handlers (e.g. flushState, dirty, or
+# change), we instead use the name of the top-level property. For example, "config.parameter_group_a.option_x" becomes
+# "config".
+def get_state_name(name: str) -> str:
+    return name.split(".")[0]
+
+
 # Reads a state parameter from Trame. For internal use only, if you're using this in your application you're violating
 # the MVVM framework. :)
 def get_state_param(state: State, value: Union[Any, Tuple]) -> Any:
