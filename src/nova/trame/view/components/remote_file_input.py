@@ -203,11 +203,11 @@ class RemoteFileInput:
     # don't want bindings in the internal implementation as our callbacks could compete with the developer's.
     def _setup_bindings(self) -> None:
         # If the bindings were given initial values, write these to the state.
-        set_state_param(self.state, self.allow_files)
-        set_state_param(self.state, self.allow_folders)
-        set_state_param(self.state, self.base_paths)
-        set_state_param(self.state, self.extensions)
-        return_contents = set_state_param(self.state, self.return_contents)
+        self._last_allow_files = set_state_param(self.state, self.allow_files)
+        self._last_allow_folders = set_state_param(self.state, self.allow_folders)
+        self._last_base_paths = set_state_param(self.state, self.base_paths)
+        self._last_extensions = set_state_param(self.state, self.extensions)
+        self._last_return_contents = set_state_param(self.state, self.return_contents)
 
         # Now we need to propagate the state to this component's view model.
         self.vm.set_binding_parameters(
@@ -216,7 +216,7 @@ class RemoteFileInput:
             base_paths=self.base_paths,
             extensions=self.extensions,
         )
-        self._setup_update_binding(return_contents)
+        self._setup_update_binding(self._last_return_contents)
 
         # Now we set up the change listeners for all bound parameters. These are responsible for updating the component
         # when other portions of the application manipulate these parameters.
@@ -227,7 +227,10 @@ class RemoteFileInput:
                 if isinstance(self.allow_files, bool):
                     return
                 allow_files = rgetdictvalue(kwargs, self.allow_files[0])
-                self.vm.set_binding_parameters(allow_files=set_state_param(self.state, self.allow_files, allow_files))
+                if allow_files != self._last_allow_files:
+                    self.vm.set_binding_parameters(
+                        allow_files=set_state_param(self.state, self.allow_files, allow_files)
+                    )
 
         if isinstance(self.allow_folders, tuple):
 
@@ -236,9 +239,10 @@ class RemoteFileInput:
                 if isinstance(self.allow_folders, bool):
                     return
                 allow_folders = rgetdictvalue(kwargs, self.allow_folders[0])
-                self.vm.set_binding_parameters(
-                    allow_folders=set_state_param(self.state, self.allow_folders, allow_folders)
-                )
+                if allow_folders != self._last_allow_folders:
+                    self.vm.set_binding_parameters(
+                        allow_folders=set_state_param(self.state, self.allow_folders, allow_folders)
+                    )
 
         if isinstance(self.base_paths, tuple):
 
@@ -247,7 +251,8 @@ class RemoteFileInput:
                 if isinstance(self.base_paths, bool):
                     return
                 base_paths = rgetdictvalue(kwargs, self.base_paths[0])
-                self.vm.set_binding_parameters(base_paths=set_state_param(self.state, self.base_paths, base_paths))
+                if base_paths != self._last_base_paths:
+                    self.vm.set_binding_parameters(base_paths=set_state_param(self.state, self.base_paths, base_paths))
 
         if isinstance(self.extensions, tuple):
 
@@ -256,7 +261,8 @@ class RemoteFileInput:
                 if isinstance(self.extensions, bool):
                     return
                 extensions = rgetdictvalue(kwargs, self.extensions[0])
-                self.vm.set_binding_parameters(extensions=set_state_param(self.state, self.extensions, extensions))
+                if extensions != self._last_extensions:
+                    self.vm.set_binding_parameters(extensions=set_state_param(self.state, self.extensions, extensions))
 
         if isinstance(self.return_contents, tuple):
 
@@ -265,7 +271,8 @@ class RemoteFileInput:
                 if isinstance(self.return_contents, bool):
                     return
                 return_contents = rgetdictvalue(kwargs, self.return_contents[0])
-                self._setup_update_binding(return_contents)
+                if return_contents != self._last_return_contents:
+                    self._setup_update_binding(return_contents)
 
     def _setup_update_binding(self, read_file: bool) -> None:
         self.vm.reset_update_binding()
