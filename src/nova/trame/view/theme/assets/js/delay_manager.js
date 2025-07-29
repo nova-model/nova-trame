@@ -5,19 +5,25 @@ class DelayManager {
     }
 
     debounce(id, func, wait, ...args) {
-        if (!(id in this.debounces)) {
-            this.debounces[id] = _.debounce(func, wait)
+        if (!(id in this.debounces) || this.debounces[id]['wait'] !== wait) {
+            this.debounces[id] = {
+                'debounce': _.debounce(func, wait),
+                'wait': wait
+            }
         }
 
-        this.debounces[id](...args)
+        this.debounces[id]['debounce'](...args)
     }
 
     throttle(id, func, wait, ...args) {
-        if (!(id in this.throttles)) {
-            this.throttles[id] = _.throttle(func, wait)
+        if (!(id in this.throttles) || this.throttles[id]['wait'] !== wait) {
+            this.throttles[id] = {
+                'throttle': _.throttle(func, wait),
+                'wait': wait
+            }
         }
 
-        this.throttles[id](...args)
+        this.throttles[id]['throttle'](...args)
     }
 }
 
