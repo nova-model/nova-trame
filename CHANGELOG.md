@@ -1,3 +1,7 @@
+### nova-trame, 0.26.0
+
+* Added data_source and projection parameters to NeutronDataSelector to allow populating data files from ONCat (thanks to Andrew Ayres and John Duggan).
+
 ### nova-trame, 0.25.1
 
 * ExecutionButtons now supports binding to stop_btn and download_btn parameters (thanks to John Duggan).
