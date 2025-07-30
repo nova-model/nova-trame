@@ -209,6 +209,10 @@ class NeutronDataSelector(DataSelector):
                 experiment = rgetdictvalue(kwargs, self._experiment[0])
                 if experiment != self._last_experiment:
                     self._last_experiment = experiment
+                    # See the note in the update_experiment method for why we call this twice.
+                    self._vm.set_binding_parameters(
+                        experiment=set_state_param(self.state, (self._selected_experiment_name,), ""),
+                    )
                     self._vm.set_binding_parameters(
                         experiment=set_state_param(self.state, (self._selected_experiment_name,), experiment)
                     )
@@ -244,6 +248,10 @@ class NeutronDataSelector(DataSelector):
         self._vm.reset()
 
     def update_experiment(self, experiment: str) -> None:
+        # Setting the experiment to an empty string forces the treeview to clear it's selection state.
+        self._vm.set_binding_parameters(
+            experiment=set_state_param(self.state, (self._selected_experiment_name,), ""),
+        )
         self._vm.set_binding_parameters(
             experiment=set_state_param(self.state, (self._selected_experiment_name,), experiment),
         )

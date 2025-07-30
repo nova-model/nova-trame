@@ -237,6 +237,7 @@ class DataSelector(datagrid.VGrid):
     def set_subdirectory(self, subdirectory_path: str = "") -> None:
         set_state_param(self.state, self._subdirectory, subdirectory_path)
         self._vm.set_subdirectory(subdirectory_path)
+        self._reset_rv_grid()
 
     def set_state(self, *args: Any, **kwargs: Any) -> None:
         raise TypeError(

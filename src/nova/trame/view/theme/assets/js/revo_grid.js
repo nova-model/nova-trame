@@ -22,23 +22,34 @@ class RevoGrid {
             return
         }
 
+        let allSelected = null
+        rowCheckboxes.forEach((element) => {
+            const input = element.querySelector('input')
+
+            const rowIndex = element.dataset.rgrow
+            if (availableData[rowIndex] !== undefined) {
+                input.checked = modelValue.includes(availableData[rowIndex].path)
+            } else {
+                input.checked = false
+            }
+
+            if (allSelected === null && input.checked) {
+                allSelected = true
+            } else if (!input.checked) {
+                allSelected = false
+            }
+        })
+
         if (modelValue.length === 0) {
             selectAllCheckbox.checked = false
             selectAllCheckbox.indeterminate = false
-        } else if (modelValue.length === availableData.length) {
+        } else if (allSelected === true) {
             selectAllCheckbox.checked = true
             selectAllCheckbox.indeterminate = false
         } else {
             selectAllCheckbox.checked = false
             selectAllCheckbox.indeterminate = true
         }
-
-        rowCheckboxes.forEach((element) => {
-            const input = element.querySelector('input')
-
-            const rowIndex = element.dataset.rgrow
-            input.checked = modelValue.includes(availableData[rowIndex].path)
-        })
     }
 
     cellTemplate(createElement, props) {
