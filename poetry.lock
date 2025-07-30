@@ -1267,14 +1267,14 @@ files = [
 
 [[package]]
 name = "mpld3"
-version = "0.5.10"
+version = "0.5.11"
 description = "D3 Viewer for Matplotlib"
 optional = false
 python-versions = "*"
 groups = ["main"]
 files = [
-    {file = "mpld3-0.5.10-py3-none-any.whl", hash = "sha256:80877acce87ea447380fad7374668737505c8c0684aab05238e7c5dc1fab38c1"},
-    {file = "mpld3-0.5.10.tar.gz", hash = "sha256:a478eb404fa5212505c59133cf272cd9a94105872e605597720e7f84de38fbc7"},
+    {file = "mpld3-0.5.11-py3-none-any.whl", hash = "sha256:99c086c51e03372c91620e715031ffae43fa6263207784214a1efbe2254702f6"},
+    {file = "mpld3-0.5.11.tar.gz", hash = "sha256:bffe2c93f8b406f8d4dc059565dfecb4779e8a1fc50bfbb4e7f5d476a274eab7"},
 ]
 
 [package.dependencies]
@@ -3541,4 +3541,4 @@ propcache = ">=0.2.1"
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<4.0"
-content-hash = "9d3890dfa9395634fbc22e7361e5be295dc8ac4b30fd1a202b63a228a11bc184"
+content-hash = "31876c7e35b3ec4a17f28052650688a71ff619845fd46bab640ada5eb521af5b"
