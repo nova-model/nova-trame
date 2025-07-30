@@ -200,18 +200,20 @@ class MatplotlibFigure(matplotlib.Figure):
 
         Parameters
         ----------
-        figure : `altair.Chart <https://altair-viz.github.io/user_guide/generated/toplevel/altair.Chart.html#altair.Chart>`_
-            Altair chart object
-        webagg : bool
+        figure : `matplotlib.figure.Figure <https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.html#matplotlib.figure.Figure>`__, optional
+            Initial Matplotlib figure.
+        webagg : bool, optional
             If true, then the WebAgg backend for Matplotlib is used. If not, then the default Trame matplotlib plugin
-            is used.
+            is used. Note that this parameter does not supporting Trame bindings since the user experiences are
+            fundamentally different between the two options and toggling them is not considered a good idea by the
+            author of this component.
         kwargs
             Arguments to be passed to `AbstractElement <https://trame.readthedocs.io/en/latest/core.widget.html#trame_client.widgets.core.AbstractElement>`_
 
         Returns
         -------
         None
-        """
+        """  # noqa: E501
         self._webagg = webagg
         if webagg:
             self._port = MatplotlibFigure._get_free_port()
@@ -252,6 +254,8 @@ class MatplotlibFigure(matplotlib.Figure):
                 self._figure.canvas.flush_events()
         else:
             super().update(figure)
+
+        self._server.state.flush()
 
     def _setup_figure_websocket(self) -> None:
         thread = Thread(target=self._mpl_run_ws_server, daemon=True)
