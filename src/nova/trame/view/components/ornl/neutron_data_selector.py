@@ -207,7 +207,7 @@ class NeutronDataSelector(DataSelector):
             @self.state.change(self._experiment[0].split(".")[0])
             def on_experiment_change(**kwargs: Any) -> None:
                 experiment = rgetdictvalue(kwargs, self._experiment[0])
-                if experiment != self._last_experiment:
+                if experiment and experiment != self._last_experiment:
                     self._last_experiment = experiment
                     # See the note in the update_experiment method for why we call this twice.
                     self._vm.set_binding_parameters(
