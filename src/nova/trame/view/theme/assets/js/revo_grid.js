@@ -12,6 +12,11 @@ class RevoGrid {
     }
 
     updateCheckboxes() {
+        // Wait for the DOM to update after the Trame state is updated.
+        setTimeout(this._updateCheckboxes.bind(this), 10)
+    }
+
+    _updateCheckboxes() {
         const trameState = window.trame.state.state
         const modelValue = _.get(trameState, this.modelKey)
         const availableData = _.get(trameState, this.dataKey)
