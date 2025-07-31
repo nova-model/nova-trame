@@ -226,6 +226,7 @@ class DataSelector(datagrid.VGrid):
         self._vm.directories_bind.connect(self._directories_name)
         self._vm.datafiles_bind.connect(self._datafiles_name)
         self._vm.reset_bind.connect(self.reset)
+        self._vm.reset_grid_bind.connect(self._reset_rv_grid)
 
     def refresh_contents(self) -> None:
         self._vm.update_view(refresh_directories=True)
