@@ -173,9 +173,10 @@ class NeutronDataSelectorModel(DataSelectorModel):
         return self.get_directories_from_path(base_path)
 
     def get_datafiles(self) -> List[str]:
+        using_custom_directory = self.state.facility == CUSTOM_DIRECTORIES_LABEL
         if self.state.experiment:
             base_path = Path("/") / self.state.facility / self.get_instrument_dir() / self.state.experiment
-        elif self.state.custom_directory:
+        elif using_custom_directory and self.state.custom_directory:
             base_path = Path(self.state.custom_directory)
         else:
             return []
