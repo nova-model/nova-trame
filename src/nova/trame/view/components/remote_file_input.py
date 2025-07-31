@@ -2,14 +2,17 @@
 
 from functools import partial
 from tempfile import NamedTemporaryFile
-from typing import Any, Optional, Union, cast
+from typing import Any, List, Optional, Tuple, Union, cast
 
 from trame.app import get_server
 from trame.widgets import client, html
 from trame.widgets import vuetify3 as vuetify
 from trame_client.widgets.core import AbstractElement
+from trame_server.core import State
 
+from nova.mvvm._internal.utils import rgetdictvalue
 from nova.mvvm.trame_binding import TrameBinding
+from nova.trame._internal.utils import get_state_name, set_state_param
 from nova.trame.model.remote_file_input import RemoteFileInputModel
 from nova.trame.view_model.remote_file_input import RemoteFileInputViewModel
 
@@ -24,57 +27,47 @@ class RemoteFileInput:
 
     def __init__(
         self,
-        v_model: Optional[Union[tuple[str, Any], str]] = None,
-        allow_files: bool = True,
-        allow_folders: bool = False,
-        allow_nonexistent_path: bool = False,
-        base_paths: Optional[list[str]] = None,
+        v_model: Union[str, Tuple],
+        allow_files: Union[bool, Tuple] = True,
+        allow_folders: Union[bool, Tuple] = False,
+        base_paths: Union[List[str], Tuple, None] = None,
         dialog_props: Optional[dict[str, Any]] = None,
-        extensions: Optional[list[str]] = None,
+        extensions: Union[List[str], Tuple, None] = None,
         input_props: Optional[dict[str, Any]] = None,
-        return_contents: bool = False,
+        return_contents: Union[bool, Tuple] = False,
     ) -> None:
         """Constructor for RemoteFileInput.
 
         Parameters
         ----------
-        v_model : tuple[str, Any] or str, optional
+        v_model : Union[str, Tuple]
             The v-model for this component. If this references a Pydantic configuration variable, then this component
             will attempt to load a label, hint, and validation rules from the configuration for you automatically.
-        allow_files : bool
+        allow_files : Union[bool, Tuple], optional
             If true, the user can save a file selection.
-        allow_folders : bool
+        allow_folders : Union[bool, Tuple], optional
             If true, the user can save a folder selection.
-        allow_nonexistent_path : bool
-            If false, the user will be warned when they've selected a non-existent path on the filesystem.
-        base_paths : list[str], optional
+        base_paths : Union[List[str], Tuple], optional
             Only files under these paths will be shown.
-        dialog_props : dict[str, typing.Any], optional
+        dialog_props : Dict[str, typing.Any], optional
             Props to be passed to VDialog.
-        extensions : list[str], optional
+        extensions : Union[List[str], Tuple], optional
             Only files with these extensions will be shown by default. The user can still choose to view all files.
-        input_props : dict[str, typing.Any], optional
+        input_props : Dict[str, typing.Any], optional
             Props to be passed to InputField.
-        return_contents : bool
+        return_contents : Union[bool, Tuple], optional
             If true, then the v_model will contain the contents of the file. If false, then the v_model will contain the
-            path of the file.
-
-        Raises
-        ------
-        ValueError
-            If v_model is None.
+            path of the file. Defaults to false.
 
         Returns
         -------
         None
         """
-        if v_model is None:
-            raise ValueError("RemoteFileInput must have a v_model attribute.")
+        self.server = get_server(None, client_type="vue3")
 
         self.v_model = v_model
         self.allow_files = allow_files
         self.allow_folders = allow_folders
-        self.allow_nonexistent_path = allow_nonexistent_path
         self.base_paths = base_paths if base_paths else ["/"]
         self.dialog_props = dict(dialog_props) if dialog_props else {}
         self.extensions = extensions if extensions else []
@@ -88,9 +81,15 @@ class RemoteFileInput:
         if "width" not in self.dialog_props:
             self.dialog_props["width"] = 600
 
-        self.create_model()
-        self.create_viewmodel()
+        self._create_model()
+        self._create_viewmodel()
+        self._setup_bindings()
+
         self.create_ui()
+
+    @property
+    def state(self) -> State:
+        return self.server.state
 
     def create_ui(self) -> None:
         with cast(
@@ -175,12 +174,11 @@ class RemoteFileInput:
                                     click=partial(self.vm.close_dialog, cancel=True),
                                 )
 
-    def create_model(self) -> None:
-        self.model = RemoteFileInputModel(self.allow_files, self.allow_folders, self.base_paths, self.extensions)
+    def _create_model(self) -> None:
+        self.model = RemoteFileInputModel()
 
-    def create_viewmodel(self) -> None:
-        server = get_server(None, client_type="vue3")
-        binding = TrameBinding(server.state)
+    def _create_viewmodel(self) -> None:
+        binding = TrameBinding(self.state)
 
         if isinstance(self.v_model, tuple):
             model_name = self.v_model[0]
@@ -197,12 +195,91 @@ class RemoteFileInput:
         self.vm.file_list_bind.connect(self.vm.get_file_list_state_name())
         self.vm.filter_bind.connect(self.vm.get_filter_state_name())
         self.vm.on_close_bind.connect(client.JSEval(exec=f"{self.vm.get_dialog_state_name()} = false;").exec)
-        if self.return_contents:
+        self.vm.showing_all_bind.connect(self.vm.get_showing_all_state_name())
+        self.vm.valid_selection_bind.connect(self.vm.get_valid_selection_state_name())
+
+    # This method sets up Trame state change listeners for each binding parameter that can be changed directly by this
+    # component. This allows us to communicate the changes to the developer's bindings without requiring our own. We
+    # don't want bindings in the internal implementation as our callbacks could compete with the developer's.
+    def _setup_bindings(self) -> None:
+        # If the bindings were given initial values, write these to the state.
+        self._last_allow_files = set_state_param(self.state, self.allow_files)
+        self._last_allow_folders = set_state_param(self.state, self.allow_folders)
+        self._last_base_paths = set_state_param(self.state, self.base_paths)
+        self._last_extensions = set_state_param(self.state, self.extensions)
+        self._last_return_contents = set_state_param(self.state, self.return_contents)
+
+        # Now we need to propagate the state to this component's view model.
+        self.vm.set_binding_parameters(
+            allow_files=self.allow_files,
+            allow_folders=self.allow_folders,
+            base_paths=self.base_paths,
+            extensions=self.extensions,
+        )
+        self._setup_update_binding(self._last_return_contents)
+
+        # Now we set up the change listeners for all bound parameters. These are responsible for updating the component
+        # when other portions of the application manipulate these parameters.
+        if isinstance(self.allow_files, tuple):
+
+            @self.state.change(get_state_name(self.allow_files[0]))
+            def on_allow_files_change(**kwargs: Any) -> None:
+                if isinstance(self.allow_files, bool):
+                    return
+                allow_files = rgetdictvalue(kwargs, self.allow_files[0])
+                if allow_files != self._last_allow_files:
+                    self.vm.set_binding_parameters(
+                        allow_files=set_state_param(self.state, self.allow_files, allow_files)
+                    )
+
+        if isinstance(self.allow_folders, tuple):
+
+            @self.state.change(get_state_name(self.allow_folders[0]))
+            def on_allow_folders_change(**kwargs: Any) -> None:
+                if isinstance(self.allow_folders, bool):
+                    return
+                allow_folders = rgetdictvalue(kwargs, self.allow_folders[0])
+                if allow_folders != self._last_allow_folders:
+                    self.vm.set_binding_parameters(
+                        allow_folders=set_state_param(self.state, self.allow_folders, allow_folders)
+                    )
+
+        if isinstance(self.base_paths, tuple):
+
+            @self.state.change(get_state_name(self.base_paths[0]))
+            def on_base_paths_change(**kwargs: Any) -> None:
+                if isinstance(self.base_paths, bool):
+                    return
+                base_paths = rgetdictvalue(kwargs, self.base_paths[0])
+                if base_paths != self._last_base_paths:
+                    self.vm.set_binding_parameters(base_paths=set_state_param(self.state, self.base_paths, base_paths))
+
+        if isinstance(self.extensions, tuple):
+
+            @self.state.change(get_state_name(self.extensions[0]))
+            def on_extensions_change(**kwargs: Any) -> None:
+                if isinstance(self.extensions, bool):
+                    return
+                extensions = rgetdictvalue(kwargs, self.extensions[0])
+                if extensions != self._last_extensions:
+                    self.vm.set_binding_parameters(extensions=set_state_param(self.state, self.extensions, extensions))
+
+        if isinstance(self.return_contents, tuple):
+
+            @self.state.change(get_state_name(self.return_contents[0]))
+            def on_return_contents_change(**kwargs: Any) -> None:
+                if isinstance(self.return_contents, bool):
+                    return
+                return_contents = rgetdictvalue(kwargs, self.return_contents[0])
+                if return_contents != self._last_return_contents:
+                    self._setup_update_binding(return_contents)
+
+    def _setup_update_binding(self, read_file: bool) -> None:
+        self.vm.reset_update_binding()
+        if read_file:
             self.vm.on_update_bind.connect(self.read_file)
         else:
             self.vm.on_update_bind.connect(self.set_v_model)
-        self.vm.showing_all_bind.connect(self.vm.get_showing_all_state_name())
-        self.vm.valid_selection_bind.connect(self.vm.get_valid_selection_state_name())
 
     def read_file(self, file_path: str) -> None:
         with open(file_path, mode="rb") as file:

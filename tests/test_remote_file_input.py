@@ -9,14 +9,6 @@ def test_remote_file_input() -> None:
     assert not file_input.allow_folders
 
 
-def test_missing_v_model() -> None:
-    try:
-        RemoteFileInput()
-        raise AssertionError("Expected ValueError from missing v_model argument")
-    except ValueError:
-        pass
-
-
 def test_open_dialog() -> None:
     file_input = RemoteFileInput(v_model="test")
     file_input.vm.open_dialog()

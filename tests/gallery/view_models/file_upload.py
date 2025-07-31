@@ -16,3 +16,6 @@ class FileUploadVM:
 
     def on_update(self, data: Dict[str, Any]) -> None:
         print("file size:", sys.getsizeof(self.model.file))
+
+    def update_view(self) -> None:
+        self.model_bind.update_in_view(self.model)
