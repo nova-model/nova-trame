@@ -1,3 +1,7 @@
+### nova-trame, 0.25.2
+
+* NeutronDataSelector should now reset its state properly when changing the instrument or experiment (thanks to John Duggan).
+
 ### nova-trame, 0.25.1
 
 * ExecutionButtons now supports binding to stop_btn and download_btn parameters (thanks to John Duggan).
