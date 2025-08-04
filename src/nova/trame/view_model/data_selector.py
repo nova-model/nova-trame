@@ -22,6 +22,7 @@ class DataSelectorViewModel:
         self.directories_bind = binding.new_bind()
         self.datafiles_bind = binding.new_bind()
         self.reset_bind = binding.new_bind()
+        self.reset_grid_bind = binding.new_bind()
 
     def expand_directory(self, paths: List[str]) -> None:
         if paths[-1] in self.expanded:
@@ -77,3 +78,4 @@ class DataSelectorViewModel:
 
         self.datafiles = self.transform_datafiles(self.model.get_datafiles())
         self.datafiles_bind.update_in_view(self.datafiles)
+        self.reset_grid_bind.update_in_view(None)

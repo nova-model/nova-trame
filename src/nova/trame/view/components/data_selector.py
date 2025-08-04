@@ -206,16 +206,19 @@ class DataSelector(datagrid.VGrid):
                 InputField(
                     v_model=self._v_model,
                     classes="flex-0-1 nova-readonly",
-                    clearable=True,
                     readonly=True,
                     type="select",
-                    click_clear=self.reset,
                 ),
             ):
                 with vuetify.Template(raw_attrs=['v-slot:selection="{ item, index }"']):
                     vuetify.VChip("{{ item.title.split('/').reverse()[0] }}", v_if="index < 2")
                     html.Span(
                         f"(+{{{{ {self._v_model}.length - 2 }}}} others)", v_if="index === 2", classes="text-caption"
+                    )
+
+                with vuetify.Template(v_slot_append_inner=True):
+                    vuetify.VIcon(
+                        "mdi-close-box", v_if=f"{self._v_model}.length > 0", color="primary", size=20, click=self.reset
                     )
 
     def _create_model(self) -> None:
@@ -231,6 +234,7 @@ class DataSelector(datagrid.VGrid):
         self._vm.directories_bind.connect(self._directories_name)
         self._vm.datafiles_bind.connect(self._datafiles_name)
         self._vm.reset_bind.connect(self.reset)
+        self._vm.reset_grid_bind.connect(self._reset_rv_grid)
 
     def refresh_contents(self) -> None:
         self._vm.update_view(refresh_directories=True)

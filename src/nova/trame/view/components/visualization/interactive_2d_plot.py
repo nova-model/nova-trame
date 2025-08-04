@@ -30,7 +30,7 @@ class Interactive2DPlot(vega.Figure):
 
         Parameters
         ----------
-        figure : `altair.Chart <https://altair-viz.github.io/user_guide/generated/toplevel/altair.Chart.html#altair.Chart>`_
+        figure : `altair.Chart <https://altair-viz.github.io/user_guide/generated/toplevel/altair.Chart.html#altair.Chart>`__, optional
             Altair chart object
         kwargs
             Arguments to be passed to `AbstractElement <https://trame.readthedocs.io/en/latest/core.widget.html#trame_client.widgets.core.AbstractElement>`_
@@ -38,7 +38,7 @@ class Interactive2DPlot(vega.Figure):
         Returns
         -------
         None
-        """
+        """  # noqa: E501
         self._initialized = False
 
         super().__init__(figure=figure, **kwargs)
@@ -83,3 +83,5 @@ class Interactive2DPlot(vega.Figure):
 
         if hasattr(self, "_start_update_handlers"):
             self._start_update_handlers()
+
+        self.server.state.flush()

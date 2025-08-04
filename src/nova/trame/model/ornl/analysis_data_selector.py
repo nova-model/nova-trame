@@ -70,7 +70,10 @@ class AnalysisDataSelectorState(NeutronDataSelectorState):
     def validate_state(self) -> Self:
         valid_facilities = self.get_facilities()
         if self.facility and self.facility not in valid_facilities:
-            warn(f"Facility '{self.facility}' could not be found. Valid options: {valid_facilities}", stacklevel=1)
+            warn(
+                f"Facility '{self.facility}' could not be found. Valid options: {valid_facilities}",
+                stacklevel=1,
+            )
 
         valid_instruments = self.get_instruments()
         if self.instrument and self.facility != CUSTOM_DIRECTORIES_LABEL and self.instrument not in valid_instruments:
@@ -152,9 +155,10 @@ class AnalysisDataSelectorModel(NeutronDataSelectorModel):
         return self.get_directories_from_path(base_path)
 
     def get_datafiles(self, *args: Any, **kwargs: Any) -> List[str]:
+        using_custom_directory = self.state.facility == CUSTOM_DIRECTORIES_LABEL
         if self.state.experiment:
             base_path = Path("/") / self.state.facility / self.get_instrument_dir() / self.state.experiment
-        elif self.state.custom_directory:
+        elif using_custom_directory and self.state.custom_directory:
             base_path = Path(self.state.custom_directory)
         else:
             return []

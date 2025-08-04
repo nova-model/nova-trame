@@ -12,6 +12,11 @@ class RevoGrid {
     }
 
     updateCheckboxes() {
+        // Wait for the DOM to update after the Trame state is updated.
+        setTimeout(this._updateCheckboxes.bind(this), 10)
+    }
+
+    _updateCheckboxes() {
         const trameState = window.trame.state.state
         const modelValue = _.get(trameState, this.modelKey)
         const availableData = _.get(trameState, this.dataKey)
@@ -22,23 +27,34 @@ class RevoGrid {
             return
         }
 
+        let allSelected = null
+        rowCheckboxes.forEach((element) => {
+            const input = element.querySelector('input')
+
+            const rowIndex = element.dataset.rgrow
+            if (availableData[rowIndex] !== undefined) {
+                input.checked = modelValue.includes(availableData[rowIndex].path)
+            } else {
+                input.checked = false
+            }
+
+            if (allSelected === null && input.checked) {
+                allSelected = true
+            } else if (!input.checked) {
+                allSelected = false
+            }
+        })
+
         if (modelValue.length === 0) {
             selectAllCheckbox.checked = false
             selectAllCheckbox.indeterminate = false
-        } else if (modelValue.length === availableData.length) {
+        } else if (allSelected === true) {
             selectAllCheckbox.checked = true
             selectAllCheckbox.indeterminate = false
         } else {
             selectAllCheckbox.checked = false
             selectAllCheckbox.indeterminate = true
         }
-
-        rowCheckboxes.forEach((element) => {
-            const input = element.querySelector('input')
-
-            const rowIndex = element.dataset.rgrow
-            input.checked = modelValue.includes(availableData[rowIndex].path)
-        })
     }
 
     cellTemplate(createElement, props) {
