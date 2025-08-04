@@ -154,7 +154,7 @@ class AnalysisDataSelectorModel(NeutronDataSelectorModel):
 
         return self.get_directories_from_path(base_path)
 
-    def get_datafiles(self, *args: Any, **kwargs: Any) -> List[str]:
+    def get_datafiles(self, *args: Any, **kwargs: Any) -> List[Any]:
         using_custom_directory = self.state.facility == CUSTOM_DIRECTORIES_LABEL
         if self.state.experiment:
             base_path = Path("/") / self.state.facility / self.get_instrument_dir() / self.state.experiment
@@ -163,4 +163,4 @@ class AnalysisDataSelectorModel(NeutronDataSelectorModel):
         else:
             return []
 
-        return self.get_datafiles_from_path(base_path)
+        return [{"path": path} for path in self.get_datafiles_from_path(base_path)]
