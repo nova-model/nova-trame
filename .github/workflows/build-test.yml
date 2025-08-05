@@ -1,9 +1,6 @@
 name: Build and Test
 
-on:
-  workflow_dispatch:
-  #push:
-     #branches:
+on: push
 
 concurrency:
   group: "${{ github.ref }}"
@@ -22,7 +19,7 @@ jobs:
       GIT_STRATEGY: clone
       IMAGE_NAME: "${NDIP_DOCKER_REPOSITORY}/${{ github.repository }}"
     steps:
-    - uses: actions/checkout@v4.1.0
+    - uses: actions/checkout@v4
       with:
         fetch-depth: 20
         lfs: true
