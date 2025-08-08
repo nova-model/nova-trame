@@ -100,6 +100,7 @@ class DataSelectorModel:
                         for extension in self.state.extensions:
                             if entry.path.lower().endswith(extension):
                                 datafiles.append(entry.path)
+                                break
                     else:
                         datafiles.append(entry.path)
         except OSError:

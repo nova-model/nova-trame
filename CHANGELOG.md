@@ -1,3 +1,7 @@
+### nova-trame, 0.25.5
+
+* NeutronDataSelector will no longer show duplicates of a file that matches multiple extensions (thanks to John Duggan).
+
 ### nova-trame, 0.25.4
 
 * InputField, FileUpload, and RemoteFileInput should support parameter bindings now (thanks to John Duggan).
