@@ -383,7 +383,12 @@ class App(ThemedApp):
 
                     vuetify.VCardTitle("Form Inputs & Controls")
                     with GridLayout(columns=3, valign="center"):
-                        FileUpload(v_model="file_upload.file", base_paths=["/HFIR", "/SNS"], label="Upload File")
+                        FileUpload(
+                            v_model="file_upload.file",
+                            base_paths=["/HFIR", "/SNS"],
+                            extensions=("file_upload.extensions",),
+                            label="{{ file_upload.label }}",
+                        )
                         with html.Div():
                             InputField(
                                 v_model="autoscroll",

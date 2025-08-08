@@ -14,6 +14,7 @@ class RemoteFileInputViewModel:
     def __init__(self, model: RemoteFileInputModel, binding: BindingInterface) -> None:
         """Creates a new RemoteFileInputViewModel."""
         self.model = model
+        self.binding = binding
 
         # Needed to keep state variables separated if this class is instantiated multiple times.
         self.id = RemoteFileInputViewModel.counter
@@ -23,13 +24,16 @@ class RemoteFileInputViewModel:
         self.showing_base_paths = True
         self.previous_value = ""
         self.value = ""
-        self.dialog_bind = binding.new_bind()
-        self.file_list_bind = binding.new_bind()
-        self.filter_bind = binding.new_bind()
-        self.showing_all_bind = binding.new_bind()
-        self.valid_selection_bind = binding.new_bind()
-        self.on_close_bind = binding.new_bind()
-        self.on_update_bind = binding.new_bind()
+        self.dialog_bind = self.binding.new_bind()
+        self.file_list_bind = self.binding.new_bind()
+        self.filter_bind = self.binding.new_bind()
+        self.showing_all_bind = self.binding.new_bind()
+        self.valid_selection_bind = self.binding.new_bind()
+        self.on_close_bind = self.binding.new_bind()
+        self.on_update_bind = self.binding.new_bind()
+
+    def reset_update_binding(self) -> None:
+        self.on_update_bind = self.binding.new_bind()
 
     def open_dialog(self) -> None:
         self.previous_value = self.value
@@ -93,3 +97,6 @@ class RemoteFileInputViewModel:
 
         self.valid_selection_bind.update_in_view(self.model.valid_selection(new_path))
         self.populate_file_list()
+
+    def set_binding_parameters(self, **kwargs: Any) -> None:
+        self.model.set_binding_parameters(**kwargs)
