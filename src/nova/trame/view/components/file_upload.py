@@ -67,7 +67,7 @@ class FileUpload(vuetify.VBtn):
         self.local_file_input = vuetify.VFileInput(
             v_model=self._v_model,
             __properties=["accept"],
-            accept=self._extensions,
+            accept=",".join(self._extensions) if isinstance(self._extensions, list) else self._extensions,
             classes="d-none",
             ref=self._ref_name,
             # Serialize the content in a way that will work with nova-mvvm and then push it to the server.
