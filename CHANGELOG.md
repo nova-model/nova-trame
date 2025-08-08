@@ -1,3 +1,7 @@
+### nova-trame, 0.26.0
+
+* Added data_source and projection parameters to NeutronDataSelector to allow populating data files from ONCat (thanks to Andrew Ayres and John Duggan).
+
 ### nova-trame, 0.25.3
 
 * Clearing NeutronDataSelector file selections will no longer send null/None values to the state (thanks to John Duggan).

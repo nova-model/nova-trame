@@ -79,7 +79,7 @@ def test_parameter_bindings() -> None:
                     NeutronDataSelector(
                         v_model=("test_nds.v_model", ["test.txt"]),
                         facility=("test_nds.facility", "SNS"),
-                        instrument=("test_nds.instrument", "BL-12"),
+                        instrument=("test_nds.instrument", "TOPAZ"),
                         experiment=("test_nds.experiment",),
                         allow_custom_directories=("test_nds.allow_custom_directories", True),
                     )

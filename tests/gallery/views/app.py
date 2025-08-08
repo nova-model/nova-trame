@@ -167,7 +167,8 @@ class App(ThemedApp):
         self.data_selector_vm.parameter_bind.connect("ds_params")
 
         self.neutron_data_selector_vm = NeutronDataSelectorVM(binding)
-        self.neutron_data_selector_vm.model_bind.connect("neutron_data_selector")
+        self.neutron_data_selector_vm.analysis_bind.connect("nds_filesystem")
+        self.neutron_data_selector_vm.oncat_bind.connect("nds_oncat")
         self.neutron_data_selector_vm.parameter_bind.connect("nds_params")
 
         self.file_upload_vm = FileUploadVM(binding)
@@ -374,13 +375,27 @@ class App(ThemedApp):
                         InputField(v_model="nds_params.allow_custom_directories", type="checkbox")
                     with html.Div(classes="border-md text-left", style="height: 650px; width: 600px;"):
                         NeutronDataSelector(
-                            v_model="neutron_data_selector.selected_files",
+                            v_model="nds_filesystem.selected_files",
                             facility=("nds_params.facility", "SNS"),
-                            instrument=("nds_params.instrument", "BL-12"),
+                            instrument=("nds_params.instrument", "TOPAZ"),
                             experiment=("nds_params.experiment", "IPTS-12132"),
                             allow_custom_directories=("nds_params.allow_custom_directories", True),
                             chips=True,
                         )
+                    with html.Div(classes="border-md text-left", style="height: 650px; width: 600px;"):
+                        try:
+                            NeutronDataSelector(
+                                v_model="nds_oncat.selected_files",
+                                data_source="oncat",
+                                projection=["indexed.run_number", "metadata.entry.title"],
+                                chips=True,
+                            )
+                        except EnvironmentError:
+                            # Unit tests will fail without this in the CI since ONCat vars won't be defined.
+                            html.Span(
+                                "You must define ONCAT_CLIENT_ID and ONCAT_CLIENT_SECRET in your environment in order "
+                                "to test the ONCat backend for NeutronDataSelector."
+                            )
 
                     vuetify.VCardTitle("Form Inputs & Controls")
                     with GridLayout(columns=3, valign="center"):

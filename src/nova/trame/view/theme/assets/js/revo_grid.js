@@ -21,7 +21,7 @@ class RevoGrid {
         const modelValue = _.get(trameState, this.modelKey)
         const availableData = _.get(trameState, this.dataKey)
         const selectAllCheckbox = this.grid.querySelector(".header-content input")
-        const rowCheckboxes = this.grid.querySelectorAll(".rgCell")
+        const rowCheckboxes = this.grid.querySelectorAll(".rgCell:first-child")
 
         if (selectAllCheckbox === null) {
             return
