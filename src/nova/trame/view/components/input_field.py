@@ -5,7 +5,7 @@ import os
 import re
 from enum import Enum
 from inspect import isclass
-from typing import Any, Dict, Optional, Union
+from typing import Any, Dict, Tuple, Union
 
 from trame.app import get_server
 from trame.widgets import client
@@ -15,6 +15,7 @@ from trame_server.controller import Controller
 from trame_server.state import State
 
 from nova.mvvm.pydantic_utils import get_field_info
+from nova.trame._internal.utils import set_state_param
 
 logger = logging.getLogger(__name__)
 
@@ -22,9 +23,14 @@ logger = logging.getLogger(__name__)
 class InputField:
     """Factory class for generating Vuetify input components."""
 
+    next_id = 0
+
     @staticmethod
     def create_boilerplate_properties(
-        v_model: Optional[Union[tuple[str, Any], str]], field_type: str, debounce: int, throttle: int
+        v_model: Union[str, Tuple, None],
+        field_type: str,
+        debounce: Union[int, Tuple],
+        throttle: Union[int, Tuple],
     ) -> dict:
         if debounce == -1:
             debounce = int(os.environ.get("NOVA_TRAME_DEFAULT_DEBOUNCE", 0))
@@ -78,26 +84,43 @@ class InputField:
                 ):
                     args |= {"items": str([option.value for option in field_info.annotation])}
 
-            if debounce > 0 and throttle > 0:
+            if debounce and throttle:
                 raise ValueError("debounce and throttle cannot be used together")
 
-            if debounce > 0:
+            server = get_server(None, client_type="vue3")
+            if debounce:
+                if isinstance(debounce, tuple):
+                    debounce_field = debounce[0]
+                    set_state_param(server.state, debounce)
+                else:
+                    debounce_field = f"nova__debounce_{InputField.next_id}"
+                    InputField.next_id += 1
+                    set_state_param(server.state, debounce_field, debounce)
+
                 args |= {
                     "update_modelValue": (
                         "window.delay_manager.debounce("
-                        f"  '{v_model}',"
+                        f"  '{field}',"
                         f"  () => flushState('{object_name_in_state}'),"
-                        f"  {debounce}"
+                        f"  {debounce_field}"
                         ")"
                     )
                 }
-            elif throttle > 0:
+            elif throttle:
+                if isinstance(throttle, tuple):
+                    throttle_field = throttle[0]
+                    set_state_param(server.state, throttle)
+                else:
+                    throttle_field = f"nova__throttle_{InputField.next_id}"
+                    InputField.next_id += 1
+                    set_state_param(server.state, throttle_field, throttle)
+
                 args |= {
                     "update_modelValue": (
                         "window.delay_manager.throttle("
-                        f"  '{v_model}',"
+                        f"  '{field}',"
                         f"  () => flushState('{object_name_in_state}'),"
-                        f"  {throttle}"
+                        f"  {throttle_field}"
                         ")"
                     )
                 }
@@ -107,10 +130,10 @@ class InputField:
 
     def __new__(
         cls,
-        v_model: Optional[Union[tuple[str, Any], str]] = None,
+        v_model: Union[str, Tuple, None] = None,
         required: bool = False,
-        debounce: int = -1,
-        throttle: int = -1,
+        debounce: Union[int, Tuple] = -1,
+        throttle: Union[int, Tuple] = -1,
         type: str = "text",
         **kwargs: Any,
     ) -> AbstractElement:
@@ -118,18 +141,19 @@ class InputField:
 
         Parameters
         ----------
-        v_model : tuple[str, Any] or str, optional
+        v_model : Union[str, Tuple], optional
             The v-model for this component. If this references a Pydantic configuration variable, then this component
             will attempt to load a label, hint, and validation rules from the configuration for you automatically.
-        required : bool
+        required : bool, optional
             If true, the input will be visually marked as required and a required rule will be added to the end of the
-            rules list.
-        debounce : int
+            rules list. This parameter will be removed in the future. Please use Pydantic to enforce validation of
+            required fields.
+        debounce : Union[int, Tuple], optional
             Number of milliseconds to wait after the last user interaction with this field before attempting to update
             the Trame state. If set to 0, then no debouncing will occur. If set to -1, then the environment variable
             `NOVA_TRAME_DEFAULT_DEBOUNCE` will be used to set this (defaults to 0). See the `Lodash Docs
             <https://lodash.com/docs/4.17.15#debounce>`__ for details.
-        throttle : int
+        throttle : Union[int, Tuple], optional
             Number of milliseconds to wait between updates to the Trame state when the user is interacting with this
             field. If set to 0, then no throttling will occur. If set to -1, then the environment variable
             `NOVA_TRAME_DEFAULT_THROTTLE` will be used to set this (defaults to 0). See the `Lodash Docs
@@ -165,7 +189,9 @@ class InputField:
             - switch
             - textarea
 
-            Any other value will produce a text field with your type used as an HTML input type attribute.
+            Any other value will produce a text field with your type used as an HTML input type attribute. Note that
+            parameter does not support binding since swapping field types dynamically produces a confusing user
+            experience.
         **kwargs
             All other arguments will be passed to the underlying
             `Trame Vuetify component <https://trame.readthedocs.io/en/latest/trame.widgets.vuetify3.html>`_.
@@ -184,7 +210,10 @@ class InputField:
         """
         server = get_server(None, client_type="vue3")
 
-        kwargs = {**cls.create_boilerplate_properties(v_model, type, debounce, throttle), **kwargs}
+        kwargs = {
+            **cls.create_boilerplate_properties(v_model, type, debounce, throttle),
+            **kwargs,
+        }
 
         if "__events" not in kwargs or kwargs["__events"] is None:
             kwargs["__events"] = []

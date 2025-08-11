@@ -43,6 +43,7 @@ logger.setLevel(logging.INFO)
 class Config(BaseModel):
     """Pydantic object for testing validation."""
 
+    debounce_rate: int = Field(default=1000, title="Debounce Rate")
     debounce: str = Field(
         default="",
         description="This field is debounced and will not update its state until you've stopped typing for 1 second.",
@@ -398,7 +399,12 @@ class App(ThemedApp):
 
                     vuetify.VCardTitle("Form Inputs & Controls")
                     with GridLayout(columns=3, valign="center"):
-                        FileUpload(v_model="file_upload.file", base_paths=["/HFIR", "/SNS"], label="Upload File")
+                        FileUpload(
+                            v_model="file_upload.file",
+                            base_paths=["/HFIR", "/SNS"],
+                            extensions=("file_upload.extensions",),
+                            label="{{ file_upload.label }}",
+                        )
                         with html.Div():
                             InputField(
                                 v_model="autoscroll",
@@ -426,8 +432,9 @@ class App(ThemedApp):
                         InputField(type="textarea", auto_grow=True, label="Text Area")
                         # [ InputField kwargs example end ]
                         InputField(ref="pydantic-field", id="pydantic-field", v_model=("config.value", "test"))
-                        InputField(v_model=("config.debounce"), debounce=1000)
-                        InputField(v_model=("config.throttle"), throttle=1000)
+                        InputField(v_model=("config.debounce_rate",))
+                        InputField(v_model=("config.debounce",), debounce=("config.debounce_rate",))
+                        InputField(v_model=("config.throttle",), throttle=1000)
                         RemoteFileInput(
                             v_model="selected_file",
                             base_paths=["/run"],

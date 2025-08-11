@@ -1,8 +1,12 @@
 """View implementation for FileUpload."""
 
-from typing import Any, List, Optional
+from typing import Any, List, Tuple, Union
 
+from trame.app import get_server
 from trame.widgets import vuetify3 as vuetify
+from trame_server.core import State
+
+from nova.trame._internal.utils import get_state_param
 
 from .remote_file_input import RemoteFileInput
 
@@ -12,25 +16,28 @@ class FileUpload(vuetify.VBtn):
 
     def __init__(
         self,
-        v_model: str,
-        base_paths: Optional[List[str]] = None,
+        v_model: Union[str, Tuple],
+        base_paths: Union[List[str], Tuple, None] = None,
+        extensions: Union[List[str], Tuple, None] = None,
         label: str = "",
-        return_contents: bool = True,
+        return_contents: Union[bool, Tuple] = True,
         **kwargs: Any,
     ) -> None:
         """Constructor for FileUpload.
 
         Parameters
         ----------
-        v_model : str
+        v_model : Union[str, Tuple]
             The state variable to set when the user uploads their file. The state variable will contain a latin1-decoded
             version of the file contents. If your file is binary or requires a different string encoding, then you can
             call `encode('latin1')` on the file contents to get the underlying bytes.
-        base_paths: list[str], optional
+        base_paths: Union[List[str], Tuple], optional
             Passed to :ref:`RemoteFileInput <api_remotefileinput>`.
+        extensions: Union[List[str], Tuple], optional
+            Restricts the files shown to the user to files that end with one of the strings in the list.
         label : str, optional
             The text to display on the upload button.
-        return_contents : bool, optional
+        return_contents : Union[bool, Tuple], optional
             If true, the file contents will be stored in v_model. If false, a file path will be stored in v_model.
             Defaults to true.
         **kwargs
@@ -41,20 +48,26 @@ class FileUpload(vuetify.VBtn):
         -------
         None
         """
+        self._server = get_server(None, client_type="vue3")
+
         self._v_model = v_model
-        if base_paths:
-            self._base_paths = base_paths
-        else:
-            self._base_paths = ["/"]
+        self._base_paths = base_paths if base_paths else ["/"]
+        self._extensions = extensions if extensions else []
         self._return_contents = return_contents
         self._ref_name = f"nova__fileupload_{self._next_id}"
 
         super().__init__(label, **kwargs)
         self.create_ui()
 
+    @property
+    def state(self) -> State:
+        return self._server.state
+
     def create_ui(self) -> None:
         self.local_file_input = vuetify.VFileInput(
-            v_model=(self._v_model, None),
+            v_model=self._v_model,
+            __properties=["accept"],
+            accept=",".join(self._extensions) if isinstance(self._extensions, list) else self._extensions,
             classes="d-none",
             ref=self._ref_name,
             # Serialize the content in a way that will work with nova-mvvm and then push it to the server.
@@ -67,6 +80,7 @@ class FileUpload(vuetify.VBtn):
         self.remote_file_input = RemoteFileInput(
             v_model=self._v_model,
             base_paths=self._base_paths,
+            extensions=self._extensions,
             input_props={"classes": "d-none"},
             return_contents=self._return_contents,
         )
@@ -79,7 +93,7 @@ class FileUpload(vuetify.VBtn):
 
         @self.server.controller.trigger(f"decode_blob_{self._id}")
         def _decode_blob(contents: bytes) -> None:
-            self.remote_file_input.decode_file(contents, self._return_contents)
+            self.remote_file_input.decode_file(contents, get_state_param(self.state, self._return_contents))
 
     def select_file(self, value: str) -> None:
         """Programmatically set the RemoteFileInput path.

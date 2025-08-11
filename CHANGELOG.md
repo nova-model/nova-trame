@@ -2,6 +2,14 @@
 
 * Added data_source and projection parameters to NeutronDataSelector to allow populating data files from ONCat (thanks to Andrew Ayres and John Duggan).
 
+### nova-trame, 0.25.5
+
+* NeutronDataSelector will no longer show duplicates of a file that matches multiple extensions (thanks to John Duggan).
+
+### nova-trame, 0.25.4
+
+* InputField, FileUpload, and RemoteFileInput should support parameter bindings now (thanks to John Duggan).
+
 ### nova-trame, 0.25.3
 
 * Clearing NeutronDataSelector file selections will no longer send null/None values to the state (thanks to John Duggan).
