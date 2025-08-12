@@ -46,16 +46,3 @@ jobs:
         run: docker run --rm ${{ steps.build.outputs.imageid }} sh -c "poetry run coverage run && poetry run coverage report"
       - name: Docs test
         run: docker run --rm ${{ steps.build.outputs.imageid }} bash build_docs.sh
-
-  publish-docs:
-    runs-on: ubuntu-latest
-    timeout-minutes: 60
-    steps:
-      - name: Verify readthedocs environment variables
-        run: |
-          if [ -z "$READTHEDOCS_WEBHOOK_SECRET" ] || [ -z "$READTHEDOCS_WEBHOOK_URL" ]; then
-            echo "Error: READTHEDOCS_WEBHOOK_SECRET and/or READTHEDOCS_WEBHOOK_URL is not set."
-            exit 1
-          fi
-      - name: Trigger readthedocs build
-        run: curl -X POST -d "branches=latest" -d "token=${READTHEDOCS_WEBHOOK_SECRET}" -d "default_branch=${{ github.ref }}" ${READTHEDOCS_WEBHOOK_URL}
