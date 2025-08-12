@@ -42,11 +42,9 @@ jobs:
         run: docker run --rm ${{ steps.build.outputs.imageid }} poetry run mypy .
       - name: Unit tests
         run: docker run --rm ${{ steps.build.outputs.imageid }} poetry run pytest
-      # - run: mkdir reports
-      # - run: docker run -u `id -u`:`id -g` -v `pwd`/reports:/src/reports ${IMAGE_NAME}:src-${{ github.sha }} poetry run coverage run
-      # - run: docker run -u `id -u`:`id -g` -v `pwd`/reports:/src/reports ${IMAGE_NAME}:src-${{ github.sha }} poetry run coverage report
-      # - run: docker run -u `id -u`:`id -g` -v `pwd`/reports:/src/reports ${IMAGE_NAME}:src-${{ github.sha }} poetry run coverage xml -o reports/coverage.xml
-      # - run: sed -i "s:<source>/src:<source>${{ github.workspace }}/${{ github.repository }}:" reports/coverage.xml
-      # need to figure out coverage rules
+      - name: Run coverage
+        run: docker run --rm ${{ steps.build.outputs.imageid }} poetry run coverage run
+      - name: Generate coverage report
+        run: docker run --rm ${{ steps.build.outputs.imageid }} poetry run coverage report
       - name: Docs test
         run: docker run --rm ${{ steps.build.outputs.imageid }} bash build_docs.sh
