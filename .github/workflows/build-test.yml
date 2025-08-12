@@ -49,4 +49,4 @@ jobs:
       # - run: sed -i "s:<source>/src:<source>${{ github.workspace }}/${{ github.repository }}:" reports/coverage.xml
       # need to figure out coverage rules
       - name: Docs test
-      - run: docker run --rm ${{ steps.build.outputs.imageid }} bash build_docs.sh
+        run: docker run --rm ${{ steps.build.outputs.imageid }} bash build_docs.sh
