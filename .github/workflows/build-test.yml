@@ -43,8 +43,6 @@ jobs:
       - name: Unit tests
         run: docker run --rm ${{ steps.build.outputs.imageid }} poetry run pytest
       - name: Run coverage
-        run: docker run --rm ${{ steps.build.outputs.imageid }} poetry run coverage run
-      - name: Generate coverage report
-        run: docker run --rm ${{ steps.build.outputs.imageid }} poetry run coverage report
+        run: docker run --rm ${{ steps.build.outputs.imageid }} sh -c "poetry run coverage run && poetry run coverage report"
       - name: Docs test
         run: docker run --rm ${{ steps.build.outputs.imageid }} bash build_docs.sh
