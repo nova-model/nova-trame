@@ -1,0 +1,33 @@
+name: Publish Documentation
+
+on:
+  - push:
+    - branches: main
+  - workflow_dispatch
+
+concurrency:
+  group: "${{ github.ref }}"
+  cancel-in-progress: true
+
+env:
+  READTHEDOCS_WEBHOOK_URL: "${{ secrets.READTHEDOCS_WEBHOOK_URL }}"
+  READTHEDOCS_WEBHOOK_SECRET: "${{ secrets.READTHEDOCS_WEBHOOK_SECRET }}"
+
+jobs:
+  publish-docs:
+    needs: tag-release
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'
+    timeout-minutes: 60
+    env:
+      GIT_STRATEGY: clone
+      IMAGE_NAME: "${NDIP_DOCKER_REPOSITORY}/${{ github.repository }}"
+    steps:
+      - name: Verify readthedocs environment variables
+        run: |
+          if [ -z "$READTHEDOCS_WEBHOOK_SECRET" ] || [ -z "$READTHEDOCS_WEBHOOK_URL" ]; then
+            echo "Error: READTHEDOCS_WEBHOOK_SECRET and/or READTHEDOCS_WEBHOOK_URL is not set."
+            exit 1
+          fi
+      - name: Trigger readthedocs build
+        run: curl -X POST -d "branches=latest" -d "token=${READTHEDOCS_WEBHOOK_SECRET}" -d "default_branch=${{ github.ref }}" ${READTHEDOCS_WEBHOOK_URL}
