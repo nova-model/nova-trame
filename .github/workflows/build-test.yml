@@ -32,7 +32,7 @@ jobs:
         uses: docker/build-push-action@v6
         id: build
         with:
-          file: Dockerfile
+          file: dockerfiles/Dockerfile
           load: true
       - name: Run ruff check
         run: docker run --rm ${{ steps.build.outputs.imageid }} poetry run ruff check
