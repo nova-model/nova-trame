@@ -4,11 +4,15 @@ class RevoGrid {
         this.modelKey = modelKey
         this.dataKey = dataKey
         this.stateKey = stateKey
+        this.lastSelection = null
+        this.shiftPressed = false
 
         this.grid = document.querySelector(`#${this.id}`)
         this.grid.addEventListener('viewportscroll', () => {
             this.updateCheckboxes()
         })
+
+        this.initShiftKeyListeners()
     }
 
     updateCheckboxes() {
@@ -66,11 +70,32 @@ class RevoGrid {
                 const path = props.data[props.rowIndex].path
                 const index = modelValue.indexOf(path)
 
-                // We need to assign instead of modifying in place in order for the Trame watcher to pick up changes.
+                // I use _.set instead of modifying the modelValue in place in order for the Trame watcher to properly detect the change.
                 if (e.target.checked && index < 0) {
-                    _.set(trameState, this.modelKey, _.concat(modelValue, path))
+                    const newIndex = props.data.findIndex((entry) => entry.path === path)
+
+                    if (this.shiftPressed && this.lastSelection !== null) {
+                        let newPaths = []
+                        // JavaScript doesn't allow a backwards step during slice, so we need to order the start/stop correctly.
+                        if (this.lastSelection < newIndex) {
+                            newPaths = props.data.slice(this.lastSelection, newIndex + 1)
+                        } else {
+                            newPaths = props.data.slice(newIndex, this.lastSelection)
+                        }
+                        // Exclude paths that are already selected to avoid duplicates.
+                        newPaths = newPaths.map((entry) => entry.path).filter((path) => !modelValue.includes(path))
+
+                        _.set(trameState, this.modelKey, _.concat(modelValue, newPaths))
+                    } else {
+                        _.set(trameState, this.modelKey, _.concat(modelValue, path))
+                    }
+
+                    this.lastSelection = newIndex
                 } else if (index >= 0) {
                     _.set(trameState, this.modelKey, modelValue.toSpliced(index, 1))
+
+                    // Only allow range selection if the last action was to select a file.
+                    this.lastSelection = null
                 }
 
                 // Update the UI
@@ -102,6 +127,18 @@ class RevoGrid {
         })
 
         return [inputVNode, 'Available Datafiles']
+    }
+
+    initShiftKeyListeners() {
+        window.document.addEventListener('keydown', (e) => {
+            this.shiftPressed = e.shiftKey
+        })
+
+        window.document.addEventListener('keyup', (e) => {
+            if (e.key === 'Shift') {
+                this.shiftPressed = false
+            }
+        })
     }
 }
 
