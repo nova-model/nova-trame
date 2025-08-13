@@ -58,4 +58,4 @@ jobs:
           file: dockerfiles/Dockerfile
           load: true
       - name: Publish
-        run: poetry publish -u __token__ -p ${PYPI_API_TOKEN}
+        run: docker run --rm ${{ steps.build.outputs.imageid }} poetry publish -u __token__ -p ${PYPI_API_TOKEN}
