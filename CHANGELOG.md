@@ -1,3 +1,7 @@
+### nova-trame, 0.27.0
+
+* DataSelector and NeutronDataSelector support range selection via Shift+Click (thanks to John Duggan).
+
 ### nova-trame, 0.26.0
 
 * Added data_source and projection parameters to NeutronDataSelector to allow populating data files from ONCat (thanks to Andrew Ayres and John Duggan).
