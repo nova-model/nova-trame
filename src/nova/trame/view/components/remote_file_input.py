@@ -12,7 +12,7 @@ from trame_server.core import State
 
 from nova.mvvm._internal.utils import rgetdictvalue
 from nova.mvvm.trame_binding import TrameBinding
-from nova.trame._internal.utils import get_state_name, set_state_param
+from nova.trame._internal.utils import get_state_name, get_state_param, set_state_param
 from nova.trame.model.remote_file_input import RemoteFileInputModel
 from nova.trame.view_model.remote_file_input import RemoteFileInputViewModel
 
@@ -35,6 +35,7 @@ class RemoteFileInput:
         extensions: Union[List[str], Tuple, None] = None,
         input_props: Optional[dict[str, Any]] = None,
         return_contents: Union[bool, Tuple] = False,
+        use_bytes: Union[bool, Tuple] = False,
     ) -> None:
         """Constructor for RemoteFileInput.
 
@@ -58,6 +59,8 @@ class RemoteFileInput:
         return_contents : Union[bool, Tuple], optional
             If true, then the v_model will contain the contents of the file. If false, then the v_model will contain the
             path of the file. Defaults to false.
+        use_bytes : Union[bool, Tuple], optional
+            If true, then the file contents will be treated as bytestreams when calling decode_file.
 
         Returns
         -------
@@ -73,6 +76,7 @@ class RemoteFileInput:
         self.extensions = extensions if extensions else []
         self.input_props = dict(input_props) if input_props else {}
         self.return_contents = return_contents
+        self.use_bytes = use_bytes
 
         if "__events" not in self.input_props:
             self.input_props["__events"] = []
@@ -286,14 +290,22 @@ class RemoteFileInput:
             self.decode_file(file.read())
 
     def decode_file(self, bytestream: bytes, set_contents: bool = False) -> None:
+        use_bytes = get_state_param(self.state, self.use_bytes)
+
         decoded_content = bytestream.decode("latin1")
         if set_contents:
             self.set_v_model(decoded_content)
         else:
-            with NamedTemporaryFile(mode="w", delete=False, encoding="utf-8") as temp_file:
-                temp_file.write(decoded_content)
-                temp_file.flush()
-                self.set_v_model(temp_file.name)
+            if use_bytes:
+                with NamedTemporaryFile(mode="wb", delete=False) as temp_file:
+                    temp_file.write(bytestream)
+                    temp_file.flush()
+                    self.set_v_model(temp_file.name)
+            else:
+                with NamedTemporaryFile(mode="w", delete=False, encoding="utf-8") as temp_file:
+                    temp_file.write(decoded_content)
+                    temp_file.flush()
+                    self.set_v_model(temp_file.name)
 
     def select_file(self, value: str) -> None:
         """Programmatically set the v_model value."""
