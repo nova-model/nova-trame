@@ -9,6 +9,7 @@ from mimetypes import types_map
 from pathlib import Path
 from threading import Thread
 from typing import Any, Optional
+from warnings import warn
 
 import tornado
 from aiohttp import ClientSession, WSMsgType, web
@@ -214,17 +215,22 @@ class MatplotlibFigure(matplotlib.Figure):
         -------
         None
         """  # noqa: E501
+        self._server = get_server(None, client_type="vue3")
         self._webagg = webagg
         if webagg:
+            self._initial_resize = True
+            if "id" in kwargs:
+                kwargs.pop("id")
+                warn("id parameter to MatplotlibFigure is ignored when webagg=True.", stacklevel=1)
+
             self._port = MatplotlibFigure._get_free_port()
+            self._id = f"nova_mpl_{self._port}"
             if "classes" in kwargs:
                 kwargs["classes"] += " nova-mpl"
             else:
                 kwargs["classes"] = "nova-mpl"
 
-            html.Div(id=f"nova_mpl_{self._port}", **kwargs)
-
-            self._server = get_server(None, client_type="vue3")
+            html.Div(id=self._id, **kwargs)
 
             self._figure = figure
             self._initialized = False
@@ -236,8 +242,52 @@ class MatplotlibFigure(matplotlib.Figure):
             self.update()
         else:
             super().__init__(figure, **kwargs)
+            self._id = self._key
 
-    def update(self, figure: Optional[Figure] = None) -> None:
+        self._query_selector = f"window.document.querySelector('#{self._id}')"
+        self._trigger = (
+            "window.trame.trigger("
+            f"  '{self._id}_resize',"
+            f"  [{self._query_selector}.offsetHeight, {self._query_selector}.offsetWidth, window.devicePixelRatio]"
+            ");"
+        )
+        self._resize_figure = client.JSEval(exec=self._trigger).exec
+        self._resize_listener = client.JSEval(
+            exec=(
+                "window.addEventListener('resize', function() {"
+                f"  window.delay_manager.debounce('{self._id}', function() {{ {self._trigger} }}, 500);"
+                "});"
+            )
+        ).exec
+
+        @self._server.controller.trigger(f"{self._id}_resize")
+        def resize_figure(height: int, width: int, device_pixel_ratio: float) -> None:
+            if self._figure:
+                # This is the browser standard assumption for DPI.
+                dpi = 96
+
+                if self._webagg:
+                    # Reserve space for the controls injected by webagg.
+                    height -= 48
+                    width -= 4
+
+                    if not self._initial_resize:
+                        # Handle device pixel ratio for retina displays
+                        dpi = int(dpi * device_pixel_ratio)
+                        height = int(height * device_pixel_ratio)
+                        width = int(width * device_pixel_ratio)
+
+                self._figure.set_dpi(dpi)
+                self._figure.set_size_inches(width / dpi, height / dpi)
+
+                self._initial_resize = False
+
+                self.update(skip_resize=True)
+
+        client.ClientTriggers(mounted=self._resize_listener)
+        client.ClientTriggers(mounted=self._resize_figure)
+
+    def update(self, figure: Optional[Figure] = None, skip_resize: bool = False) -> None:
         if self._webagg:
             if figure:
                 self._figure = figure
@@ -255,7 +305,10 @@ class MatplotlibFigure(matplotlib.Figure):
         else:
             super().update(figure)
 
-        self._server.state.flush()
+        if not skip_resize and hasattr(self, "_resize_figure"):
+            self._resize_figure()
+        else:
+            self._server.state.flush()
 
     def _setup_figure_websocket(self) -> None:
         thread = Thread(target=self._mpl_run_ws_server, daemon=True)
