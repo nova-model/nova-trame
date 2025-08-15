@@ -30,7 +30,7 @@ def test_data_selector() -> None:
                     assert input._model.state.experiment == ""
 
                     input.update_facility("HFIR")
-                    input.update_instrument("CG-2")
+                    input.update_instrument("GP-SANS")
                     input.update_experiment("IPTS-27744")
 
                     with catch_warnings(record=True) as captured_warnings:

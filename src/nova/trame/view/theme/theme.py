@@ -3,6 +3,7 @@
 import asyncio
 import json
 import logging
+import os
 import sys
 from asyncio import create_task
 from functools import partial
@@ -210,6 +211,10 @@ class ThemedApp:
         -------
         `trame_client.ui.core.AbstractLayout <https://trame.readthedocs.io/en/latest/core.ui.html#trame_client.ui.core.AbstractLayout>`_
         """
+        # This detects if Poetry is running Python so that we can show links to NOVA resources during development.
+        # Poetry should not be used in production.
+        show_nova_resources = os.environ.get("VIRTUAL_ENV") is not None
+
         with VAppLayout(self.server, vuetify_config=self.vuetify_config) as layout:
             self.local_storage = LocalStorageManager(self.server.controller)
 
@@ -225,8 +230,32 @@ class ThemedApp:
                     with vuetify.VAppBar() as toolbar:
                         layout.toolbar = toolbar
 
-                        with vuetify.VAppBarTitle() as toolbar_title:
+                        with vuetify.VAppBarTitle(classes="flex-0-1") as toolbar_title:
                             layout.toolbar_title = toolbar_title
+
+                        if show_nova_resources:
+                            vuetify.VBtn(
+                                "NOVA Examples",
+                                classes="ml-4",
+                                href="https://github.com/nova-model/nova-examples/",
+                                __properties=["target"],
+                                target="_blank",
+                            )
+                            html.Div("·", classes="mx-1")
+                            vuetify.VBtn(
+                                "NOVA Tutorial",
+                                href="https://nova.ornl.gov/tutorial/",
+                                __properties=["target"],
+                                target="_blank",
+                            )
+                            html.Div("·", classes="mx-1")
+                            vuetify.VBtn(
+                                "NOVA Documentation",
+                                href="https://nova-application-development.readthedocs.io/en/latest/",
+                                __properties=["target"],
+                                target="_blank",
+                            )
+
                         vuetify.VSpacer()
                         with html.Div(classes="mr-2") as actions:
                             layout.actions = actions

@@ -34,9 +34,9 @@ def test_parameter_bindings() -> None:
         v_model: List[str] = Field(default=[])
         directory: str = Field(default="")
         extensions: List[str] = Field(default=[])
-        prefix: str = Field(default="")
         refresh_rate: int = Field(default=0)
         select_strategy: str = Field(default="")
+        subdirectory: str = Field(default="")
 
     class MyTrameApp(ThemedApp):
         def __init__(self, server: Server = None) -> None:
@@ -60,7 +60,7 @@ def test_parameter_bindings() -> None:
                         v_model=("test_ds.v_model", ["test.txt"]),
                         directory=("test_ds.directory", "/"),
                         extensions=("test_ds.extensions", [".txt"]),
-                        prefix=("test_ds.prefix", "bin"),
+                        subdirectory=("test_ds.subdirectory", "bin"),
                         refresh_rate=("test_ds.refresh_rate", 15),
                         select_strategy=("test_ds.select_strategy", "page"),
                     )
