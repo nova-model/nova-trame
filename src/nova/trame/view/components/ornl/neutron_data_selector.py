@@ -91,7 +91,7 @@ class NeutronDataSelector(DataSelector):
         if data_source == "oncat" and subdirectory:
             warn("subdirectory will be ignored since data will be pulled from ONCat.", stacklevel=1)
 
-        if isinstance(facility, str) and allow_custom_directories:
+        if isinstance(facility, str) and facility and allow_custom_directories:
             warn("allow_custom_directories will be ignored since the facility parameter is fixed.", stacklevel=1)
 
         self._facility = facility
