@@ -317,3 +317,9 @@ class NeutronDataSelector(DataSelector):
             experiment=set_state_param(self.state, (self._selected_experiment_name,), experiment),
         )
         self._vm.reset()
+
+    def set_state(self, *args: Any, **kwargs: Any) -> None:
+        raise TypeError(
+            "The set_state method has been removed. Please use update_facility, update_instrument, and "
+            "update_experiment instead."
+        )
