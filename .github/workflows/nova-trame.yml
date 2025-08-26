@@ -1,142 +1,39 @@
-name: Build and Deploy
+name: Publish Package
 
-on:
-  workflow_dispatch:
-  #push:
-     #branches:
+on: workflow_dispatch
 
 concurrency:
   group: "${{ github.ref }}"
   cancel-in-progress: true
 
 env:
-  TAG_PUSH_TOKEN: "${{ secrets.TAG_PUSH_TOKEN }}"
-  READTHEDOCS_WEBHOOK_URL: "${{ secrets.READTHEDOCS_WEBHOOK_URL }}"
-  READTHEDOCS_WEBHOOK_SECRET: "${{ secrets.READTHEDOCS_WEBHOOK_SECRET }}"
   PYPI_API_TOKEN: "${{ secrets.PYPI_API_TOKEN }}"
 
 jobs:
-  lint-check:
-    runs-on: ubuntu-latest
-    timeout-minutes: 60
-    env:
-      GIT_STRATEGY: clone
-      IMAGE_NAME: "${NDIP_DOCKER_REPOSITORY}/${{ github.repository }}"
-    steps:
-    - uses: actions/checkout@v4.1.0
-      with:
-        fetch-depth: 20
-        lfs: true
-    - run: curl https://code.ornl.gov/rse-deployment/rse-sharables/raw/master/rse-bash-modules.sh -O
-    - run: source rse-bash-modules.sh
-    - run: func_rse_docker_cleanup
-    - run: docker login -u $NDIP_DOCKER_USER -p $NDIP_DOCKER_PASSWORD $NDIP_DOCKER_REPOSITORY
-    - run: export VERSION=$(cat pyproject.toml | grep "version =" | head -n 1 | awk '{ print $3 }' | tr -d '"')
-    - run: docker build -f dockerfiles/Dockerfile --target source -t image .
-    - run: docker run -u `id -u`:`id -g` image poetry run ruff check
-    - run: docker run -u `id -u`:`id -g` image poetry run ruff format --check
-    - run: docker run -u `id -u`:`id -g` image poetry run mypy .
-    - run: docker tag image ${IMAGE_NAME}:src-${{ github.sha }}
-    - run: docker push ${IMAGE_NAME}:src-${{ github.sha }}
-    - run: curl https://code.ornl.gov/rse-deployment/rse-sharables/raw/master/rse-bash-modules.sh -O
-      if: always()
-    - run: source rse-bash-modules.sh
-      if: always()
-    - run: func_rse_docker_cleanup
-      if: always()
-
-  unit-tests:
-    needs: lint-check
-    runs-on: ubuntu-latest
-    timeout-minutes: 60
-    env:
-      GIT_STRATEGY: clone
-      IMAGE_NAME: "${NDIP_DOCKER_REPOSITORY}/${{ github.repository }}"
-    steps:
-    - uses: actions/checkout@v4.1.0
-      with:
-        fetch-depth: 20
-        lfs: true
-    - run: curl https://code.ornl.gov/rse-deployment/rse-sharables/raw/master/rse-bash-modules.sh -O
-    - run: source rse-bash-modules.sh
-    - run: func_rse_docker_cleanup
-    - run: docker login -u $NDIP_DOCKER_USER -p $NDIP_DOCKER_PASSWORD $NDIP_DOCKER_REPOSITORY
-    - run: export VERSION=$(cat pyproject.toml | grep "version =" | head -n 1 | awk '{ print $3 }' | tr -d '"')
-    - run: mkdir reports
-    - run: docker run -u `id -u`:`id -g` -v `pwd`/reports:/src/reports ${IMAGE_NAME}:src-${{ github.sha }} poetry run coverage run
-    - run: docker run -u `id -u`:`id -g` -v `pwd`/reports:/src/reports ${IMAGE_NAME}:src-${{ github.sha }} poetry run coverage report
-    - run: docker run -u `id -u`:`id -g` -v `pwd`/reports:/src/reports ${IMAGE_NAME}:src-${{ github.sha }} poetry run coverage xml -o reports/coverage.xml
-    - run: sed -i "s:<source>/src:<source>${{ github.workspace }}/${{ github.repository }}:" reports/coverage.xml
-    # need to figure out coverage rules
-    - run: curl https://code.ornl.gov/rse-deployment/rse-sharables/raw/master/rse-bash-modules.sh -O
-      if: always()
-    - run: source rse-bash-modules.sh
-      if: always()
-    - run: func_rse_docker_cleanup
-      if: always()
-
-  docs-test:
-    needs: lint-check
-    runs-on: ubuntu-latest
-    timeout-minutes: 60
-    env:
-      GIT_STRATEGY: clone
-      IMAGE_NAME: "${NDIP_DOCKER_REPOSITORY}/${{ github.repository }}"
-    steps:
-    - uses: actions/checkout@v4.1.0
-      with:
-        fetch-depth: 20
-        lfs: true
-    - run: curl https://code.ornl.gov/rse-deployment/rse-sharables/raw/master/rse-bash-modules.sh -O
-    - run: source rse-bash-modules.sh
-    - run: func_rse_docker_cleanup
-    - run: docker login -u $NDIP_DOCKER_USER -p $NDIP_DOCKER_PASSWORD $NDIP_DOCKER_REPOSITORY
-    - run: export VERSION=$(cat pyproject.toml | grep "version =" | head -n 1 | awk '{ print $3 }' | tr -d '"')
-    - run: docker run -u `id -u`:`id -g` ${IMAGE_NAME}:src-${{ github.sha }} bash build_docs.sh
-    - run: curl https://code.ornl.gov/rse-deployment/rse-sharables/raw/master/rse-bash-modules.sh -O
-      if: always()
-    - run: source rse-bash-modules.sh
-      if: always()
-    - run: func_rse_docker_cleanup
-      if: always()
-
   tag-release:
-    needs:
-    - unit-tests
-    - docs-test
     runs-on: ubuntu-latest
-    if: github.ref_name == github.event.repository.default_branch
     timeout-minutes: 60
+    permissions: write-all
     env:
       GIT_STRATEGY: clone
       IMAGE_NAME: "${NDIP_DOCKER_REPOSITORY}/${{ github.repository }}"
     steps:
-    - uses: actions/checkout@v4.1.0
-      with:
-        fetch-depth: 20
-        lfs: true
-    - uses: actions/download-artifact@v4.1.0
-    - run: curl https://code.ornl.gov/rse-deployment/rse-sharables/raw/master/rse-bash-modules.sh -O
-    - run: source rse-bash-modules.sh
-    - run: func_rse_docker_cleanup
-    - run: docker login -u $NDIP_DOCKER_USER -p $NDIP_DOCKER_PASSWORD $NDIP_DOCKER_REPOSITORY
-    - run: export VERSION=$(cat pyproject.toml | grep "version =" | head -n 1 | awk '{ print $3 }' | tr -d '"')
-    - run: git config user.email "${{ github.actor }}"
-    - run: git config user.name "${{ github.actor }}"
-    - run: |
-        if [ -z $(git ls-remote --tags origin "$VERSION") ]; then
-          git remote add gitlab https://oauth2:${NDIP_GROUP_TOKEN}@${{ github.server_url }}/${{ github.repository }}.git
-          git tag ${VERSION}
-          git push gitlab --tags
-        fi
-    - run: curl https://code.ornl.gov/rse-deployment/rse-sharables/raw/master/rse-bash-modules.sh -O
-      if: always()
-    - run: source rse-bash-modules.sh
-      if: always()
-    - run: func_rse_docker_cleanup
-      if: always()
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 20
+          lfs: true
+      - name: Parse version
+        run: echo "VERSION=$(cat pyproject.toml | grep "version =" | head -n 1 | awk '{ print $3 }' | tr -d '"')" >> $GITHUB_ENV
+      - name: Create release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ env.VERSION }}
+          release_name: ${{ env.VERSION }}
 
-  package-build:
+  publish-package:
     needs: tag-release
     runs-on: ubuntu-latest
     if: github.event_name == 'workflow_dispatch'
@@ -145,52 +42,20 @@ jobs:
       GIT_STRATEGY: clone
       IMAGE_NAME: "${NDIP_DOCKER_REPOSITORY}/${{ github.repository }}"
     steps:
-    - uses: actions/checkout@v4.1.0
-      with:
-        fetch-depth: 20
-        lfs: true
-    - uses: actions/download-artifact@v4.1.0
-    - run: curl https://code.ornl.gov/rse-deployment/rse-sharables/raw/master/rse-bash-modules.sh -O
-    - run: source rse-bash-modules.sh
-    - run: func_rse_docker_cleanup
-    - run: docker login -u $NDIP_DOCKER_USER -p $NDIP_DOCKER_PASSWORD $NDIP_DOCKER_REPOSITORY
-    - run: export VERSION=$(cat pyproject.toml | grep "version =" | head -n 1 | awk '{ print $3 }' | tr -d '"')
-    - run: 'docker run -u `id -u`:`id -g` ${IMAGE_NAME}:src-${{ github.sha }} bash -c " poetry config repositories.gitlab_repo ${{ github.api_url }}/projects/${{ github.repository }}/packages/pypi && poetry publish -u gitlab-ci-token -p ${{ github.token }} -r gitlab_repo && poetry publish -u __token__ -p ${PYPI_API_TOKEN} "'
-    - run: curl https://code.ornl.gov/rse-deployment/rse-sharables/raw/master/rse-bash-modules.sh -O
-      if: always()
-    - run: source rse-bash-modules.sh
-      if: always()
-    - run: func_rse_docker_cleanup
-      if: always()
-
-  docs-publish:
-    needs: tag-release
-    runs-on: ubuntu-latest
-    if: github.ref_name == github.event.repository.default_branch
-    timeout-minutes: 60
-    env:
-      GIT_STRATEGY: clone
-      IMAGE_NAME: "${NDIP_DOCKER_REPOSITORY}/${{ github.repository }}"
-    steps:
-    - uses: actions/checkout@v4.1.0
-      with:
-        fetch-depth: 20
-        lfs: true
-    - uses: actions/download-artifact@v4.1.0
-    - run: curl https://code.ornl.gov/rse-deployment/rse-sharables/raw/master/rse-bash-modules.sh -O
-    - run: source rse-bash-modules.sh
-    - run: func_rse_docker_cleanup
-    - run: docker login -u $NDIP_DOCKER_USER -p $NDIP_DOCKER_PASSWORD $NDIP_DOCKER_REPOSITORY
-    - run: export VERSION=$(cat pyproject.toml | grep "version =" | head -n 1 | awk '{ print $3 }' | tr -d '"')
-    - run: |
-        if [ -z "$READTHEDOCS_WEBHOOK_SECRET" ] || [ -z "$READTHEDOCS_WEBHOOK_URL" ]; then
-          echo "Error: READTHEDOCS_WEBHOOK_SECRET and/or READTHEDOCS_WEBHOOK_URL is not set."
-          exit 1
-        fi
-    - run: curl -X POST -d "branches=latest" -d "token=${READTHEDOCS_WEBHOOK_SECRET}" -d "default_branch=${{ github.ref }}" ${READTHEDOCS_WEBHOOK_URL}
-    - run: curl https://code.ornl.gov/rse-deployment/rse-sharables/raw/master/rse-bash-modules.sh -O
-      if: always()
-    - run: source rse-bash-modules.sh
-      if: always()
-    - run: func_rse_docker_cleanup
-      if: always()
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 20
+          lfs: true
+      - name: Build
+        uses: docker/build-push-action@v6
+        id: build
+        with:
+          file: dockerfiles/Dockerfile
+          load: true
+      - name: Publish
+        run: docker run --rm ${{ steps.build.outputs.imageid }} poetry publish -u __token__ -p ${PYPI_API_TOKEN}

@@ -2,6 +2,14 @@
 
 * DataSelector and NeutronDataSelector support range selection via Shift+Click (thanks to John Duggan).
 
+### nova-trame, 0.26.2
+
+* Improved the error message when a developer uses the removed NeutronDataSelector.set_state method (thanks to John Duggan).
+
+### nova-trame, 0.26.1
+
+* Added use_bytes parameter to FileUpload and RemoteFileInput for handling binary files that are not stored on the server (thanks to John Duggan).
+
 ### nova-trame, 0.26.0
 
 * Added data_source and projection parameters to NeutronDataSelector to allow populating data files from ONCat (thanks to Andrew Ayres and John Duggan).

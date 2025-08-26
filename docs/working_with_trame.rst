@@ -26,6 +26,36 @@ To use a component, you can do the following:
 
 The :code:`with` syntax will create a hierarchy of components that matches the structure of typical HTML elements. The above snippet would create an HTML div element, with a Vuetify list as a child, and two Vuetify list items as children of the list.
 
+++++++++++++++++++
+Binding Parameters
+++++++++++++++++++
+
+With Trame, and the components provided by this library, you can usually have a component parameter be set dynamically via a binding parameter.
+
+For example, consider the following code:
+
+.. code-block:: python
+
+    vuetify.VBtn("Click Me!", disabled=True)
+
+This button is not very useful, as there's no mechanism to enable the button in Python. We may also want to have the button text be set dynamically. If we use a binding, however, then both of these become possible with the following:
+
+.. code-block:: python
+
+    vuetify.VBtn("{{ button.label }}", disabled=("button.disabled", True))
+
+.. note::
+
+    In the above code, button is defined in the Trame state. In NOVA, it is added to the Trame state when you call connect() on the `nova-mvvm binding <https://nova-application-development.readthedocs.io/projects/mvvm-lib/en/latest/core_concepts/data_binding.html#how-to-use-tramebinding>`__.
+
+When setting a component's text, we can use `handlebars syntax <https://handlebarsjs.com/guide/>`__ to reference Python variables. When setting named parameters, we use the following tuple syntax: `("variable_name", initial_value)`. The initial value can be omitted if it's not needed: `("variable_name",)`. Note that the trailing comma is necessary here for Trame to interpret this as a binding parameter due to how Python interprets tuples.
+
+Vuetify directives, such as `v_model` and `v_if`, typically don't require using the tuple syntax.
+
+.. code-block:: python
+
+    vuetify.VBtn("Click Me!", v_if="button.visible")
+
 +++++++++++++++
 Layouts & Slots
 +++++++++++++++

@@ -21,6 +21,7 @@ class FileUpload(vuetify.VBtn):
         extensions: Union[List[str], Tuple, None] = None,
         label: str = "",
         return_contents: Union[bool, Tuple] = True,
+        use_bytes: Union[bool, Tuple] = False,
         **kwargs: Any,
     ) -> None:
         """Constructor for FileUpload.
@@ -40,6 +41,8 @@ class FileUpload(vuetify.VBtn):
         return_contents : Union[bool, Tuple], optional
             If true, the file contents will be stored in v_model. If false, a file path will be stored in v_model.
             Defaults to true.
+        use_bytes : Union[bool, Tuple], optional
+            If true, then files uploaded from the local machine will contain bytes rather than text.
         **kwargs
             All other arguments will be passed to the underlying
             `Button component <https://trame.readthedocs.io/en/latest/trame.widgets.vuetify3.html#trame.widgets.vuetify3.VBtn>`_.
@@ -54,6 +57,7 @@ class FileUpload(vuetify.VBtn):
         self._base_paths = base_paths if base_paths else ["/"]
         self._extensions = extensions if extensions else []
         self._return_contents = return_contents
+        self._use_bytes = use_bytes
         self._ref_name = f"nova__fileupload_{self._next_id}"
 
         super().__init__(label, **kwargs)
@@ -83,6 +87,7 @@ class FileUpload(vuetify.VBtn):
             extensions=self._extensions,
             input_props={"classes": "d-none"},
             return_contents=self._return_contents,
+            use_bytes=self._use_bytes,
         )
 
         with self:
