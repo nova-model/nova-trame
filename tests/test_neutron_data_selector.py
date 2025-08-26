@@ -31,7 +31,7 @@ def test_data_selector() -> None:
 
                     input.update_facility("HFIR")
                     input.update_instrument("BIO-SANS")
-                    input.update_experiment("IPTS-27744")
+                    input.update_experiment("IPTS-24666")
 
                     with catch_warnings(record=True) as captured_warnings:
                         input.update_facility(facility="NSS")
