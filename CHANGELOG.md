@@ -1,3 +1,7 @@
+### nova-trame, 0.27.0
+
+* DataSelector and NeutronDataSelector support range selection via Shift+Click (thanks to John Duggan).
+
 ### nova-trame, 0.26.2
 
 * Improved the error message when a developer uses the removed NeutronDataSelector.set_state method (thanks to John Duggan).
