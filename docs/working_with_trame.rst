@@ -44,6 +44,10 @@ This button is not very useful, as there's no mechanism to enable the button in 
 
     vuetify.VBtn("{{ button.label }}", disabled=("button.disabled", True))
 
+.. note::
+
+    In the above code, button is defined in the Trame state. In NOVA, it is added to the Trame state when you call connect() on the `nova-mvvm binding <https://nova-application-development.readthedocs.io/projects/mvvm-lib/en/latest/core_concepts/data_binding.html#how-to-use-tramebinding>`__.
+
 When setting a component's text, we can use `handlebars syntax <https://handlebarsjs.com/guide/>`__ to reference Python variables. When setting named parameters, we use the following tuple syntax: `("variable_name", initial_value)`. The initial value can be omitted if it's not needed: `("variable_name",)`. Note that the trailing comma is necessary here for Trame to interpret this as a binding parameter due to how Python interprets tuples.
 
 Vuetify directives, such as `v_model` and `v_if`, typically don't require using the tuple syntax.
