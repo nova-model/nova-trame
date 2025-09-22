@@ -18,6 +18,7 @@ class HBoxLayout(html.Div):
         valign: Optional[str] = None,
         gap: Optional[Union[int, str]] = "0em",
         vspace: Optional[Union[int, str]] = "0em",
+        stretch: bool = True,
         **kwargs: Any,
     ) -> None:
         """Constructor for HBoxLayout.
@@ -42,6 +43,9 @@ class HBoxLayout(html.Div):
         vspace : optional[str]
             The vertical gap to place between items. Can be any CSS gap value (e.g. "4px" or "0.25em"). Defaults to no
             gap between items.
+        stretch : optional[bool]
+            If True, then this layout component will stretch to attempt to fill the space of it's parent container.
+            Defaults to True.
         kwargs : Any
             Additional keyword arguments to pass to html.Div.
 
@@ -60,6 +64,8 @@ class HBoxLayout(html.Div):
         if isinstance(classes, list):
             classes = " ".join(classes)
         classes += " d-flex flex-row"
+        if stretch:
+            classes += " flex-1-1 overflow-y-auto"
 
         widget_style = self.get_root_styles(height, width, halign, valign, gap, vspace)
         user_style = kwargs.pop("style", {})
