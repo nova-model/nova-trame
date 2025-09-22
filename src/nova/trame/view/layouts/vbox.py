@@ -18,7 +18,7 @@ class VBoxLayout(html.Div):
         valign: Optional[str] = None,
         gap: Optional[Union[int, str]] = "0em",
         vspace: Optional[Union[int, str]] = "0em",
-        stretch: bool = True,
+        stretch: bool = False,
         **kwargs: Any,
     ) -> None:
         """Constructor for VBoxLayout.
@@ -45,7 +45,7 @@ class VBoxLayout(html.Div):
             gap between items.
         stretch : optional[bool]
             If True, then this layout component will stretch to attempt to fill the space of it's parent container.
-            Defaults to True.
+            Defaults to False.
         kwargs : Any
             Additional keyword arguments to pass to html.Div.
 
