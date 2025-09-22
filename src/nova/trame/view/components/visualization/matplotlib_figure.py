@@ -217,6 +217,10 @@ class MatplotlibFigure(matplotlib.Figure):
         """  # noqa: E501
         self._server = get_server(None, client_type="vue3")
         self._webagg = webagg
+        if "classes" in kwargs:
+            kwargs["classes"] += " h-100 w-100 overflow-hidden"
+        else:
+            kwargs["classes"] = "h-100 w-100 overflow-hidden"
         if webagg:
             self._initial_resize = True
             if "id" in kwargs:
@@ -225,10 +229,7 @@ class MatplotlibFigure(matplotlib.Figure):
 
             self._port = MatplotlibFigure._get_free_port()
             self._id = f"nova_mpl_{self._port}"
-            if "classes" in kwargs:
-                kwargs["classes"] += " nova-mpl"
-            else:
-                kwargs["classes"] = "nova-mpl"
+            kwargs["classes"] += " nova-mpl"
 
             html.Div(id=self._id, **kwargs)
 
@@ -277,10 +278,10 @@ class MatplotlibFigure(matplotlib.Figure):
                         height = int(height * device_pixel_ratio)
                         width = int(width * device_pixel_ratio)
 
+                    self._initial_resize = False
+
                 self._figure.set_dpi(dpi)
                 self._figure.set_size_inches(width / dpi, height / dpi)
-
-                self._initial_resize = False
 
                 self.update(skip_resize=True)
 
