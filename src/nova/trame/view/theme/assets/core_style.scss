@@ -70,8 +70,18 @@ html {
 }
 
 .v-window {
+    display: flex;
+    flex: 1 1;
     overflow-x: visible !important;
     overflow-y: visible !important;
+
+    .v-window__container {
+        flex: 1 1;
+
+        .v-window-item {
+            flex: 1 1;
+        }
+    }
 }
 
 @media only screen and (max-width: 959px) {

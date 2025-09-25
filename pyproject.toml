@@ -1,6 +1,6 @@
 [project]
 name = "nova-trame"
-version = "1.0.0"
+version = "1.0.0rc"
 description = "A Python Package for injecting curated themes and custom components into Trame applications"
 authors = [
     { name = "John Duggan", email = "dugganjw@ornl.gov" },
