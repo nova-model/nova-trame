@@ -257,11 +257,11 @@ class MatplotlibFigure(matplotlib.Figure):
             f"if ({self._query_selector} === null) {{ return; }}"
             # webagg figures receive a fixed width and height. This blocks the flexbox scaling, so I temporarily hide
             # the figure to allow the container to grow/shrink naturally in flexbox.
-            f"{self._query_selector}.style.display = 'none';"
+            f"window.document.querySelectorAll('.nova-mpl').forEach((item) => {{ item.style.display = 'none'; }});"
             f"const height = {self._query_selector}.parentNode.offsetHeight;"
             f"const width = {self._query_selector}.parentNode.offsetWidth;"
             # Revert the display value to allow the figure to render again.
-            f"{self._query_selector}.style.display = '';"
+            f"window.document.querySelectorAll('.nova-mpl').forEach((item) => {{ item.style.display = ''; }});"
             "window.trame.trigger("
             f"  '{self._id}_resize',"
             f"  [height, width, window.devicePixelRatio]"
