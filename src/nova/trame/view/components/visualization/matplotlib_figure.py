@@ -275,7 +275,7 @@ class MatplotlibFigure(matplotlib.Figure):
                 "const resizeObserver = new window.ResizeObserver(() => {"
                 f"  window.delay_manager.debounce('{self._id}', function() {{ {self._trigger} }}, 500);"
                 "});"
-                f"resizeObserver.observe(window.document.querySelector('#{self._id}'));"
+                f"resizeObserver.observe({self._query_selector}.parentNode);"
             )
         ).exec
 
