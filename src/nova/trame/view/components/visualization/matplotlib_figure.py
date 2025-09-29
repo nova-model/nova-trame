@@ -70,6 +70,13 @@ class _MPLApplication(tornado.web.Application):
                 data_uri = "data:image/png;base64," + blob.encode("base64").replace("\n", "")
                 self.write_message(data_uri)
 
+        def write_message(self, *args: Any, **kwargs: Any) -> Any:
+            # We need the websocket to remain alive if a message fails to write.
+            try:
+                super().write_message(*args, **kwargs)
+            except Exception:
+                pass
+
     def __init__(self, figure: Figure) -> None:
         self.figure = figure
         self.manager = new_figure_manager_given_figure(id(figure), figure)
@@ -218,9 +225,9 @@ class MatplotlibFigure(matplotlib.Figure):
         self._server = get_server(None, client_type="vue3")
         self._webagg = webagg
         if "classes" in kwargs:
-            kwargs["classes"] += " h-100 w-100 overflow-hidden"
+            kwargs["classes"] += " flex-1-1"
         else:
-            kwargs["classes"] = "h-100 w-100 overflow-hidden"
+            kwargs["classes"] = "flex-1-1"
         if webagg:
             self._initial_resize = True
             if "id" in kwargs:
@@ -247,17 +254,28 @@ class MatplotlibFigure(matplotlib.Figure):
 
         self._query_selector = f"window.document.querySelector('#{self._id}')"
         self._trigger = (
+            f"if ({self._query_selector} === null) {{ return; }}"
+            # webagg figures receive a fixed width and height. This blocks the flexbox scaling, so I temporarily hide
+            # the figure to allow the container to grow/shrink naturally in flexbox.
+            f"{self._query_selector}.style.display = 'none';"
+            f"const height = {self._query_selector}.parentNode.offsetHeight;"
+            f"const width = {self._query_selector}.parentNode.offsetWidth;"
+            # Revert the display value to allow the figure to render again.
+            f"{self._query_selector}.style.display = '';"
             "window.trame.trigger("
             f"  '{self._id}_resize',"
-            f"  [{self._query_selector}.offsetHeight, {self._query_selector}.offsetWidth, window.devicePixelRatio]"
+            f"  [height, width, window.devicePixelRatio]"
             ");"
         )
         self._resize_figure = client.JSEval(exec=self._trigger).exec
         self._resize_listener = client.JSEval(
             exec=(
-                "window.addEventListener('resize', function() {"
+                # ResizeObserver is necessary to detect changes in size unrelated to the viewport size such as when
+                # content is conditionally rendered that changes the size of the figure's container.
+                "const resizeObserver = new window.ResizeObserver(() => {"
                 f"  window.delay_manager.debounce('{self._id}', function() {{ {self._trigger} }}, 500);"
                 "});"
+                f"resizeObserver.observe(window.document.querySelector('#{self._id}'));"
             )
         ).exec
 
@@ -278,10 +296,18 @@ class MatplotlibFigure(matplotlib.Figure):
                         height = int(height * device_pixel_ratio)
                         width = int(width * device_pixel_ratio)
 
+                if height <= 0 or width <= 0:
+                    return
+
+                if self._webagg:
                     self._initial_resize = False
 
                 self._figure.set_dpi(dpi)
-                self._figure.set_size_inches(width / dpi, height / dpi)
+                new_width = width / dpi
+                new_height = height / dpi
+                current_size = self._figure.get_size_inches()
+                if current_size[0] != new_width or current_size[1] != new_height:
+                    self._figure.set_size_inches(new_width, new_height)
 
                 self.update(skip_resize=True)
 

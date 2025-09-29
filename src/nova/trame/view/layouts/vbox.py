@@ -66,6 +66,8 @@ class VBoxLayout(html.Div):
         classes += " d-flex flex-column"
         if stretch:
             classes += " flex-1-1 overflow-y-auto"
+        else:
+            classes += " flex-0-1"
 
         widget_style = self.get_root_styles(height, width, halign, valign, gap, vspace)
         user_style = kwargs.pop("style", {})
