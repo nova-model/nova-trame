@@ -85,11 +85,11 @@ class MplTest:
         self.update()
 
     def create_ui(self) -> None:
-        with html.Div():
-            self.webagg_view = MatplotlibFigure(self.figure, webagg=True, classes="text-left w-100")
+        with VBoxLayout(height=400):
+            self.webagg_view = MatplotlibFigure(self.figure, webagg=True)
             vuetify.VBtn("Change MPL Figure", click=self.update)
-        with html.Div():
-            self.svg_view = MatplotlibFigure(self.figure, classes="text-left w-100")
+        with VBoxLayout(height=450):
+            self.svg_view = MatplotlibFigure(self.figure)
 
     def update(self) -> None:
         self.ax.clear()
@@ -208,11 +208,7 @@ class App(ThemedApp):
                 html.Div("Sticky Top Content", classes="text-center w-100")
                 ProgressBar("test")
             with layout.content:
-                with vuetify.VCard(
-                    classes="align-center d-flex flex-column text-center",
-                    subtitle="This page is for visual testing of this theming package.",
-                    title="Widget Gallery",
-                ):
+                with VBoxLayout(classes="pa-16", stretch=True):
                     vuetify.VCardTitle("Layouts")
                     html.P("GridLayout")
                     # [ setup grid ]
@@ -357,10 +353,13 @@ class App(ThemedApp):
                             vuetify.VTab("Tab 3")
 
                     vuetify.VCardTitle("Data Selection Widgets")
-                    with GridLayout(classes="mb-1", columns=2, valign="center", width=600):
+                    with GridLayout(classes="mb-1", columns=2, valign="center"):
                         InputField(v_model="ds_params.directory")
                         InputField(v_model="ds_params.refresh_rate")
-                    with html.Div(classes="border-md text-left", style="height: 650px; width: 600px;"):
+                    # The flex-shrink statement forces this component to take a pixel height.
+                    # Better would be to refactor this gallery code fully to work properly as a full-page application,
+                    # but until that happens please ignore.
+                    with VBoxLayout(classes="border-md", height=400, style="flex-shrink: 0 !important"):
                         DataSelector(
                             v_model="data_selector.selected_files",
                             chips=True,
@@ -368,12 +367,12 @@ class App(ThemedApp):
                             subdirectory=("ds_params.subdirectory",),
                             refresh_rate=("ds_params.refresh_rate", 15),
                         )
-                    with GridLayout(classes="mb-1", columns=4, valign="center", width=600):
+                    with GridLayout(classes="mb-1", columns=4, valign="center"):
                         InputField(v_model="nds_params.facility")
                         InputField(v_model="nds_params.instrument")
                         InputField(v_model="nds_params.experiment")
                         InputField(v_model="nds_params.allow_custom_directories", type="checkbox")
-                    with html.Div(classes="border-md text-left", style="height: 650px; width: 600px;"):
+                    with VBoxLayout(classes="border-md", height=400, style="flex-shrink: 0 !important"):
                         NeutronDataSelector(
                             v_model="nds_filesystem.selected_files",
                             facility=("nds_params.facility", "SNS"),
@@ -382,7 +381,7 @@ class App(ThemedApp):
                             allow_custom_directories=("nds_params.allow_custom_directories", True),
                             chips=True,
                         )
-                    with html.Div(classes="border-md text-left", style="height: 650px; width: 600px;"):
+                    with VBoxLayout(classes="border-md", height=400, style="flex-shrink: 0 !important"):
                         try:
                             NeutronDataSelector(
                                 v_model="nds_oncat.selected_files",

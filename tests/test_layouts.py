@@ -7,7 +7,7 @@ from nova.trame.view.layouts import GridLayout, HBoxLayout, VBoxLayout
 
 
 def test_grid() -> None:
-    with GridLayout(rows=2, columns=3):
+    with GridLayout(columns=3, stretch=True):
         html.Div("Test 1")
         html.Div("Test 2", row_span=2, column_span=2)
 
@@ -28,13 +28,13 @@ def test_complex_layout() -> None:
 
 
 def test_hbox() -> None:
-    with HBoxLayout():
+    with HBoxLayout(stretch=True):
         html.Div("Test 1")
         html.Div("Test 2")
 
 
 def test_vbox() -> None:
-    with VBoxLayout():
+    with VBoxLayout(stretch=True):
         html.Div("Test 1")
         html.Div("Test 2")
 

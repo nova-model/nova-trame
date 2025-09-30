@@ -56,7 +56,10 @@ class _MPLApplication(tornado.web.Application):
                 self.supports_binary = message["value"]
             else:
                 manager = self.application.manager  # type: ignore
-                manager.handle_json(message)
+                try:
+                    manager.handle_json(message)
+                except Exception:
+                    pass
 
         def send_json(self, content: Any) -> None:
             set_event_loop(self.application.loop)  # type: ignore
