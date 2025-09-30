@@ -6,7 +6,7 @@ the nova-trame project.
 ## Starting from the template
 
 - Add other Python dependencies you project need with `poetry add xxx` or `poetry add --dev xxx`
-- Modify Dockerfile as needed. Please make sure it can still run as non-root (we use it in GitLab CI/CD and in general this
+- Modify Dockerfile as needed. Please make sure it can still run as non-root (we use it in GitHub Actions and in general this
 is a good practice).
 - install pre-commit (if not already installed) - `pip install pre-commit`
 - activate `pre-commit` for your project: `cd <project folder> && pre-commit install`
@@ -78,12 +78,11 @@ poetry run copier update
 See [here](https://copier.readthedocs.io/en/stable/updating/#updating-a-project) for more information.
 
 
-## CI/CD in GitLab
+## CI/CD in GitHub
 
-Take a look at the [`.gitlab-ci.yml`](.gitlab-ci.yml) file. It configures pipelines to run in GitLab.
-Some jobs will run automatically on each commit, jobs to
-build packages and Docker images need to be triggered manually.
-
+Take a look at the [`.github/workflows`](.github/workflows) folder.
+Actions to lint and test your code will run automatically on each commit.
+The action for building and releasing this package needs to be triggered manually.
 
 ### Versioning
 
@@ -92,7 +91,4 @@ image tags, python package versioning, and automatic creation of git tags.
 
 ### Publishing docs to readthedocs.io
 
-The  [`.gitlab-ci.yml`](.gitlab-ci.yml) file contains a job to publish documentation to readthedocs.io. This job requires
-two environment variables _READTHEDOCS_WEBHOOK_URL_ and _READTHEDOCS_WEBHOOK_SECRET_ to be available. You should get
-the URL and the secret from your readthedocs project (_click on your project, or create a new one ->admin->Integrations->Generic API incoming webhook_)
-and save them in GitLab (_Gitlab project->Settings->CI/CD->Variables->Add variable_).
+This repo has a [webhook](https://github.com/nova-model/nova-trame/settings/hooks) that automatically triggers documentation builds on readthedocs.

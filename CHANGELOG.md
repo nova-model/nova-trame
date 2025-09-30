@@ -1,3 +1,16 @@
+### nova-trame, 1.0.0
+
+* Adds a stretch parameter to GridLayout, HBoxLayout, and VBoxLayout and overhauls how the main content slot works (thanks to John Duggan).
+* This is tagged to version 1.0.0 as we are going to begin considering backwards compatibility with all future changes.
+
+### nova-trame, 0.27.0
+
+* DataSelector and NeutronDataSelector support range selection via Shift+Click (thanks to John Duggan).
+
+### nova-trame, 0.26.2
+
+* Improved the error message when a developer uses the removed NeutronDataSelector.set_state method (thanks to John Duggan).
+
 ### nova-trame, 0.26.1
 
 * Added use_bytes parameter to FileUpload and RemoteFileInput for handling binary files that are not stored on the server (thanks to John Duggan).

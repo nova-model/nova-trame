@@ -30,8 +30,8 @@ def test_data_selector() -> None:
                     assert input._model.state.experiment == ""
 
                     input.update_facility("HFIR")
-                    input.update_instrument("CG-2")
-                    input.update_experiment("IPTS-27744")
+                    input.update_instrument("BIO-SANS")
+                    input.update_experiment("IPTS-24666")
 
                     with catch_warnings(record=True) as captured_warnings:
                         input.update_facility(facility="NSS")
@@ -46,6 +46,12 @@ def test_data_selector() -> None:
                         assert str(captured_warnings[0].message).startswith(
                             "Instrument 'BL1B' could not be found in 'SNS'."
                         )
+
+                    try:
+                        input.set_state()
+                        raise AssertionError("set_state should fail to run")
+                    except TypeError:
+                        pass
 
     MyTrameApp()
 

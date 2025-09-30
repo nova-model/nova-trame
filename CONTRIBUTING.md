@@ -5,15 +5,14 @@ This document provides guidelines to help you contribute effectively and ensure 
 
 ## Getting Started
 
-To start contributing to this project, you will need an ORNL's GitLab account.
-If you are unfamiliar with GitLab or version control,
-consider reviewing GitLab's [Documentation](https://docs.gitlab.com/).
+To start contributing to this project, you will need a GitHub account. If you are unfamiliar with GitHub or version control,
+then please consider reviewing the [GitHub docs](https://docs.github.com/).
 
 ## How to Contribute
 
 ### Reporting Bugs
 
-If you find a bug in the project, please open an issue on GitLab with a clear and concise description. Make sure to include:
+If you find a bug in the project, please open an issue on GitHub with a clear and concise description. Make sure to include:
 
 - Steps to reproduce the bug.
 - Expected behavior.
@@ -24,17 +23,15 @@ If you find a bug in the project, please open an issue on GitLab with a clear an
 
 We welcome feature suggestions! To propose a new feature:
 
-1. Open an issue on GitLab with the title "Feature Request: [Feature Name]".
+1. Open an issue on GitHub with the title "Feature Request: [Feature Name]".
 2. Provide a detailed description of the proposed feature.
 3. Explain why this feature would be useful for the project.
 4. Include any relevant examples or mockups.
 
 ### Submitting Changes
 
-If you'd like to contribute code changes, please follow the following guidelines:
-
-- [Working on a feature](https://calvera.ornl.gov/docs/dev/project_management/gitlab/single-repo/)
-- [Style guidelines](https://calvera.ornl.gov/docs/dev/project_management/style_guidelines/)
+If you'd like to contribute code changes, please follow our
+[style guidelines](https://calvera.ornl.gov/docs/dev_guide/contributing/style_guidelines/).
 
 ## Code of Conduct
 
