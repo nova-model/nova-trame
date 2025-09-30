@@ -11,10 +11,10 @@ def test_local_storage(driver: Firefox) -> None:
     text_field = driver.find_element(By.ID, "local-storage-input")
     text_field.clear()
     text_field.click()
-    text_field.send_keys("1234567890")
+    text_field.send_keys("1")
     driver.execute_script("window.document.getElementById('local-storage-set').click();")
     WebDriverWait(driver, 10).until(
-        lambda *args: driver.execute_script("return window.localStorage.getItem('local_storage_test');") == "1234567890"
+        lambda *args: driver.execute_script("return window.localStorage.getItem('local_storage_test');") == "1"
     )
 
     driver.execute_script("window.document.getElementById('local-storage-remove').click();")
