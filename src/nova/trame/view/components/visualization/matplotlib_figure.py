@@ -59,7 +59,7 @@ class _MPLApplication(tornado.web.Application):
                 try:
                     manager.handle_json(message)
                 except Exception:
-                    pass
+                    manager.refresh_all()
 
         def send_json(self, content: Any) -> None:
             set_event_loop(self.application.loop)  # type: ignore
