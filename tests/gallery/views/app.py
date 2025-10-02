@@ -9,6 +9,7 @@ from typing import Any, Optional, cast
 import blinker
 import numpy as np
 from altair import Chart, X, Y, selection_interval
+from matplotlib.axes import Axes
 from matplotlib.figure import Figure
 from pydantic import BaseModel, Field, field_validator
 from trame.app import get_server
@@ -79,8 +80,10 @@ class MplTest:
     """Creates a Matplotlib figure using both Trame options for Matplotlib integration."""
 
     def __init__(self) -> None:
-        self.figure = Figure(layout="constrained")
-        self.ax = self.figure.add_subplot()
+        self.figure1 = Figure(layout="constrained")
+        self.figure2 = Figure(layout="constrained")
+        self.ax1 = self.figure1.add_subplot()
+        self.ax2 = self.figure2.add_subplot()
         self.fig_type = ""
 
         self.create_ui()
@@ -89,28 +92,36 @@ class MplTest:
     def create_ui(self) -> None:
         with GridLayout(columns=2, stretch=True):
             with HBoxLayout(stretch=True):
-                self.webagg_view = MatplotlibFigure(self.figure, webagg=True)
+                self.webagg_view = MatplotlibFigure(self.figure1, webagg=True)
             with HBoxLayout(stretch=True, style="overflow: hidden !important"):
-                self.svg_view = MatplotlibFigure(self.figure)
+                self.svg_view = MatplotlibFigure(self.figure2)
         vuetify.VBtn("Change MPL Figure", click=self.update)
 
     def update(self) -> None:
-        self.ax.clear()
-
         if self.fig_type == "sin":
             self.fig_type = "cos"
-            self.ax.set_title("cos")
-            t = np.arange(0.0, 2.0, 0.01)
-            s = np.cos(2 * np.pi * t)
         else:
             self.fig_type = "sin"
-            self.ax.set_title("sin")
+
+        self.plot(self.ax1)
+        self.plot(self.ax2)
+
+        self.webagg_view.update(self.figure1)
+        self.svg_view.update(self.figure2)
+
+    def plot(self, ax: Axes) -> None:
+        ax.clear()
+
+        if self.fig_type == "sin":
+            ax.set_title("sin")
             t = np.arange(0.0, 3.0, 0.01)
             s = np.sin(2 * np.pi * t)
+        else:
+            ax.set_title("cos")
+            t = np.arange(0.0, 2.0, 0.01)
+            s = np.cos(2 * np.pi * t)
 
-        self.ax.plot(t, s)
-        self.webagg_view.update(self.figure)
-        self.svg_view.update(self.figure)
+        ax.plot(t, s)
 
 
 class ComponentTab:

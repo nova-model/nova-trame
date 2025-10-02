@@ -13,7 +13,7 @@ from warnings import warn
 
 import tornado
 from aiohttp import ClientSession, WSMsgType, web
-from matplotlib import get_data_path
+from matplotlib import get_data_path, rcParams
 from matplotlib.backends.backend_webagg import FigureManagerWebAgg, new_figure_manager_given_figure  # type: ignore
 from matplotlib.figure import Figure
 from trame.app import get_server
@@ -232,7 +232,6 @@ class MatplotlibFigure(matplotlib.Figure):
         else:
             kwargs["classes"] = "flex-1-1"
         if webagg:
-            self._initial_resize = True
             if "id" in kwargs:
                 kwargs.pop("id")
                 warn("id parameter to MatplotlibFigure is ignored when webagg=True.", stacklevel=1)
@@ -267,7 +266,7 @@ class MatplotlibFigure(matplotlib.Figure):
             f"window.document.querySelectorAll('.nova-mpl').forEach((item) => {{ item.style.display = ''; }});"
             "window.trame.trigger("
             f"  '{self._id}_resize',"
-            f"  [height, width, window.devicePixelRatio]"
+            f"  [height, width]"
             ");"
         )
         self._resize_figure = client.JSEval(exec=self._trigger).exec
@@ -283,29 +282,21 @@ class MatplotlibFigure(matplotlib.Figure):
         ).exec
 
         @self._server.controller.trigger(f"{self._id}_resize")
-        def resize_figure(height: int, width: int, device_pixel_ratio: float) -> None:
+        def resize_figure(height: int, width: int) -> None:
             if self._figure:
-                # This is the browser standard assumption for DPI.
-                dpi = 96
-
                 if self._webagg:
                     # Reserve space for the controls injected by webagg.
                     height -= 48
                     width -= 4
 
-                    if not self._initial_resize:
-                        # Handle device pixel ratio for retina displays
-                        dpi = int(dpi * device_pixel_ratio)
-                        height = int(height * device_pixel_ratio)
-                        width = int(width * device_pixel_ratio)
-
                 if height <= 0 or width <= 0:
                     return
 
                 if self._webagg:
-                    self._initial_resize = False
-
-                self._figure.set_dpi(dpi)
+                    # Webagg does not respect the Figure object's DPI.
+                    dpi = rcParams["figure.dpi"]
+                else:
+                    dpi = self._figure.get_dpi()
                 new_width = width / dpi
                 new_height = height / dpi
                 current_size = self._figure.get_size_inches()
