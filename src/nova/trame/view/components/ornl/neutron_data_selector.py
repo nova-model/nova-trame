@@ -292,6 +292,8 @@ class NeutronDataSelector(DataSelector):
                         projection=set_state_param(self.state, self._projection, projection)
                     )
 
+        super()._setup_bindings()
+
     # These update methods notify the rest of the application when the component changes bound parameters.
     def update_facility(self, facility: str) -> None:
         self._vm.set_binding_parameters(

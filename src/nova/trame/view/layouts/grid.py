@@ -1,6 +1,7 @@
 """Trame implementation of the GridLayout class."""
 
 from typing import Any, Optional, Union
+from warnings import warn
 
 from trame.widgets import html
 from trame_client.widgets.core import AbstractElement
@@ -19,6 +20,7 @@ class GridLayout(html.Div):
         halign: Optional[str] = None,
         valign: Optional[str] = None,
         gap: Optional[Union[int, str]] = "0em",
+        stretch: bool = False,
         **kwargs: Any,
     ) -> None:
         """Constructor for GridLayout.
@@ -38,10 +40,14 @@ class GridLayout(html.Div):
             <https://developer.mozilla.org/en-US/docs/Web/CSS/justify-items>`__ for available options.
         valign : optional[str]
             The vertical alignment of items in the grid. See `MDN
-            <https://developer.mozilla.org/en-US/docs/Web/CSS/align-items>`__ for available options.
+            <https://developer.mozilla.org/en-US/docs/Web/CSS/align-items>`__ for available options. Note that this
+            parameter is ignored when stretch=True.
         gap : optional[str]
             The gap to place between items (works both horizontally and vertically). Can be any CSS gap value (e.g.
             "4px" or "0.25em"). Defaults to no gap between items.
+        stretch : optional[bool]
+            If True, then this layout component will stretch to attempt to fill the space of it's parent container.
+            Defaults to False.
         kwargs : Any
             Additional keyword arguments to pass to html.Div.
 
@@ -69,6 +75,13 @@ class GridLayout(html.Div):
         if isinstance(classes, list):
             classes = " ".join(classes)
         classes += " d-grid"
+        if stretch:
+            if valign:
+                warn("Ignoring valign parameter to GridLayout since stretch=True.", stacklevel=1)
+            valign = "stretch"
+            classes += " flex-1-1 overflow-y-auto"
+        else:
+            classes += " flex-0-1"
 
         widget_style = self.get_root_styles(columns, height, width, halign, valign, gap)
         user_style = kwargs.pop("style", {})

@@ -8,8 +8,8 @@ the nova-trame project.
 - Add other Python dependencies you project need with `poetry add xxx` or `poetry add --dev xxx`
 - Modify Dockerfile as needed. Please make sure it can still run as non-root (we use it in GitHub Actions and in general this
 is a good practice).
-- install pre-commit (if not already installed) - `pip install pre-commit`
-- activate `pre-commit` for your project: `cd <project folder> && pre-commit install`
+- install pre-commit (if not already installed) - `poetry add pre-commit`
+- activate `pre-commit` for your project: `cd <project folder> && poetry run pre-commit install`
 - finally, clear the content of this section and add the description of your project. You can keep/adjust instructions
 below
 
@@ -28,19 +28,12 @@ pip install poetry
 poetry install
 ```
 
-## Running
-### From source
-```bash
-poetry run app
-```
-
-## Example Application
-This package includes an example Trame application that shows commonly used Vuetify components for visual testing of our themes.
+## Widget Gallery
+This package includes a widget gallery that shows commonly used Vuetify components for visual testing. Please use this to test your changes in this repository.
 
 You can run it via:
 ```commandline
-poetry install
-poetry run start [--server]
+poetry run app [--server]
 ```
 
 ## Formatting

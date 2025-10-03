@@ -14,7 +14,7 @@ from tests.gallery import main
 def _setup_selenium() -> Firefox:
     options = FirefoxOptions()
     options.add_argument("-headless")
-    options.add_argument("--height=10000")
+    options.add_argument("--height=20000")
 
     driver = Firefox(options=options)
     driver.get("http://localhost:8080")

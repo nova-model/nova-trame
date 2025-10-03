@@ -129,7 +129,7 @@ class DataSelector(datagrid.VGrid):
         return get_server(None, client_type="vue3").state
 
     def create_ui(self, *args: Any, **kwargs: Any) -> None:
-        with VBoxLayout(classes="nova-data-selector", height="100%") as self._layout:
+        with VBoxLayout(classes="nova-data-selector", stretch=True) as self._layout:
             with HBoxLayout(valign="center"):
                 self._layout.filter = html.Div(classes="flex-1-1")
                 with vuetify.VBtn(
@@ -138,9 +138,9 @@ class DataSelector(datagrid.VGrid):
                     vuetify.VIcon("mdi-refresh")
                     vuetify.VTooltip("Refresh Contents", activator="parent")
 
-            with GridLayout(columns=2, classes="flex-1-0 h-0", valign="start"):
+            with GridLayout(columns=2, stretch=True):
                 if isinstance(self._subdirectory, tuple) or not self._subdirectory:
-                    with html.Div(classes="d-flex flex-column h-100 overflow-hidden"):
+                    with VBoxLayout(stretch=True):
                         vuetify.VListSubheader("Available Directories", classes="flex-0-1 justify-center px-0")
                         vuetify.VTreeview(
                             v_if=(f"{self._directories_name}.length > 0",),

@@ -9,10 +9,11 @@ from mimetypes import types_map
 from pathlib import Path
 from threading import Thread
 from typing import Any, Optional
+from warnings import warn
 
 import tornado
 from aiohttp import ClientSession, WSMsgType, web
-from matplotlib import get_data_path
+from matplotlib import get_data_path, rcParams
 from matplotlib.backends.backend_webagg import FigureManagerWebAgg, new_figure_manager_given_figure  # type: ignore
 from matplotlib.figure import Figure
 from trame.app import get_server
@@ -55,7 +56,10 @@ class _MPLApplication(tornado.web.Application):
                 self.supports_binary = message["value"]
             else:
                 manager = self.application.manager  # type: ignore
-                manager.handle_json(message)
+                try:
+                    manager.handle_json(message)
+                except Exception:
+                    manager.refresh_all()
 
         def send_json(self, content: Any) -> None:
             set_event_loop(self.application.loop)  # type: ignore
@@ -68,6 +72,13 @@ class _MPLApplication(tornado.web.Application):
             else:
                 data_uri = "data:image/png;base64," + blob.encode("base64").replace("\n", "")
                 self.write_message(data_uri)
+
+        def write_message(self, *args: Any, **kwargs: Any) -> Any:
+            # We need the websocket to remain alive if a message fails to write.
+            try:
+                super().write_message(*args, **kwargs)
+            except Exception:
+                pass
 
     def __init__(self, figure: Figure) -> None:
         self.figure = figure
@@ -214,17 +225,22 @@ class MatplotlibFigure(matplotlib.Figure):
         -------
         None
         """  # noqa: E501
+        self._server = get_server(None, client_type="vue3")
         self._webagg = webagg
+        if "classes" in kwargs:
+            kwargs["classes"] += " flex-1-1"
+        else:
+            kwargs["classes"] = "flex-1-1"
         if webagg:
+            if "id" in kwargs:
+                kwargs.pop("id")
+                warn("id parameter to MatplotlibFigure is ignored when webagg=True.", stacklevel=1)
+
             self._port = MatplotlibFigure._get_free_port()
-            if "classes" in kwargs:
-                kwargs["classes"] += " nova-mpl"
-            else:
-                kwargs["classes"] = "nova-mpl"
+            self._id = f"nova_mpl_{self._port}"
+            kwargs["classes"] += " nova-mpl"
 
-            html.Div(id=f"nova_mpl_{self._port}", **kwargs)
-
-            self._server = get_server(None, client_type="vue3")
+            html.Div(id=self._id, **kwargs)
 
             self._figure = figure
             self._initialized = False
@@ -236,8 +252,63 @@ class MatplotlibFigure(matplotlib.Figure):
             self.update()
         else:
             super().__init__(figure, **kwargs)
+            self._id = self._key
 
-    def update(self, figure: Optional[Figure] = None) -> None:
+        self._query_selector = f"window.document.querySelector('#{self._id}')"
+        self._trigger = (
+            f"if ({self._query_selector} === null) {{ return; }}"
+            # webagg figures receive a fixed width and height. This blocks the flexbox scaling, so I temporarily hide
+            # the figure to allow the container to grow/shrink naturally in flexbox.
+            f"window.document.querySelectorAll('.nova-mpl').forEach((item) => {{ item.style.display = 'none'; }});"
+            f"const height = {self._query_selector}.parentNode.offsetHeight;"
+            f"const width = {self._query_selector}.parentNode.offsetWidth;"
+            # Revert the display value to allow the figure to render again.
+            f"window.document.querySelectorAll('.nova-mpl').forEach((item) => {{ item.style.display = ''; }});"
+            "window.trame.trigger("
+            f"  '{self._id}_resize',"
+            f"  [height, width]"
+            ");"
+        )
+        self._resize_figure = client.JSEval(exec=self._trigger).exec
+        self._resize_listener = client.JSEval(
+            exec=(
+                # ResizeObserver is necessary to detect changes in size unrelated to the viewport size such as when
+                # content is conditionally rendered that changes the size of the figure's container.
+                "const resizeObserver = new window.ResizeObserver(() => {"
+                f"  window.delay_manager.debounce('{self._id}', function() {{ {self._trigger} }}, 500);"
+                "});"
+                f"resizeObserver.observe({self._query_selector}.parentNode);"
+            )
+        ).exec
+
+        @self._server.controller.trigger(f"{self._id}_resize")
+        def resize_figure(height: int, width: int) -> None:
+            if self._figure:
+                if self._webagg:
+                    # Reserve space for the controls injected by webagg.
+                    height -= 48
+                    width -= 4
+
+                if height <= 0 or width <= 0:
+                    return
+
+                if self._webagg:
+                    # Webagg does not respect the Figure object's DPI.
+                    dpi = rcParams["figure.dpi"]
+                else:
+                    dpi = self._figure.get_dpi()
+                new_width = width / dpi
+                new_height = height / dpi
+                current_size = self._figure.get_size_inches()
+                if current_size[0] != new_width or current_size[1] != new_height:
+                    self._figure.set_size_inches(new_width, new_height)
+
+                self.update(skip_resize=True)
+
+        client.ClientTriggers(mounted=self._resize_listener)
+        client.ClientTriggers(mounted=self._resize_figure)
+
+    def update(self, figure: Optional[Figure] = None, skip_resize: bool = False) -> None:
         if self._webagg:
             if figure:
                 self._figure = figure
@@ -255,7 +326,10 @@ class MatplotlibFigure(matplotlib.Figure):
         else:
             super().update(figure)
 
-        self._server.state.flush()
+        if not skip_resize and hasattr(self, "_resize_figure"):
+            self._resize_figure()
+        else:
+            self._server.state.flush()
 
     def _setup_figure_websocket(self) -> None:
         thread = Thread(target=self._mpl_run_ws_server, daemon=True)

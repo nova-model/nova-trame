@@ -1,3 +1,8 @@
+### nova-trame, 1.0.0
+
+* Adds a stretch parameter to GridLayout, HBoxLayout, and VBoxLayout and overhauls how the main content slot works (thanks to John Duggan).
+* This is tagged to version 1.0.0 as we are going to begin considering backwards compatibility with all future changes.
+
 ### nova-trame, 0.27.0
 
 * DataSelector and NeutronDataSelector support range selection via Shift+Click (thanks to John Duggan).

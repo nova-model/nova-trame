@@ -70,12 +70,24 @@ html {
 }
 
 .v-window {
+    display: flex;
+    flex: 1 1;
     overflow-x: visible !important;
     overflow-y: visible !important;
+
+    .v-window__container {
+        flex: 1 1;
+
+        .v-window-item {
+            flex: 1 1;
+        }
+    }
 }
 
 @media only screen and (max-width: 959px) {
     .d-grid {
+        /* This forces all grid rows to have the same height. If one doesn't want this to happen, then they should use the box layouts. :) */
+        grid-auto-rows: 1fr;
         grid-template-columns: repeat(1, 1fr) !important;
     }
 
