@@ -1,3 +1,7 @@
+### nova-trame, 1.0.1
+
+* Exit button now attempts to close the browser tab and will be visually consistent across all themes now (thanks to John Duggan).
+
 ### nova-trame, 1.0.0
 
 * Adds a stretch parameter to GridLayout, HBoxLayout, and VBoxLayout and overhauls how the main content slot works (thanks to John Duggan).
