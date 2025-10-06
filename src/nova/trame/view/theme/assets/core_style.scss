@@ -12,6 +12,13 @@ html {
     box-shadow: none !important;
 }
 
+.exit-button {
+    .v-btn__content,
+    .v-btn__prepend i {
+        font-size: 0.875rem !important;
+    }
+}
+
 .mpl-message, .ui-dialog-titlebar {
     display: none !important;
 }
@@ -185,7 +192,7 @@ html {
         font-size: 1rem;
     }
 
-    .v-btn {
+    .v-btn:not(.exit-button) {
         min-width: 0px !important;
         padding: 5px 5px !important;
         box-shadow: none !important;

@@ -28,9 +28,10 @@ class ExitButton:
         with vuetify.VBtn(
             "Exit",
             prepend_icon="mdi-close-box",
-            classes="mr-4 bg-error",
+            classes="exit-button mr-4 bg-secondary",
             id="shutdown_app_theme_button",
             color="white",
+            size="default",
             click=self.open_exit_dialog,
         ):
             with vuetify.VDialog(v_model="nova_show_exit_dialog", persistent="true"):
