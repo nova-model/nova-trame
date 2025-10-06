@@ -1,9 +1,11 @@
 """Components used to control the lifecycle of a Themed Application."""
 
 import logging
+from asyncio import sleep
 from typing import Any
 
 from trame.app import get_server
+from trame.widgets import client
 from trame.widgets import vuetify3 as vuetify
 
 logger = logging.getLogger(__name__)
@@ -20,6 +22,7 @@ class ExitButton:
         self.server.state.nova_show_stop_jobs_on_exit_checkbox = False
         self.server.state.nova_running_jobs = []
         self.server.state.nova_show_exit_progress = False
+        self.close_browser = client.JSEval(exec="window.close();").exec
         self.exit_application_callback = exit_callback
         self.job_status_callback = job_status_callback
         self.create_ui()
@@ -52,7 +55,7 @@ class ExitButton:
                     with vuetify.VCardActions(v_if="!nova_show_exit_progress"):
                         vuetify.VBtn(
                             "Exit App",
-                            click=self.exit_application_callback,
+                            click=self.exit_application,
                             color="error",
                         )
                         vuetify.VBtn(
@@ -65,6 +68,13 @@ class ExitButton:
                             variant="outlined",
                         )
                         vuetify.VProgressCircular(indeterminate=True)
+
+    async def exit_application(self) -> None:
+        self.close_browser()
+
+        # sleep gives time for the Trame server to communicate the close request to the browser.
+        await sleep(0.1)
+        await self.exit_application_callback()
 
     async def open_exit_dialog(self) -> None:
         self.server.state.nova_show_exit_dialog = True
