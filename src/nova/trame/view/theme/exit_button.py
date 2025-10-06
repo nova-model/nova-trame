@@ -22,6 +22,9 @@ class ExitButton:
         self.server.state.nova_show_stop_jobs_on_exit_checkbox = False
         self.server.state.nova_running_jobs = []
         self.server.state.nova_show_exit_progress = False
+        # Note that window.close() will fail in many situations due to security concerns: https://developer.mozilla.org/en-US/docs/Web/API/Window/close
+        # This is simply a best effort to close the tab. My hope is that it will generally work when people are running
+        # applications through our dashboard since tabs are opened via target="_blank" links.
         self.close_browser = client.JSEval(exec="window.close();").exec
         self.exit_application_callback = exit_callback
         self.job_status_callback = job_status_callback
