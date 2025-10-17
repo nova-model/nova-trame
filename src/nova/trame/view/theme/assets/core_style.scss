@@ -27,6 +27,10 @@ html {
     white-space: pre-wrap;
 }
 
+.nova-pre-content:empty {
+    margin-bottom: 12px !important;
+}
+
 .nova-data-selector {
     .v-list-group {
         --prepend-width: 12px !important;

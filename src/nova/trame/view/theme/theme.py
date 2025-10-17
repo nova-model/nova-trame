@@ -288,7 +288,7 @@ class ThemedApp:
 
                     with vuetify.VMain(classes="align-stretch d-flex flex-column h-screen"):
                         # [slot override example]
-                        layout.pre_content = vuetify.VSheet(classes="bg-background flex-0-1 mt-1 ")
+                        layout.pre_content = vuetify.VSheet(classes="bg-background flex-0-1 mt-1 nova-pre-content ")
                         # [slot override example complete]
                         with vuetify.VContainer(classes="flex-1-1 overflow-hidden pt-0 pb-2", fluid=True):
                             layout.content = vuetify.VCard(
