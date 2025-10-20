@@ -60,6 +60,12 @@ html {
         }
     }
 
+    .rv-row-text {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
     .header-content {
         font-weight: 500;
         height: 40px;

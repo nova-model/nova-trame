@@ -104,7 +104,9 @@ class RevoGrid {
             },
         })
 
-        return createElement('label', undefined, inputVNode, props.model[props.prop])
+        const spanNode = createElement('span', {'class': 'cursor-pointer rv-row-text'}, props.model[props.prop])
+
+        return createElement('label', { 'title': props.model[props.prop] }, inputVNode, spanNode)
     }
 
     columnTemplate(createElement) {
