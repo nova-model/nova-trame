@@ -60,6 +60,10 @@ html {
         }
     }
 
+    .rgCell label {
+        cursor: pointer;
+    }
+
     .rv-row-text {
         overflow: hidden;
         text-overflow: ellipsis;
