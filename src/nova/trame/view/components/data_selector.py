@@ -28,6 +28,7 @@ class DataSelector(datagrid.VGrid):
         self,
         v_model: Union[str, Tuple],
         directory: Union[str, Tuple],
+        clear_selection_on_directory_change: Union[bool, Tuple] = True,
         extensions: Union[List[str], Tuple, None] = None,
         prefix: Union[str, Tuple] = "",
         subdirectory: Union[str, Tuple] = "",
@@ -45,6 +46,8 @@ class DataSelector(datagrid.VGrid):
         directory : Union[str, Tuple]
             The top-level folder to expose to users. Only contents of this directory and its children will be exposed to
             users.
+        clear_selection_on_directory_change: Union[bool, Tuple], optional
+            Whether or not to clear the selected files when the directory is changed.
         extensions : Union[List[str], Tuple], optional
             A list of file extensions to restrict selection to. If unset, then all files will be shown.
         prefix : Union[str, Tuple], optional
@@ -96,6 +99,7 @@ class DataSelector(datagrid.VGrid):
         else:
             self._v_model_name_in_state = v_model[0].split(".")[0]
 
+        self._clear_selection = clear_selection_on_directory_change
         self._directory = directory
         self._last_directory = get_state_param(self.state, self._directory)
         self._extensions = extensions if extensions is not None else []
@@ -240,8 +244,9 @@ class DataSelector(datagrid.VGrid):
         self._vm.update_view(refresh_directories=True)
 
     def reset(self, _: Any = None) -> None:
-        self._reset_state()
-        self._reset_rv_grid()
+        if bool(get_state_param(self.state, self._clear_selection)):
+            self._reset_state()
+            self._reset_rv_grid()
 
     def set_subdirectory(self, subdirectory_path: str = "") -> None:
         set_state_param(self.state, self._subdirectory, subdirectory_path)

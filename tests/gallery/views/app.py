@@ -303,6 +303,7 @@ class ComponentTab:
             with VBoxLayout(classes="border-md", height=400, style="flex-shrink: 0 !important"):
                 NeutronDataSelector(
                     v_model="nds_filesystem.selected_files",
+                    clear_selection_on_experiment_change=False,
                     facility=("nds_params.facility", "SNS"),
                     instrument=("nds_params.instrument", "TOPAZ"),
                     experiment=("nds_params.experiment", "IPTS-12132"),
