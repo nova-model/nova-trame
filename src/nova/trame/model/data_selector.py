@@ -130,9 +130,9 @@ class DataSelectorModel:
 
     def sort_datafiles(self, files: List[Tuple[str, float]]) -> List[str]:
         if self.state.sort_alpha is not None:
-            files.sort(key=lambda x: x[0].lower(), reverse=not self.state.sort_alpha)
+            files = natsorted(files, key=lambda x: x[0].lower(), reverse=not self.state.sort_alpha)
         elif self.state.sort_time is not None:
-            files.sort(key=lambda x: x[1], reverse=self.state.sort_time)
+            files = sorted(files, key=lambda x: x[1], reverse=self.state.sort_time)
 
         return [file[0] for file in files]
 
