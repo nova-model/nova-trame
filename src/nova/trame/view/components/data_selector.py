@@ -11,7 +11,7 @@ from trame_server.core import State
 
 from nova.mvvm._internal.utils import rgetdictvalue
 from nova.mvvm.trame_binding import TrameBinding
-from nova.trame._internal.utils import get_state_param, set_state_param
+from nova.trame._internal.utils import get_state_name, get_state_param, set_state_param
 from nova.trame.model.data_selector import DataSelectorModel, DataSelectorState
 from nova.trame.view.layouts import GridLayout, HBoxLayout, VBoxLayout
 from nova.trame.view_model.data_selector import DataSelectorViewModel
@@ -133,6 +133,8 @@ class DataSelector(datagrid.VGrid):
         return get_server(None, client_type="vue3").state
 
     def create_ui(self, *args: Any, **kwargs: Any) -> None:
+        show_directories = isinstance(self._subdirectory, tuple) or not self._subdirectory
+
         with VBoxLayout(classes="nova-data-selector", stretch=True) as self._layout:
             with HBoxLayout(valign="center"):
                 self._layout.filter = html.Div(classes="flex-1-1")
@@ -143,7 +145,7 @@ class DataSelector(datagrid.VGrid):
                     vuetify.VTooltip("Refresh Contents", activator="parent")
 
             with GridLayout(columns=2, stretch=True):
-                if isinstance(self._subdirectory, tuple) or not self._subdirectory:
+                if show_directories:
                     with VBoxLayout(stretch=True):
                         vuetify.VListSubheader("Available Directories", classes="flex-0-1 justify-center px-0")
                         vuetify.VTreeview(
@@ -159,51 +161,63 @@ class DataSelector(datagrid.VGrid):
                         )
                         vuetify.VListItem("No directories found", classes="flex-0-1 text-center", v_else=True)
 
-                if "columns" in kwargs:
-                    columns = kwargs.pop("columns")
-                else:
-                    columns = (
-                        "[{"
-                        "    cellTemplate: (createElement, props) =>"
-                        f"       window.grid_manager.get('{self._revogrid_id}').cellTemplate(createElement, props),"
-                        "    columnTemplate: (createElement) =>"
-                        f"       window.grid_manager.get('{self._revogrid_id}').columnTemplate(createElement),"
-                        "    name: 'Available Datafiles',"
-                        "    prop: 'title',"
-                        "}]",
-                    )
+                with VBoxLayout(column_span=1 if show_directories else 2, stretch=True):
+                    with HBoxLayout(gap="0.25em", valign="center"):
+                        if isinstance(self._extensions, tuple):
+                            extensions_name = f"{get_state_name(self._extensions[0])}.extensions"
+                        else:
+                            extensions_name = f"{self._state_name}.extensions"
 
-                super().__init__(
-                    v_model=self._v_model,
-                    can_focus=False,
-                    columns=columns,
-                    column_span=1 if isinstance(self._subdirectory, tuple) or not self._subdirectory else 2,
-                    frame_size=10,
-                    hide_attribution=True,
-                    id=self._revogrid_id,
-                    readonly=True,
-                    stretch=True,
-                    source=(self._datafiles_name,),
-                    theme="compact",
-                    **kwargs,
-                )
-                if self._label:
-                    self.label = self._label
-                if "update_modelValue" not in kwargs:
-                    self.update_modelValue = self._flush_state
-
-                # Sets up some JavaScript event handlers when the component is mounted.
-                with self:
-                    client.ClientTriggers(
-                        mounted=(
-                            "window.grid_manager.add("
-                            f"  '{self._revogrid_id}',"
-                            f"  '{self._v_model}',"
-                            f"  '{self._datafiles_name}',"
-                            f"  '{self._v_model_name_in_state}'"
-                            ")"
+                        html.P(
+                            f"Showing {{{{ {extensions_name}.join(',') }}}} files",
+                            v_if=f"{extensions_name}.length > 0",
                         )
+                        InputField(v_model=f"{self._state_name}.search")
+
+                    if "columns" in kwargs:
+                        columns = kwargs.pop("columns")
+                    else:
+                        columns = (
+                            "[{"
+                            "    cellTemplate: (createElement, props) =>"
+                            f"       window.grid_manager.get('{self._revogrid_id}').cellTemplate(createElement, props),"
+                            "    columnTemplate: (createElement) =>"
+                            f"       window.grid_manager.get('{self._revogrid_id}').columnTemplate(createElement),"
+                            "    name: 'Available Datafiles',"
+                            "    prop: 'title',"
+                            "}]",
+                        )
+
+                    super().__init__(
+                        v_model=self._v_model,
+                        can_focus=False,
+                        columns=columns,
+                        frame_size=10,
+                        hide_attribution=True,
+                        id=self._revogrid_id,
+                        readonly=True,
+                        stretch=True,
+                        source=(self._datafiles_name,),
+                        theme="compact",
+                        **kwargs,
                     )
+                    if self._label:
+                        self.label = self._label
+                    if "update_modelValue" not in kwargs:
+                        self.update_modelValue = self._flush_state
+
+                    # Sets up some JavaScript event handlers when the component is mounted.
+                    with self:
+                        client.ClientTriggers(
+                            mounted=(
+                                "window.grid_manager.add("
+                                f"  '{self._revogrid_id}',"
+                                f"  '{self._v_model}',"
+                                f"  '{self._datafiles_name}',"
+                                f"  '{self._v_model_name_in_state}'"
+                                ")"
+                            )
+                        )
 
             with cast(
                 vuetify.VSelect,

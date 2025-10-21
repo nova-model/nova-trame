@@ -110,12 +110,12 @@ class RevoGrid {
     }
 
     columnTemplate(createElement) {
+        const trameState = window.trame.state.state
+        const availableData = _.get(trameState, this.dataKey)
+
         const inputVNode = createElement('input', {
             type: 'checkbox',
             onChange: (e) => {
-                const trameState = window.trame.state.state
-                const availableData = _.get(trameState, this.dataKey)
-
                 if (e.target.checked) {
                     _.set(trameState, this.modelKey, availableData.map((item) => item.path))
                 } else {
@@ -127,8 +127,14 @@ class RevoGrid {
                 window.trame.state.dirty(this.stateKey)
             },
         })
+        const header = createElement('div', {'class': 'd-flex'}, inputVNode, 'Available Datafiles')
 
-        return [inputVNode, 'Available Datafiles']
+        let controls = null
+        if (availableData.length < 1) {
+            controls = createElement('div', {'class': 'd-flex'}, 'No files found. Select a directory with files on the left.')
+        }
+
+        return createElement('div', {'class': 'd-flex flex-column'}, header, controls)
     }
 
     initShiftKeyListeners() {

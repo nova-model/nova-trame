@@ -13,6 +13,7 @@ class DataSelectorState(BaseModel, validate_assignment=True):
 
     directory: str = Field(default="")
     extensions: List[str] = Field(default=[])
+    search: str = Field(default="", title="Search")
     subdirectory: str = Field(default="")
 
 
@@ -95,14 +96,21 @@ class DataSelectorModel:
             datafile_path = base_path / self.state.subdirectory
 
             for entry in os.scandir(datafile_path):
+                can_add = False
                 if entry.is_file():
                     if self.state.extensions:
                         for extension in self.state.extensions:
                             if entry.path.lower().endswith(extension):
-                                datafiles.append(entry.path)
+                                can_add = True
                                 break
                     else:
-                        datafiles.append(entry.path)
+                        can_add = True
+
+                if self.state.search and self.state.search.lower() not in entry.path.lower():
+                    can_add = False
+
+                if can_add:
+                    datafiles.append(entry.path)
         except OSError:
             pass
 

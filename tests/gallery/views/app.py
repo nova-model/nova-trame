@@ -304,6 +304,7 @@ class ComponentTab:
                 NeutronDataSelector(
                     v_model="nds_filesystem.selected_files",
                     clear_selection_on_experiment_change=False,
+                    extensions=[".h5", ".nxs"],
                     facility=("nds_params.facility", "SNS"),
                     instrument=("nds_params.instrument", "TOPAZ"),
                     experiment=("nds_params.experiment", "IPTS-12132"),
