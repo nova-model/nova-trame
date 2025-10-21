@@ -162,65 +162,67 @@ class DataSelector(datagrid.VGrid):
                         vuetify.VListItem("No directories found", classes="flex-0-1 text-center", v_else=True)
 
                 with VBoxLayout(column_span=1 if show_directories else 2, stretch=True):
-                    with HBoxLayout(classes="mx-2", gap="0.25em", valign="center"):
-                        if isinstance(self._extensions, tuple):
-                            extensions_name = f"{get_state_name(self._extensions[0])}.extensions"
-                        else:
-                            extensions_name = f"{self._state_name}.extensions"
+                    with VBoxLayout(classes="mx-2", gap="0.5em"):
+                        with HBoxLayout(gap="0.25em", valign="center"):
+                            if isinstance(self._extensions, tuple):
+                                extensions_name = f"{get_state_name(self._extensions[0])}.extensions"
+                            else:
+                                extensions_name = f"{self._state_name}.extensions"
+
+                            InputField(v_model=f"{self._state_name}.search")
+                            with vuetify.VBtn(classes="icon-btn", icon=True, click=self._vm.toggle_alpha_sort):
+                                vuetify.VTooltip(
+                                    "Sorting A->Z",
+                                    activator="parent",
+                                    v_if=f"{self._state_name}.sort_alpha === true",
+                                )
+                                vuetify.VTooltip(
+                                    "Sorting Z->A",
+                                    activator="parent",
+                                    v_else_if=f"{self._state_name}.sort_alpha === false",
+                                )
+                                vuetify.VTooltip("Click to sort alphanumerically", activator="parent", v_else=True)
+
+                                vuetify.VIcon(
+                                    "mdi-sort-alphabetical-ascending",
+                                    size=16,
+                                    v_if=f"{self._state_name}.sort_alpha === true",
+                                )
+                                vuetify.VIcon(
+                                    "mdi-sort-alphabetical-descending",
+                                    size=16,
+                                    v_else_if=f"{self._state_name}.sort_alpha === false",
+                                )
+                                vuetify.VIcon("mdi-order-alphabetical-ascending", size=16, v_else=True)
+                            with vuetify.VBtn(classes="icon-btn", icon=True, click=self._vm.toggle_time_sort):
+                                vuetify.VTooltip(
+                                    "Newest modification times first",
+                                    activator="parent",
+                                    v_if=f"{self._state_name}.sort_time === true",
+                                )
+                                vuetify.VTooltip(
+                                    "Oldest modification times first",
+                                    activator="parent",
+                                    v_else_if=f"{self._state_name}.sort_time === false",
+                                )
+                                vuetify.VTooltip("Click to sort by modification times", activator="parent", v_else=True)
+
+                                vuetify.VIcon(
+                                    "mdi-sort-clock-ascending",
+                                    size=16,
+                                    v_if=f"{self._state_name}.sort_time === true",
+                                )
+                                vuetify.VIcon(
+                                    "mdi-sort-clock-descending",
+                                    size=16,
+                                    v_else_if=f"{self._state_name}.sort_time === false",
+                                )
+                                vuetify.VIcon("mdi-clock", size=16, v_else=True)
 
                         html.P(
                             f"Showing {{{{ {extensions_name}.join(',') }}}} files",
                             v_if=f"{extensions_name}.length > 0",
                         )
-                        InputField(v_model=f"{self._state_name}.search")
-                        with vuetify.VBtn(classes="icon-btn", icon=True, click=self._vm.toggle_alpha_sort):
-                            vuetify.VTooltip(
-                                "Sorting A->Z",
-                                activator="parent",
-                                v_if=f"{self._state_name}.sort_alpha === true",
-                            )
-                            vuetify.VTooltip(
-                                "Sorting Z->A",
-                                activator="parent",
-                                v_else_if=f"{self._state_name}.sort_alpha === false",
-                            )
-                            vuetify.VTooltip("Click to sort alphanumerically", activator="parent", v_else=True)
-
-                            vuetify.VIcon(
-                                "mdi-sort-alphabetical-ascending",
-                                size=16,
-                                v_if=f"{self._state_name}.sort_alpha === true",
-                            )
-                            vuetify.VIcon(
-                                "mdi-sort-alphabetical-descending",
-                                size=16,
-                                v_else_if=f"{self._state_name}.sort_alpha === false",
-                            )
-                            vuetify.VIcon("mdi-order-alphabetical-ascending", size=16, v_else=True)
-                        with vuetify.VBtn(classes="icon-btn", icon=True, click=self._vm.toggle_time_sort):
-                            vuetify.VTooltip(
-                                "Newest modification times first",
-                                activator="parent",
-                                v_if=f"{self._state_name}.sort_time === true",
-                            )
-                            vuetify.VTooltip(
-                                "Oldest modification times first",
-                                activator="parent",
-                                v_else_if=f"{self._state_name}.sort_time === false",
-                            )
-                            vuetify.VTooltip("Click to sort by modification times", activator="parent", v_else=True)
-
-                            vuetify.VIcon(
-                                "mdi-sort-clock-ascending",
-                                size=16,
-                                v_if=f"{self._state_name}.sort_time === true",
-                            )
-                            vuetify.VIcon(
-                                "mdi-sort-clock-descending",
-                                size=16,
-                                v_else_if=f"{self._state_name}.sort_time === false",
-                            )
-                            vuetify.VIcon("mdi-clock", size=16, v_else=True)
 
                     if "columns" in kwargs:
                         columns = kwargs.pop("columns")
