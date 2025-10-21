@@ -74,7 +74,7 @@ class GridLayout(html.Div):
         classes = kwargs.pop("classes", [])
         if isinstance(classes, list):
             classes = " ".join(classes)
-        classes += " d-grid"
+
         if stretch:
             if valign:
                 warn("Ignoring valign parameter to GridLayout since stretch=True.", stacklevel=1)
@@ -82,6 +82,12 @@ class GridLayout(html.Div):
             classes += " flex-1-1 overflow-y-auto"
         else:
             classes += " flex-0-1"
+
+        v_show = kwargs.get("v_show", None)
+        if v_show:
+            classes = (f"{v_show} ? '{classes} d-grid' : '{classes}'",)
+        else:
+            classes += " d-grid"
 
         widget_style = self.get_root_styles(columns, height, width, halign, valign, gap)
         user_style = kwargs.pop("style", {})

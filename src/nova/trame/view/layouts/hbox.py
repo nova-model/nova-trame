@@ -63,11 +63,17 @@ class HBoxLayout(html.Div):
         classes = kwargs.pop("classes", [])
         if isinstance(classes, list):
             classes = " ".join(classes)
-        classes += " d-flex flex-row"
+
         if stretch:
             classes += " flex-1-1 overflow-y-auto"
         else:
             classes += " flex-0-1"
+
+        v_show = kwargs.get("v_show", None)
+        if v_show:
+            classes = (f"{v_show} ? '{classes} d-flex flex-row' : '{classes}'",)
+        else:
+            classes += " d-flex flex-row"
 
         widget_style = self.get_root_styles(height, width, halign, valign, gap, vspace)
         user_style = kwargs.pop("style", {})

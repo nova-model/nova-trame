@@ -33,6 +33,8 @@ class NeutronDataSelectorViewModel(DataSelectorViewModel):
                 case "custom_directory":
                     self.reset()
                     self.update_view()
+                case "search":
+                    self.update_view()
 
     def transform_datafiles(self, datafiles: List[Any]) -> List[Dict[str, str]]:
         return [{"title": os.path.basename(datafile["path"]), **datafile} for datafile in datafiles]
