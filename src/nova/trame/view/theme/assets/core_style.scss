@@ -58,6 +58,12 @@ html {
             cursor: pointer;
             margin-right: 0.25em;
         }
+
+        p {
+            line-height: 1;
+            margin-top: 1em;
+            white-space: normal;
+        }
     }
 
     .rgCell label {

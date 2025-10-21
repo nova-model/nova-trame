@@ -131,7 +131,7 @@ class RevoGrid {
 
         let controls = null
         if (availableData.length < 1) {
-            controls = createElement('div', {'class': 'd-flex'}, 'No files found. Select a directory with files on the left.')
+            controls = createElement('p', {}, 'No files found. Select a directory with files on the left.')
         }
 
         return createElement('div', {'class': 'd-flex flex-column'}, header, controls)
