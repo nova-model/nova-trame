@@ -68,6 +68,14 @@ class DataSelectorViewModel:
         self.model.set_subdirectory(subdirectory_path)
         self.update_view()
 
+    def toggle_alpha_sort(self) -> None:
+        self.model.toggle_alpha_sort()
+        self.update_view()
+
+    def toggle_time_sort(self) -> None:
+        self.model.toggle_time_sort()
+        self.update_view()
+
     def transform_datafiles(self, datafiles: List[Any]) -> List[Dict[str, str]]:
         return [{"path": datafile, "title": os.path.basename(datafile)} for datafile in datafiles]
 

@@ -2,7 +2,7 @@
 
 import os
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 from natsort import natsorted
 from pydantic import BaseModel, Field
@@ -14,6 +14,10 @@ class DataSelectorState(BaseModel, validate_assignment=True):
     directory: str = Field(default="")
     extensions: List[str] = Field(default=[])
     search: str = Field(default="", title="Search")
+    # True: A->Z, False: Z->A, None: no order
+    sort_alpha: Optional[bool] = Field(default=None)
+    # True: Recent modifications first, False: Older modifications first, None: no order
+    sort_time: Optional[bool] = Field(default=None)
     subdirectory: str = Field(default="")
 
 
@@ -110,11 +114,11 @@ class DataSelectorModel:
                     can_add = False
 
                 if can_add:
-                    datafiles.append(entry.path)
+                    datafiles.append((entry.path, entry.stat().st_mtime))
         except OSError:
             pass
 
-        return natsorted(datafiles)
+        return self.sort_datafiles(datafiles)
 
     def get_datafiles(self) -> List[str]:
         base_path = Path(self.state.directory)
@@ -123,3 +127,33 @@ class DataSelectorModel:
 
     def set_subdirectory(self, subdirectory_path: str) -> None:
         self.state.subdirectory = subdirectory_path
+
+    def sort_datafiles(self, files: List[Tuple[str, float]]) -> List[str]:
+        if self.state.sort_alpha is not None:
+            files.sort(key=lambda x: x[0].lower(), reverse=not self.state.sort_alpha)
+        elif self.state.sort_time is not None:
+            files.sort(key=lambda x: x[1], reverse=self.state.sort_time)
+
+        return [file[0] for file in files]
+
+    def toggle_alpha_sort(self) -> None:
+        # Reset the time sort since we've changed alpha sort more recently
+        self.state.sort_time = None
+
+        if self.state.sort_alpha is None:
+            self.state.sort_alpha = True
+        elif self.state.sort_alpha:
+            self.state.sort_alpha = False
+        else:
+            self.state.sort_alpha = None
+
+    def toggle_time_sort(self) -> None:
+        # Reset the alpha sort since we've changed time sort more recently
+        self.state.sort_alpha = None
+
+        if self.state.sort_time is None:
+            self.state.sort_time = True
+        elif self.state.sort_time:
+            self.state.sort_time = False
+        else:
+            self.state.sort_time = None
