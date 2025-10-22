@@ -4,7 +4,7 @@ import json
 import logging
 from asyncio import create_task
 from pathlib import Path
-from typing import Any, Optional, cast
+from typing import Any, Dict, List, Optional, Union
 
 import blinker
 import numpy as np
@@ -16,7 +16,6 @@ from trame.app import get_server
 from trame.decorators import TrameApp
 from trame.widgets import client, html
 from trame.widgets import vuetify3 as vuetify
-from trame_client.widgets.core import AbstractElement
 from trame_server.core import Server
 from trame_server.state import State
 from vega_datasets import data
@@ -51,6 +50,9 @@ class Config(BaseModel):
         default="",
         description="This field is debounced and will not update its state until you've stopped typing for 1 second.",
         title="Debounced Field",
+    )
+    radio_items: List[Dict[str, Union[str, int]]] = Field(
+        default=[{"title": "Item 1", "value": 1}, {"title": "Item 2", "value": 2}]
     )
     throttle: str = Field(
         default="",
@@ -345,9 +347,7 @@ class ComponentTab:
                     vuetify.VBtn("Add Line to Autoscroller", click=self.append_to_autoscroll)
                 InputField(type="checkbox", label="Checkbox")
                 InputField(type="file", label="File Upload")
-                with cast(AbstractElement, InputField(type="radio")):
-                    vuetify.VRadio(label="Radio 1", value="radio1")
-                    vuetify.VRadio(label="Radio 2", value="radio2")
+                InputField(type="radio", label="Radio Buttons", items=("config.radio_items",))
                 InputField(
                     type="select",
                     items="['Option 1', 'Option 2']",

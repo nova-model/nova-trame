@@ -1,3 +1,7 @@
+### nova-trame, 1.0.2
+
+* Passing an items parameter to InputField(type="radio") now generates a correct radio button group (thanks to John Duggan).
+
 ### nova-trame, 1.0.1
 
 * Exit button now attempts to close the browser tab and will be visually consistent across all themes now (thanks to John Duggan).
