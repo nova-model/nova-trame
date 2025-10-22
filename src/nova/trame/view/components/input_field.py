@@ -170,7 +170,8 @@ class InputField:
             - file
             - input
             - otp
-            - radio
+            - radio - Produces a radio button group. Note that this accepts an additional parameter items that expects \
+                a list of dictionaries with the following format: { title: 'Item 1', value: 'item_1' }.
             - range-slider
             - select - Produces a dropdown menu. This menu can have items automatically populated if the v_model is \
                 connected to a Pydantic field that uses an Enum type. Otherwise, you must specify the items parameter \
@@ -244,7 +245,11 @@ class InputField:
             case "otp":
                 input = vuetify.VOtpInput(**kwargs)
             case "radio":
-                input = vuetify.VRadioGroup(**kwargs)
+                items = kwargs.pop("items", None)
+                if isinstance(items, tuple):
+                    items = items[0]
+                with vuetify.VRadioGroup(**kwargs) as input:
+                    vuetify.VRadio(v_for=f"item in {items}", label=("item.title",), value=("item.value",))
             case "range-slider":
                 input = vuetify.VRangeSlider(**kwargs)
             case "select":
