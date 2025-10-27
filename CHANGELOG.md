@@ -1,3 +1,9 @@
+### nova-trame, 1.1.0
+
+* Sort and filtering capabilities have been added to the DataSelector (thanks to John Duggan).
+* Added a parameter to NeutronDataSelector to preserve selected files when changing the facility, instrument, or experiment (thanks to John Duggan).
+* The v_show parameter should now be functional when used on GridLayout, HBoxLayout, and VBoxLayout (thanks to John Duggan).
+
 ### nova-trame, 1.0.1
 
 * Exit button now attempts to close the browser tab and will be visually consistent across all themes now (thanks to John Duggan).
