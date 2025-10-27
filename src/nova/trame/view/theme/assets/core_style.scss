@@ -274,6 +274,10 @@ html {
         }
     }
 
+    .v-treeview.hide-actions .v-list-item .v-list-item__prepend {
+        width: unset;
+    }
+
     .nova-data-selector .icon-btn {
         height: 28px;
     }
