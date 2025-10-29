@@ -56,7 +56,9 @@ class DataSelectorViewModel:
             self.expand_directory(paths)
 
     def on_state_updated(self, results: Dict[str, Any]) -> None:
-        pass
+        for result in results.get("updated", []):
+            if result == "search":
+                self.update_view()
 
     def set_binding_parameters(self, **kwargs: Any) -> None:
         self.model.set_binding_parameters(**kwargs)
@@ -64,6 +66,14 @@ class DataSelectorViewModel:
 
     def set_subdirectory(self, subdirectory_path: str = "") -> None:
         self.model.set_subdirectory(subdirectory_path)
+        self.update_view()
+
+    def toggle_alpha_sort(self) -> None:
+        self.model.toggle_alpha_sort()
+        self.update_view()
+
+    def toggle_time_sort(self) -> None:
+        self.model.toggle_time_sort()
         self.update_view()
 
     def transform_datafiles(self, datafiles: List[Any]) -> List[Dict[str, str]]:
