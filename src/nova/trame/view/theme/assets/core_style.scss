@@ -58,11 +58,27 @@ html {
             cursor: pointer;
             margin-right: 0.25em;
         }
+
+        p {
+            line-height: 1;
+            margin-top: 1em;
+            white-space: normal;
+        }
+    }
+
+    .rgCell label {
+        cursor: pointer;
+    }
+
+    .rv-row-text {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
 
     .header-content {
         font-weight: 500;
-        height: 40px;
+        height: fit-content;
     }
 
     .inner-content-table {
@@ -256,6 +272,14 @@ html {
                 }
             }
         }
+    }
+
+    .v-treeview.hide-actions .v-list-item .v-list-item__prepend {
+        width: unset;
+    }
+
+    .nova-data-selector .icon-btn {
+        height: 28px;
     }
 }
 

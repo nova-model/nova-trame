@@ -1,6 +1,12 @@
-### nova-trame, 1.0.2
+### nova-trame, 1.1.1
 
 * Passing an items parameter to InputField(type="radio") now generates a correct radio button group (thanks to John Duggan).
+
+### nova-trame, 1.1.0
+
+* Sort and filtering capabilities have been added to the DataSelector (thanks to John Duggan).
+* Added a parameter to NeutronDataSelector to preserve selected files when changing the facility, instrument, or experiment (thanks to John Duggan).
+* The v_show parameter should now be functional when used on GridLayout, HBoxLayout, and VBoxLayout (thanks to John Duggan).
 
 ### nova-trame, 1.0.1
 

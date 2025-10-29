@@ -31,6 +31,7 @@ class NeutronDataSelector(DataSelector):
         self,
         v_model: Union[str, Tuple],
         allow_custom_directories: Union[bool, Tuple] = False,
+        clear_selection_on_experiment_change: Union[bool, Tuple] = True,
         data_source: Literal["filesystem", "oncat"] = "filesystem",
         facility: Union[str, Tuple] = "",
         instrument: Union[str, Tuple] = "",
@@ -52,6 +53,8 @@ class NeutronDataSelector(DataSelector):
         allow_custom_directories : Union[bool, Tuple], optional
             Whether or not to allow users to provide their own directories to search for datafiles in. Ignored if the
             facility parameter is set.
+        clear_selection_on_experiment_change: Union[bool, Tuple], optional
+            Whether or not to clear the selected files when the user changes the facility, instrument, or experiment.
         data_source : Literal["filesystem", "oncat"], optional
             The source from which to pull datafiles. Defaults to "filesystem". If using ONCat, you will need to set the
             following environment variables for local development: `ONCAT_CLIENT_ID` and `ONCAT_CLIENT_SECRET`. Note
@@ -119,6 +122,7 @@ class NeutronDataSelector(DataSelector):
         super().__init__(
             v_model,
             "",
+            clear_selection_on_directory_change=clear_selection_on_experiment_change,
             extensions=extensions,
             subdirectory=subdirectory if data_source == "filesystem" else "oncat",
             refresh_rate=refresh_rate,
