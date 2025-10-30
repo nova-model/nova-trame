@@ -1,3 +1,7 @@
+### nova-trame, 1.1.1
+
+* Passing an items parameter to InputField(type="radio") now generates a correct radio button group (thanks to John Duggan).
+
 ### nova-trame, 1.1.0
 
 * Sort and filtering capabilities have been added to the DataSelector (thanks to John Duggan).
