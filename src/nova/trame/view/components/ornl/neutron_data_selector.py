@@ -36,6 +36,7 @@ class NeutronDataSelector(DataSelector):
         facility: Union[str, Tuple] = "",
         instrument: Union[str, Tuple] = "",
         experiment: Union[str, Tuple] = "",
+        show_experiment_filters: Union[bool, Tuple] = True,
         extensions: Union[List[str], Tuple, None] = None,
         projection: Union[List[str], Tuple, None] = None,
         subdirectory: Union[str, Tuple] = "",
@@ -66,6 +67,9 @@ class NeutronDataSelector(DataSelector):
             The instrument to restrict data selection to. Please use the instrument acronym (e.g. CG-2).
         experiment : Union[str, Tuple], optional
             The experiment to restrict data selection to.
+        show_experiment_filters : Union[bool, Tuple], optional
+            If false, then the facility, instrument, and experiment selection widgets will be hidden from the user. This
+            is only intended to be used when all of these parameters are fixed or controlled by external widgets.
         extensions : Union[List[str], Tuple], optional
             A list of file extensions to restrict selection to. If unset, then all files will be shown.
         projection : Union[List[str], Tuple], optional
@@ -104,6 +108,15 @@ class NeutronDataSelector(DataSelector):
         self._last_allow_custom_directories = self._allow_custom_directories
         self._data_source = data_source
         self._projection = projection
+
+        # This is passed to a v_if, which requires a Trame binding to function.
+        if isinstance(show_experiment_filters, bool):
+            if show_experiment_filters:
+                self._show_experiment_filters = ("true",)
+            else:
+                self._show_experiment_filters = ("false",)
+        else:
+            self._show_experiment_filters = show_experiment_filters
 
         self._state_name = f"nova__dataselector_{self._next_id}_state"
         self._facilities_name = f"nova__neutrondataselector_{self._next_id}_facilities"
@@ -157,7 +170,7 @@ class NeutronDataSelector(DataSelector):
             super().create_ui(**kwargs)
 
         with self._layout.filter:
-            with GridLayout(columns=3):
+            with GridLayout(v_if=self._show_experiment_filters, columns=3):
                 column_span = 3
                 if isinstance(self._facility, tuple) or not self._facility:
                     column_span -= 1

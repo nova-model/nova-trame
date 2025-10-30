@@ -1,3 +1,7 @@
+### nova-trame, 1.2.0
+
+* Adds a show_experiment_filters parameter to NeutronDataSelector to allow hiding the facility/instrument/experiment selection widgets (thanks to John Duggan).
+
 ### nova-trame, 1.1.1
 
 * Passing an items parameter to InputField(type="radio") now generates a correct radio button group (thanks to John Duggan).
