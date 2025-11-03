@@ -211,9 +211,9 @@ class ThemedApp:
         -------
         `trame_client.ui.core.AbstractLayout <https://trame.readthedocs.io/en/latest/core.ui.html#trame_client.ui.core.AbstractLayout>`_
         """
-        # This detects if Poetry is running Python so that we can show links to NOVA resources during development.
-        # Poetry should not be used in production.
-        show_nova_resources = os.environ.get("VIRTUAL_ENV") is not None
+        # This detects if Pixi is running in production mode so that we can show links to NOVA resources during
+        # development.
+        show_nova_resources = os.environ.get("PIXI_ENVIRONMENT_NAME", "") != "production"
 
         with VAppLayout(self.server, vuetify_config=self.vuetify_config) as layout:
             self.local_storage = LocalStorageManager(self.server.controller)

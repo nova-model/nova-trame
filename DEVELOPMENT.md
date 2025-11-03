@@ -5,11 +5,11 @@ the nova-trame project.
 
 ## Starting from the template
 
-- Add other Python dependencies you project need with `poetry add xxx` or `poetry add --dev xxx`
+- Add other Python dependencies you project need with [`pixi add`](https://pixi.sh/latest/reference/cli/pixi/add/).
 - Modify Dockerfile as needed. Please make sure it can still run as non-root (we use it in GitHub Actions and in general this
 is a good practice).
-- install pre-commit (if not already installed) - `poetry add pre-commit`
-- activate `pre-commit` for your project: `cd <project folder> && poetry run pre-commit install`
+- install pre-commit (if not already installed) - `pixi add --pypi pre-commit`
+- activate `pre-commit` for your project: `cd <project folder> && pixi run pre-commit install`
 - finally, clear the content of this section and add the description of your project. You can keep/adjust instructions
 below
 
@@ -22,10 +22,10 @@ to create an issue [in this repo](https://code.ornl.gov/ndip/project-templates/p
 
 ## Installation
 
-```commandline
-pip install poetry
+Start by installing [Pixi](https://pixi.sh/latest/). Once done, run the following:
 
-poetry install
+```commandline
+pixi install
 ```
 
 ## Widget Gallery
@@ -33,18 +33,18 @@ This package includes a widget gallery that shows commonly used Vuetify componen
 
 You can run it via:
 ```commandline
-poetry run app [--server]
+pixi run app [--server]
 ```
 
 ## Formatting
 ```commandline
-poetry run ruff format
+pixi run ruff format
 ```
 
 ## Linting
 ```commandline
-poetry run ruff check
-poetry run mypy .
+pixi run ruff check
+pixi run mypy .
 ```
 
 ## Testing
@@ -52,12 +52,12 @@ You will need a working [Firefox](https://www.mozilla.org/en-US/firefox/) instal
 Otherwise, all [Selenium-based tests](https://www.selenium.dev/) will fail.
 
 ```commandline
-poetry run pytest
+pixi run pytest
 ```
 or, with coverage
 ```commandline
-poetry run coverage run
-poetry run coverage report
+pixi run coverage run
+pixi run coverage report
 ```
 
 ## Updating project from template
@@ -66,7 +66,7 @@ This project was created from a [template](https://code.ornl.gov/ndip/project-te
 can try to update the project to incorporate these changes. Just enter the project folder, make sure `git status`
 shows it clean, and run:
 ```
-poetry run copier update
+copier update
 ```
 See [here](https://copier.readthedocs.io/en/stable/updating/#updating-a-project) for more information.
 

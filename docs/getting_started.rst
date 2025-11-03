@@ -12,12 +12,11 @@ You can install nova-trame directly with
 
     pip install nova-trame
 
-or with `Poetry <https://python-poetry.org/>`_ by placing the following in your :code:`pyproject.toml` (you can version lock with typical `Semantic Versioning <https://semver.org/>`_ syntax):
+or with `Pixi <https://pixi.sh/latest/>`_ with:
 
-.. code-block:: toml
+.. code-block:: bash
 
-    [tool.poetry.dependencies]
-    nova-trame = "*"
+    pixi add --pypi nova-trame
 
 -----------------------
 Creating an Application
@@ -37,11 +36,11 @@ Now you can run your application with the following:
     :end-before: run app complete
     :dedent:
 
-If you installed via Poetry, you can run the above script with:
+If you installed via Pixi, you can run the above script with:
 
 .. code-block:: bash
 
-    poetry run python my_trame_app.py [--server] [--timeout=0]
+    pixi run python my_trame_app.py [--server] [--timeout=0]
 
 After running this, if you point your browser to http://localhost:8080, then you should see a basic web application with our default theme and a button that says "Hello World".
 
