@@ -34,6 +34,7 @@ jobs:
         with:
           file: dockerfiles/Dockerfile
           load: true
+          target: source
       - name: Run ruff check
         run: docker run --rm ${{ steps.build.outputs.imageid }} ruff check
       - name: Run format check
