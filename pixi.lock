@@ -1729,8 +1729,8 @@ packages:
   requires_python: '>=3.10,<4.0'
 - pypi: ./
   name: nova-trame
-  version: 1.3.0.dev0
-  sha256: a86abb9864ced5e793724bee163a29990538bc4b7a3eecf62911a7b95dfe48d4
+  version: 1.3.0.dev1
+  sha256: 9185807acc8cb0a5734c40a0db974f1fb4b848632866e007c1f437d758dd07e3
   requires_python: '>=3.10,<3.14'
   editable: true
 - pypi: https://files.pythonhosted.org/packages/57/7e/b72610cc91edf138bc588df5150957a4937221ca6058b825b4725c27be62/numpy-2.3.4-cp313-cp313-macosx_10_13_x86_64.whl
