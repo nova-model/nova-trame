@@ -107,7 +107,7 @@ class DataSelectorModel:
                     else:
                         can_add = True
 
-                if self.state.search and self.state.search.lower() not in entry.path.lower():
+                if self.state.search and self.state.search.lower() not in entry.name.lower():
                     can_add = False
 
                 if can_add:
