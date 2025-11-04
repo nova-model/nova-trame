@@ -121,11 +121,19 @@ class ONCatDataSelectorModel(NeutronDataSelectorModel):
             experiment=self.state.experiment,
             projection=projection,
         ):
+            can_add = False
             path = datafile_data.location
             if self.state.extensions:
                 for extension in self.state.extensions:
                     if path.lower().endswith(extension):
-                        datafiles.append(self.create_datafile_obj(datafile_data, projection))
+                        can_add = True
             else:
+                can_add = True
+
+            if self.state.search and self.state.search.lower() not in os.path.basename(path).lower():
+                can_add = False
+
+            if can_add:
                 datafiles.append(self.create_datafile_obj(datafile_data, projection))
+
         return natsorted(datafiles, key=lambda d: d["path"])

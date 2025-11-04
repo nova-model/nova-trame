@@ -185,7 +185,7 @@ class DataSelector(datagrid.VGrid):
                             "}]",
                         )
 
-                    with HBoxLayout(classes="position-absolute", style="right: 0; z-index: 100;"):
+                    with HBoxLayout(classes="position-absolute", style="right: 1em; z-index: 100;"):
                         with vuetify.VBtn(icon=True, variant="text"):
                             vuetify.VIcon("mdi-magnify", size=16)
                             vuetify.VTooltip("Search", activator="parent")
