@@ -108,7 +108,7 @@ class ONCatDataSelectorModel(NeutronDataSelectorModel):
 
         return new_obj
 
-    def get_datafiles(self, *args: Any, **kwargs: Any) -> List[Any]:
+    def get_datafiles(self, *args: Any, **kwargs: Any) -> List[Dict[str, str]]:
         if not self.state.facility or not self.state.instrument or not self.state.experiment:
             return []
 

@@ -8,6 +8,7 @@ from trame.widgets import vuetify3 as vuetify
 
 from nova.mvvm._internal.utils import rgetdictvalue
 from nova.mvvm.trame_binding import TrameBinding
+from nova.trame._internal.utils import get_state_name
 from nova.trame.model.ornl.analysis_data_selector import (
     CUSTOM_DIRECTORIES_LABEL,
     AnalysisDataSelectorModel,
@@ -147,25 +148,29 @@ class NeutronDataSelector(DataSelector):
         return key.split(".")[-1].replace("_", " ").title()
 
     def create_ui(self, **kwargs: Any) -> None:
+        if isinstance(self._extensions, tuple):
+            extensions_name = f"{get_state_name(self._extensions[0])}.extensions"
+        else:
+            extensions_name = f"{self._state_name}.extensions"
+
         if self._data_source == "oncat":
             columns = (
-                "["
-                "  {"
+                "[{"
                 "    cellTemplate: (createElement, props) =>"
                 f"     window.grid_manager.get('{self._revogrid_id}').cellTemplate(createElement, props),"
                 "    columnTemplate: (createElement) =>"
-                f"     window.grid_manager.get('{self._revogrid_id}').columnTemplate(createElement),"
+                f"     window.grid_manager.get('{self._revogrid_id}').columnTemplate(createElement, {extensions_name}),"
                 "    name: 'Available Datafiles',"
+                "    sortable: true,"
                 "    prop: 'title',"
-                "    size: 150,"
-                "  },"
+                "},"
             )
             if self._projection:
                 for key in self._projection:
-                    columns += f"{{name: '{self.create_projection_column_title(key)}', prop: '{key}', size: 150}},"
+                    columns += f"{{name: '{self.create_projection_column_title(key)}', prop: '{key}', sortable: true}},"
             columns += "]"
 
-            super().create_ui(columns=(columns,), resize=True, **kwargs)
+            super().create_ui(columns=(columns,), **kwargs)
         else:
             super().create_ui(**kwargs)
 

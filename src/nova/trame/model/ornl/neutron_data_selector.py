@@ -59,5 +59,5 @@ class NeutronDataSelectorModel(DataSelectorModel):
     def get_directories(self, base_path: Optional[Path] = None) -> List[Dict[str, Any]]:
         raise NotImplementedError()
 
-    def get_datafiles(self, *args: Any, **kwargs: Any) -> List[str]:
+    def get_datafiles(self, *args: Any, **kwargs: Any) -> List[Dict[str, str]]:
         raise NotImplementedError()
