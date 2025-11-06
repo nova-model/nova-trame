@@ -114,7 +114,7 @@ class DataSelectorModel:
         except OSError:
             pass
 
-        return datafiles
+        return natsorted(datafiles)
 
     def get_datafiles(self) -> List[Dict[str, str]]:
         base_path = Path(self.state.directory)
