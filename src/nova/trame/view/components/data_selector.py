@@ -138,6 +138,18 @@ class DataSelector(datagrid.VGrid):
         with VBoxLayout(classes="nova-data-selector", stretch=True) as self._layout:
             with HBoxLayout(valign="center"):
                 self._layout.filter = html.Div(classes="flex-1-1")
+                with vuetify.VBtn(icon=True, size="small", variant="text"):
+                    vuetify.VIcon("mdi-magnify", size=16)
+                    vuetify.VTooltip("Search", activator="parent")
+
+                    with vuetify.VMenu(activator="parent", close_on_content_click=False):
+                        with vuetify.VCard(width=200):
+                            with vuetify.VCardText():
+                                InputField(v_model=f"{self._state_name}.search", variant="outlined")
+
+                with vuetify.VBtn(icon=True, size="small", variant="text", click=self.refresh_contents):
+                    vuetify.VIcon("mdi-refresh", size=16)
+                    vuetify.VTooltip("Refresh Contents", activator="parent")
 
             with GridLayout(columns=2, stretch=True):
                 if show_directories:
@@ -184,20 +196,6 @@ class DataSelector(datagrid.VGrid):
                             "    prop: 'modtime',"
                             "}]",
                         )
-
-                    with HBoxLayout(classes="position-absolute", style="right: 1em; z-index: 100;"):
-                        with vuetify.VBtn(icon=True, variant="text"):
-                            vuetify.VIcon("mdi-magnify", size=16)
-                            vuetify.VTooltip("Search", activator="parent")
-
-                            with vuetify.VMenu(activator="parent", close_on_content_click=False):
-                                with vuetify.VCard(width=200):
-                                    with vuetify.VCardText():
-                                        InputField(v_model=f"{self._state_name}.search", variant="outlined")
-
-                        with vuetify.VBtn(icon=True, variant="text", click=self.refresh_contents):
-                            vuetify.VIcon("mdi-refresh", size=16)
-                            vuetify.VTooltip("Refresh Contents", activator="parent")
 
                     super().__init__(
                         v_model=self._v_model,
