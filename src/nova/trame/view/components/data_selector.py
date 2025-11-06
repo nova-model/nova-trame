@@ -190,17 +190,12 @@ class DataSelector(datagrid.VGrid):
                             "    sortable: true,"
                             "    name: 'Available Datafiles',"
                             "    prop: 'title',"
-                            "},{"
-                            "    sortable: true,"
-                            "    name: 'Date Last Modified',"
-                            "    prop: 'modtime',"
                             "}]",
                         )
 
                     super().__init__(
                         v_model=self._v_model,
                         can_focus=False,
-                        col_size=200,
                         columns=columns,
                         frame_size=10,
                         hide_attribution=True,

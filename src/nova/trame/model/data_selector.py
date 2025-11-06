@@ -1,9 +1,8 @@
 """Model implementation for DataSelector."""
 
 import os
-from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional
 
 from natsort import natsorted
 from pydantic import BaseModel, Field
@@ -91,7 +90,7 @@ class DataSelectorModel:
 
         return self.get_directories_from_path(base_path)
 
-    def get_datafiles_from_path(self, base_path: Path) -> List[Tuple[str, str]]:
+    def get_datafiles_from_path(self, base_path: Path) -> List[str]:
         datafiles = []
         try:
             datafile_path = base_path / self.state.subdirectory
@@ -111,7 +110,7 @@ class DataSelectorModel:
                     can_add = False
 
                 if can_add:
-                    datafiles.append((entry.path, datetime.fromtimestamp(entry.stat().st_mtime).isoformat()))
+                    datafiles.append(entry.path)
         except OSError:
             pass
 
@@ -120,7 +119,7 @@ class DataSelectorModel:
     def get_datafiles(self) -> List[Dict[str, str]]:
         base_path = Path(self.state.directory)
 
-        return [{"path": datafile[0], "modtime": datafile[1]} for datafile in self.get_datafiles_from_path(base_path)]
+        return [{"path": datafile} for datafile in self.get_datafiles_from_path(base_path)]
 
     def set_subdirectory(self, subdirectory_path: str) -> None:
         self.state.subdirectory = subdirectory_path

@@ -163,4 +163,4 @@ class AnalysisDataSelectorModel(NeutronDataSelectorModel):
         else:
             return []
 
-        return [{"path": datafile[0], "modtime": datafile[1]} for datafile in self.get_datafiles_from_path(base_path)]
+        return [{"path": datafile} for datafile in self.get_datafiles_from_path(base_path)]
