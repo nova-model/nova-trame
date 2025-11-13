@@ -20,7 +20,7 @@ from nova.trame._internal.utils import set_state_param
 logger = logging.getLogger(__name__)
 
 
-class InputField:
+class InputField(AbstractElement):
     """Factory class for generating Vuetify input components."""
 
     next_id = 0

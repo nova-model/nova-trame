@@ -13,7 +13,7 @@ from .neutron_data_selector import NeutronDataSelectorModel, NeutronDataSelector
 
 CUSTOM_DIRECTORIES_LABEL = "Custom Directory"
 
-INSTRUMENTS = {
+INSTRUMENT_DIRS = {
     "HFIR": {
         "CG-1A": "CG1A",
         "DEV BEAM": "CG1B",
@@ -59,6 +59,52 @@ INSTRUMENTS = {
     },
 }
 
+INSTRUMENT_IDS = {
+    "HFIR": {
+        "CG-1A": "CG-1A",
+        "DEV BEAM": "CG-1B",
+        "MARS": "CG-1D",
+        "GP-SANS": "CG-2",
+        "BIO-SANS": "CG-3",
+        "CNPDB": "CG-4B",
+        "CTAX": "CG-4C",
+        "IMAGINE": "CG-4D",
+        "PTAX": "HB-1",
+        "VERITAS": "HB-1A",
+        "POWDER": "HB-2A",
+        "HIDRA": "HB-2B",
+        "WAND²": "HB-2C",
+        "TAX": "HB-3",
+        "DEMAND": "HB-3A",
+        "NOWG": "NOW-G",
+        "NOWV": "NOW-V",
+    },
+    "SNS": {
+        "ARCS": "BL-18",
+        "BL-0": "BL-0",
+        "BASIS": "BL-2",
+        "CNCS": "BL-5",
+        "CORELLI": "BL-9",
+        "EQ-SANS": "BL-6",
+        "HYSPEC": "BL-14B",
+        "MANDI": "BL-11B",
+        "NOMAD": "BL-1B",
+        "NOWB": "NOW-B",
+        "NOWD": "NOW-D",
+        "NSE": "BL-15",
+        "POWGEN": "BL-11A",
+        "LIQREF": "BL-4B",
+        "MAGREF": "BL-4A",
+        "SEQUOIA": "BL-17",
+        "SNAP": "BL-3",
+        "TOPAZ": "BL-12",
+        "USANS": "BL-1A",
+        "VENUS": "BL-10",
+        "VISION": "BL-16B",
+        "VULCAN": "BL-7",
+    },
+}
+
 
 class AnalysisDataSelectorState(NeutronDataSelectorState):
     """Selection state for identifying datafiles."""
@@ -75,7 +121,7 @@ class AnalysisDataSelectorState(NeutronDataSelectorState):
                 stacklevel=1,
             )
 
-        valid_instruments = self.get_instruments()
+        valid_instruments = [instrument["name"] for instrument in self.get_instruments()]
         if self.instrument and self.facility != CUSTOM_DIRECTORIES_LABEL and self.instrument not in valid_instruments:
             warn(
                 (
@@ -89,13 +135,18 @@ class AnalysisDataSelectorState(NeutronDataSelectorState):
         return self
 
     def get_facilities(self) -> List[str]:
-        facilities = list(INSTRUMENTS.keys())
+        facilities = list(INSTRUMENT_IDS.keys())
         if self.allow_custom_directories:
             facilities.append(CUSTOM_DIRECTORIES_LABEL)
         return facilities
 
-    def get_instruments(self) -> List[str]:
-        return list(INSTRUMENTS.get(self.facility, {}).keys())
+    def get_instruments(self) -> List[Dict[str, str]]:
+        instruments = [
+            {"id": id, "name": name, "title": f"{id}: {name}"}
+            for name, id in INSTRUMENT_IDS.get(self.facility, {}).items()
+        ]
+
+        return natsorted(instruments, key=lambda x: x["name"])
 
 
 class AnalysisDataSelectorModel(NeutronDataSelectorModel):
@@ -125,7 +176,7 @@ class AnalysisDataSelectorModel(NeutronDataSelectorModel):
         return Path("/") / self.state.facility / self.get_instrument_dir() / self.state.experiment
 
     def get_instrument_dir(self) -> str:
-        return INSTRUMENTS.get(self.state.facility, {}).get(self.state.instrument, "")
+        return INSTRUMENT_DIRS.get(self.state.facility, {}).get(self.state.instrument, "")
 
     def get_experiments(self) -> List[str]:
         experiments = []
@@ -154,7 +205,7 @@ class AnalysisDataSelectorModel(NeutronDataSelectorModel):
 
         return self.get_directories_from_path(base_path)
 
-    def get_datafiles(self, *args: Any, **kwargs: Any) -> List[Any]:
+    def get_datafiles(self, *args: Any, **kwargs: Any) -> List[Dict[str, str]]:
         using_custom_directory = self.state.facility == CUSTOM_DIRECTORIES_LABEL
         if self.state.experiment:
             base_path = Path("/") / self.state.facility / self.get_instrument_dir() / self.state.experiment
@@ -163,4 +214,4 @@ class AnalysisDataSelectorModel(NeutronDataSelectorModel):
         else:
             return []
 
-        return [{"path": path} for path in self.get_datafiles_from_path(base_path)]
+        return [{"path": datafile} for datafile in self.get_datafiles_from_path(base_path)]
