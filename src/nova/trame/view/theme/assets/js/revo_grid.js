@@ -109,7 +109,7 @@ class RevoGrid {
         return createElement('label', { 'title': props.model[props.prop] }, inputVNode, spanNode)
     }
 
-    columnTemplate(createElement) {
+    columnTemplate(createElement, extensions) {
         const trameState = window.trame.state.state
         const availableData = _.get(trameState, this.dataKey)
 
@@ -127,11 +127,17 @@ class RevoGrid {
                 window.trame.state.dirty(this.stateKey)
             },
         })
-        const header = createElement('div', {'class': 'd-flex'}, inputVNode, 'Available Datafiles')
+
+        let extensions_text = ''
+        if (extensions.length > 0) {
+            extensions_text = ` (${extensions.join(',')})`
+        }
+
+        const header = createElement('div', {'class': 'd-flex'}, inputVNode, `Available Datafiles${extensions_text}`)
 
         let controls = null
         if (availableData.length < 1) {
-            controls = createElement('p', {}, 'No files found. Select a directory with files on the left.')
+            controls = createElement('p', {}, 'No files to display.')
         }
 
         return createElement('div', {'class': 'd-flex flex-column'}, header, controls)

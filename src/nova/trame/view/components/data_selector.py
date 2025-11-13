@@ -138,16 +138,23 @@ class DataSelector(datagrid.VGrid):
         with VBoxLayout(classes="nova-data-selector", stretch=True) as self._layout:
             with HBoxLayout(valign="center"):
                 self._layout.filter = html.Div(classes="flex-1-1")
-                with vuetify.VBtn(
-                    classes="mx-1", density="compact", icon=True, variant="text", click=self.refresh_contents
-                ):
-                    vuetify.VIcon("mdi-refresh")
+                with vuetify.VBtn(icon=True, size="small", variant="text"):
+                    vuetify.VIcon("mdi-magnify", size=16)
+                    vuetify.VTooltip("Search", activator="parent")
+
+                    with vuetify.VMenu(activator="parent", close_on_content_click=False):
+                        with vuetify.VCard(width=200):
+                            with vuetify.VCardText():
+                                InputField(v_model=f"{self._state_name}.search", variant="outlined")
+
+                with vuetify.VBtn(icon=True, size="small", variant="text", click=self.refresh_contents):
+                    vuetify.VIcon("mdi-refresh", size=16)
                     vuetify.VTooltip("Refresh Contents", activator="parent")
 
             with GridLayout(columns=2, stretch=True):
                 if show_directories:
                     with VBoxLayout(stretch=True):
-                        vuetify.VListSubheader("Available Directories", classes="flex-0-1 justify-center px-0")
+                        vuetify.VListSubheader("Available Directories", classes="flex-0-1 justify-start pl-4")
                         vuetify.VTreeview(
                             v_if=(f"{self._directories_name}.length > 0",),
                             activatable=True,
@@ -159,70 +166,15 @@ class DataSelector(datagrid.VGrid):
                             click_open=(self._vm.expand_directory, "[$event.path]"),
                             update_activated=(self.set_subdirectory, "$event"),
                         )
-                        vuetify.VListItem("No directories found", classes="flex-0-1 text-center", v_else=True)
+                        vuetify.VListItem("No directories found", classes="flex-0-1 pl-4 text-left", v_else=True)
 
-                with VBoxLayout(column_span=1 if show_directories else 2, stretch=True):
-                    with VBoxLayout(classes="mx-2", gap="0.5em"):
-                        with HBoxLayout(gap="0.25em", valign="center"):
-                            if isinstance(self._extensions, tuple):
-                                extensions_name = f"{get_state_name(self._extensions[0])}.extensions"
-                            else:
-                                extensions_name = f"{self._state_name}.extensions"
-
-                            InputField(v_model=f"{self._state_name}.search")
-                            with vuetify.VBtn(classes="icon-btn", icon=True, click=self._vm.toggle_alpha_sort):
-                                vuetify.VTooltip(
-                                    "Sorting A->Z",
-                                    activator="parent",
-                                    v_if=f"{self._state_name}.sort_alpha === true",
-                                )
-                                vuetify.VTooltip(
-                                    "Sorting Z->A",
-                                    activator="parent",
-                                    v_else_if=f"{self._state_name}.sort_alpha === false",
-                                )
-                                vuetify.VTooltip("Click to sort alphanumerically", activator="parent", v_else=True)
-
-                                vuetify.VIcon(
-                                    "mdi-sort-alphabetical-ascending",
-                                    size=16,
-                                    v_if=f"{self._state_name}.sort_alpha === true",
-                                )
-                                vuetify.VIcon(
-                                    "mdi-sort-alphabetical-descending",
-                                    size=16,
-                                    v_else_if=f"{self._state_name}.sort_alpha === false",
-                                )
-                                vuetify.VIcon("mdi-order-alphabetical-ascending", size=16, v_else=True)
-                            with vuetify.VBtn(classes="icon-btn", icon=True, click=self._vm.toggle_time_sort):
-                                vuetify.VTooltip(
-                                    "Newest modification times first",
-                                    activator="parent",
-                                    v_if=f"{self._state_name}.sort_time === true",
-                                )
-                                vuetify.VTooltip(
-                                    "Oldest modification times first",
-                                    activator="parent",
-                                    v_else_if=f"{self._state_name}.sort_time === false",
-                                )
-                                vuetify.VTooltip("Click to sort by modification times", activator="parent", v_else=True)
-
-                                vuetify.VIcon(
-                                    "mdi-sort-clock-ascending",
-                                    size=16,
-                                    v_if=f"{self._state_name}.sort_time === true",
-                                )
-                                vuetify.VIcon(
-                                    "mdi-sort-clock-descending",
-                                    size=16,
-                                    v_else_if=f"{self._state_name}.sort_time === false",
-                                )
-                                vuetify.VIcon("mdi-clock", size=16, v_else=True)
-
-                        html.P(
-                            f"Showing {{{{ {extensions_name}.join(',') }}}} files",
-                            v_if=f"{extensions_name}.length > 0",
-                        )
+                with VBoxLayout(
+                    classes="position-relative", column_span=1 if show_directories else 2, gap="0.5em", stretch=True
+                ):
+                    if isinstance(self._extensions, tuple):
+                        extensions_name = f"{get_state_name(self._extensions[0])}.extensions"
+                    else:
+                        extensions_name = f"{self._state_name}.extensions"
 
                     if "columns" in kwargs:
                         columns = kwargs.pop("columns")
@@ -232,7 +184,10 @@ class DataSelector(datagrid.VGrid):
                             "    cellTemplate: (createElement, props) =>"
                             f"       window.grid_manager.get('{self._revogrid_id}').cellTemplate(createElement, props),"
                             "    columnTemplate: (createElement) =>"
-                            f"       window.grid_manager.get('{self._revogrid_id}').columnTemplate(createElement),"
+                            "        window.grid_manager.get("
+                            f"           '{self._revogrid_id}'"
+                            f"       ).columnTemplate(createElement, {extensions_name}),"
+                            "    sortable: true,"
                             "    name: 'Available Datafiles',"
                             "    prop: 'title',"
                             "}]",
@@ -246,6 +201,7 @@ class DataSelector(datagrid.VGrid):
                         hide_attribution=True,
                         id=self._revogrid_id,
                         readonly=True,
+                        resize=True,
                         stretch=True,
                         source=(self._datafiles_name,),
                         theme="compact",

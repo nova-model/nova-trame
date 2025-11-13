@@ -59,18 +59,22 @@ class ONCatDataSelectorModel(NeutronDataSelectorModel):
             facilities.append(facility_data.name)
         return natsorted(facilities)
 
-    def get_instruments(self) -> List[str]:
+    def get_instruments(self) -> List[Dict[str, str]]:
         if not self.state.facility:
             return []
 
         self.state.instrument_mapping = {}
         instruments = []
         for instrument_data in self.oncat_client.Instrument.list(
-            facility=self.state.facility, projection=["short_name"]
+            facility=self.state.facility, projection=["long_id", "short_name"]
         ):
             self.state.instrument_mapping[instrument_data.short_name] = instrument_data.id
-            instruments.append(instrument_data.short_name)
-        return natsorted(instruments)
+
+            id = instrument_data.long_id
+            name = instrument_data.short_name
+            instruments.append({"id": id, "name": name, "title": f"{id}: {name}"})
+
+        return natsorted(instruments, key=lambda x: x["name"])
 
     def get_experiments(self) -> List[str]:
         if not self.state.facility or not self.state.instrument:
@@ -108,7 +112,7 @@ class ONCatDataSelectorModel(NeutronDataSelectorModel):
 
         return new_obj
 
-    def get_datafiles(self, *args: Any, **kwargs: Any) -> List[Any]:
+    def get_datafiles(self, *args: Any, **kwargs: Any) -> List[Dict[str, str]]:
         if not self.state.facility or not self.state.instrument or not self.state.experiment:
             return []
 
@@ -121,11 +125,19 @@ class ONCatDataSelectorModel(NeutronDataSelectorModel):
             experiment=self.state.experiment,
             projection=projection,
         ):
+            can_add = False
             path = datafile_data.location
             if self.state.extensions:
                 for extension in self.state.extensions:
                     if path.lower().endswith(extension):
-                        datafiles.append(self.create_datafile_obj(datafile_data, projection))
+                        can_add = True
             else:
+                can_add = True
+
+            if self.state.search and self.state.search.lower() not in os.path.basename(path).lower():
+                can_add = False
+
+            if can_add:
                 datafiles.append(self.create_datafile_obj(datafile_data, projection))
+
         return natsorted(datafiles, key=lambda d: d["path"])

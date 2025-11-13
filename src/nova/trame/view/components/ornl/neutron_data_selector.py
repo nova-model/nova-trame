@@ -8,6 +8,7 @@ from trame.widgets import vuetify3 as vuetify
 
 from nova.mvvm._internal.utils import rgetdictvalue
 from nova.mvvm.trame_binding import TrameBinding
+from nova.trame._internal.utils import get_state_name
 from nova.trame.model.ornl.analysis_data_selector import (
     CUSTOM_DIRECTORIES_LABEL,
     AnalysisDataSelectorModel,
@@ -36,6 +37,7 @@ class NeutronDataSelector(DataSelector):
         facility: Union[str, Tuple] = "",
         instrument: Union[str, Tuple] = "",
         experiment: Union[str, Tuple] = "",
+        show_experiment_filters: Union[bool, Tuple] = True,
         extensions: Union[List[str], Tuple, None] = None,
         projection: Union[List[str], Tuple, None] = None,
         subdirectory: Union[str, Tuple] = "",
@@ -66,6 +68,9 @@ class NeutronDataSelector(DataSelector):
             The instrument to restrict data selection to. Please use the instrument acronym (e.g. CG-2).
         experiment : Union[str, Tuple], optional
             The experiment to restrict data selection to.
+        show_experiment_filters : Union[bool, Tuple], optional
+            If false, then the facility, instrument, and experiment selection widgets will be hidden from the user. This
+            is only intended to be used when all of these parameters are fixed or controlled by external widgets.
         extensions : Union[List[str], Tuple], optional
             A list of file extensions to restrict selection to. If unset, then all files will be shown.
         projection : Union[List[str], Tuple], optional
@@ -105,6 +110,15 @@ class NeutronDataSelector(DataSelector):
         self._data_source = data_source
         self._projection = projection
 
+        # This is passed to a v_if, which requires a Trame binding to function.
+        if isinstance(show_experiment_filters, bool):
+            if show_experiment_filters:
+                self._show_experiment_filters = ("true",)
+            else:
+                self._show_experiment_filters = ("false",)
+        else:
+            self._show_experiment_filters = show_experiment_filters
+
         self._state_name = f"nova__dataselector_{self._next_id}_state"
         self._facilities_name = f"nova__neutrondataselector_{self._next_id}_facilities"
         self._selected_facility_name = (
@@ -134,30 +148,34 @@ class NeutronDataSelector(DataSelector):
         return key.split(".")[-1].replace("_", " ").title()
 
     def create_ui(self, **kwargs: Any) -> None:
+        if isinstance(self._extensions, tuple):
+            extensions_name = f"{get_state_name(self._extensions[0])}.extensions"
+        else:
+            extensions_name = f"{self._state_name}.extensions"
+
         if self._data_source == "oncat":
             columns = (
-                "["
-                "  {"
+                "[{"
                 "    cellTemplate: (createElement, props) =>"
                 f"     window.grid_manager.get('{self._revogrid_id}').cellTemplate(createElement, props),"
                 "    columnTemplate: (createElement) =>"
-                f"     window.grid_manager.get('{self._revogrid_id}').columnTemplate(createElement),"
+                f"     window.grid_manager.get('{self._revogrid_id}').columnTemplate(createElement, {extensions_name}),"
                 "    name: 'Available Datafiles',"
+                "    sortable: true,"
                 "    prop: 'title',"
-                "    size: 150,"
-                "  },"
+                "},"
             )
             if self._projection:
                 for key in self._projection:
-                    columns += f"{{name: '{self.create_projection_column_title(key)}', prop: '{key}', size: 150}},"
+                    columns += f"{{name: '{self.create_projection_column_title(key)}', prop: '{key}', sortable: true}},"
             columns += "]"
 
-            super().create_ui(columns=(columns,), resize=True, **kwargs)
+            super().create_ui(columns=(columns,), **kwargs)
         else:
             super().create_ui(**kwargs)
 
         with self._layout.filter:
-            with GridLayout(columns=3):
+            with GridLayout(v_if=self._show_experiment_filters, columns=3):
                 column_span = 3
                 if isinstance(self._facility, tuple) or not self._facility:
                     column_span -= 1
@@ -169,18 +187,30 @@ class NeutronDataSelector(DataSelector):
                     )
                 if isinstance(self._instrument, tuple) or not self._instrument:
                     column_span -= 1
-                    InputField(
+                    with InputField(
                         v_if=f"{self._selected_facility_name} !== '{CUSTOM_DIRECTORIES_LABEL}'",
                         v_model=self._selected_instrument_name,
+                        chips=True,
                         items=(self._instruments_name,),
+                        item_value="name",
                         type="autocomplete",
                         update_modelValue=(self.update_instrument, "[$event]"),
-                    )
+                    ):
+                        with vuetify.Template(v_slot_chip="data"):
+                            vuetify.VChip("{{ data.item.raw.id }}", v_if="data.item.raw", classes="mr-1")
+                            vuetify.VListItemTitle("{{ data.item.raw.name }}")
+                        with vuetify.Template(v_slot_item="data"):
+                            with vuetify.VListItem(v_bind="data.props"):
+                                with vuetify.Template(v_slot_prepend=True):
+                                    vuetify.VChip("{{ data.item.raw.id }}", classes="mr-1")
+                                with vuetify.Template(v_slot_title=True):
+                                    vuetify.VListItemTitle("{{ data.item.raw.name }}")
                 InputField(
                     v_if=f"{self._selected_facility_name} !== '{CUSTOM_DIRECTORIES_LABEL}'",
                     v_model=self._selected_experiment_name,
                     column_span=column_span,
                     items=(self._experiments_name,),
+                    item_value="title",
                     type="autocomplete",
                     update_modelValue=(self.update_experiment, "[$event]"),
                 )
