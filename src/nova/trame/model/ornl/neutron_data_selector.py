@@ -26,7 +26,7 @@ class NeutronDataSelectorState(DataSelectorState):
     def get_facilities(self) -> List[str]:
         raise NotImplementedError()
 
-    def get_instruments(self) -> List[str]:
+    def get_instruments(self) -> List[Dict[str, str]]:
         raise NotImplementedError()
 
 
@@ -50,7 +50,7 @@ class NeutronDataSelectorModel(DataSelectorModel):
     def get_facilities(self) -> List[str]:
         return natsorted(self.state.get_facilities())
 
-    def get_instruments(self) -> List[str]:
+    def get_instruments(self) -> List[Dict[str, str]]:
         return natsorted(self.state.get_instruments())
 
     def get_experiments(self) -> List[str]:

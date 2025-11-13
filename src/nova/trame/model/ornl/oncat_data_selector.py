@@ -59,18 +59,22 @@ class ONCatDataSelectorModel(NeutronDataSelectorModel):
             facilities.append(facility_data.name)
         return natsorted(facilities)
 
-    def get_instruments(self) -> List[str]:
+    def get_instruments(self) -> List[Dict[str, str]]:
         if not self.state.facility:
             return []
 
         self.state.instrument_mapping = {}
         instruments = []
         for instrument_data in self.oncat_client.Instrument.list(
-            facility=self.state.facility, projection=["short_name"]
+            facility=self.state.facility, projection=["long_id", "short_name"]
         ):
             self.state.instrument_mapping[instrument_data.short_name] = instrument_data.id
-            instruments.append(instrument_data.short_name)
-        return natsorted(instruments)
+
+            id = instrument_data.long_id
+            name = instrument_data.short_name
+            instruments.append({"id": id, "name": name, "title": f"{id}: {name}"})
+
+        return natsorted(instruments, key=lambda x: x["name"])
 
     def get_experiments(self) -> List[str]:
         if not self.state.facility or not self.state.instrument:

@@ -187,18 +187,30 @@ class NeutronDataSelector(DataSelector):
                     )
                 if isinstance(self._instrument, tuple) or not self._instrument:
                     column_span -= 1
-                    InputField(
+                    with InputField(
                         v_if=f"{self._selected_facility_name} !== '{CUSTOM_DIRECTORIES_LABEL}'",
                         v_model=self._selected_instrument_name,
+                        chips=True,
                         items=(self._instruments_name,),
+                        item_value="name",
                         type="autocomplete",
                         update_modelValue=(self.update_instrument, "[$event]"),
-                    )
+                    ):
+                        with vuetify.Template(v_slot_chip="data"):
+                            vuetify.VChip("{{ data.item.raw.id }}", v_if="data.item.raw", classes="mr-1")
+                            vuetify.VListItemTitle("{{ data.item.raw.name }}")
+                        with vuetify.Template(v_slot_item="data"):
+                            with vuetify.VListItem(v_bind="data.props"):
+                                with vuetify.Template(v_slot_prepend=True):
+                                    vuetify.VChip("{{ data.item.raw.id }}", classes="mr-1")
+                                with vuetify.Template(v_slot_title=True):
+                                    vuetify.VListItemTitle("{{ data.item.raw.name }}")
                 InputField(
                     v_if=f"{self._selected_facility_name} !== '{CUSTOM_DIRECTORIES_LABEL}'",
                     v_model=self._selected_experiment_name,
                     column_span=column_span,
                     items=(self._experiments_name,),
+                    item_value="title",
                     type="autocomplete",
                     update_modelValue=(self.update_experiment, "[$event]"),
                 )
