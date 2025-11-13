@@ -57,5 +57,6 @@ jobs:
         with:
           file: dockerfiles/Dockerfile
           load: true
+          target: package
       - name: Publish
-        run: docker run --rm ${{ steps.build.outputs.imageid }} poetry publish -u __token__ -p ${PYPI_API_TOKEN}
+        run: docker run --rm ${{ steps.build.outputs.imageid }} sh -c "hatch build && hatch publish -u __token__ -a ${PYPI_API_TOKEN}"
