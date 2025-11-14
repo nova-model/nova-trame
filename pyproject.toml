@@ -12,6 +12,26 @@ readme = "README.md"
 license = "MIT"
 keywords = ["NDIP", "Python", "Trame", "Vuetify"]
 requires-python = ">=3.10,<3.14"
+dependencies = [
+    "altair",
+    "libsass",
+    "mergedeep",
+    "mpld3>=0.5.11,<0.6",
+    "tomli",
+    "tornado>=6.5.0",
+    "trame",
+    "trame-datagrid",
+    "trame-matplotlib",
+    "trame-plotly",
+    "trame-vega",
+    "trame-vuetify",
+    "nova-mvvm",
+    "pydantic",
+    "nova-common>=0.2.2",
+    "blinker>=1.9.0,<2",
+    "natsort>=8.4.0,<9",
+    "pyoncat>=2.1,<3"
+]
 
 [project.urls]
 Changelog = "https://code.ornl.gov/ndip/public-packages/nova-trame/blob/main/CHANGELOG.md"
@@ -29,24 +49,6 @@ production = {features = [], solve-group = "default"}
 [tool.pixi.pypi-dependencies]
 nova-trame = { path = ".", editable = true }
 hatch = "*"
-altair = "*"
-libsass = "*"
-mergedeep = "*"
-mpld3 = ">=0.5.11,<0.6"
-tomli = "*"
-tornado = ">=6.5.0"
-trame = "*"
-trame-datagrid = "*"
-trame-matplotlib = "*"
-trame-plotly = "*"
-trame-vega = "*"
-trame-vuetify = "*"
-nova-mvvm = "*"
-pydantic = "*"
-nova-common = ">=0.2.2"
-blinker = ">=1.9.0,<2"
-natsort = ">=8.4.0,<9"
-pyoncat = ">=2.1,<3"
 
 [tool.pixi.feature.dev.pypi-dependencies]
 mypy = ">=1.10.0,<2"
