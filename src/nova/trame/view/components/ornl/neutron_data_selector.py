@@ -38,6 +38,7 @@ class NeutronDataSelector(DataSelector):
         instrument: Union[str, Tuple] = "",
         experiment: Union[str, Tuple] = "",
         show_experiment_filters: Union[bool, Tuple] = True,
+        show_selected_files: Union[bool, Tuple] = True,
         extensions: Union[List[str], Tuple, None] = None,
         projection: Union[List[str], Tuple, None] = None,
         subdirectory: Union[str, Tuple] = "",
@@ -71,6 +72,9 @@ class NeutronDataSelector(DataSelector):
         show_experiment_filters : Union[bool, Tuple], optional
             If false, then the facility, instrument, and experiment selection widgets will be hidden from the user. This
             is only intended to be used when all of these parameters are fixed or controlled by external widgets.
+        show_selected_files : Union[bool, Tuple], optional
+            If true, then the currently selected files will be shown to the user below the directory and file selection
+            widgets.
         extensions : Union[List[str], Tuple], optional
             A list of file extensions to restrict selection to. If unset, then all files will be shown.
         projection : Union[List[str], Tuple], optional
@@ -141,6 +145,7 @@ class NeutronDataSelector(DataSelector):
             subdirectory=subdirectory if data_source == "filesystem" else "oncat",
             refresh_rate=refresh_rate,
             select_strategy=select_strategy,
+            show_selected_files=show_selected_files,
             **kwargs,
         )
 
