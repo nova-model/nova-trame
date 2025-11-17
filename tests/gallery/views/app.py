@@ -311,6 +311,7 @@ class ComponentTab:
                     instrument=("nds_params.instrument", "TOPAZ"),
                     experiment=("nds_params.experiment", "IPTS-12132"),
                     show_experiment_filters=False,
+                    show_selected_files=False,
                     allow_custom_directories=("nds_params.allow_custom_directories", True),
                     chips=True,
                 )

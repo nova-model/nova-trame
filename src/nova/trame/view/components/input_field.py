@@ -139,6 +139,9 @@ class InputField(AbstractElement):
     ) -> AbstractElement:
         """Constructor for InputField.
 
+        For all parameters, tuples have a special syntax. See :ref:`TrameTuple <api_trame_tuple>` for a description of
+        it.
+
         Parameters
         ----------
         v_model : Union[str, Tuple], optional

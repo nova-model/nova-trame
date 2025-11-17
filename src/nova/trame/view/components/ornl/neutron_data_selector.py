@@ -16,6 +16,7 @@ from nova.trame.model.ornl.analysis_data_selector import (
 )
 from nova.trame.model.ornl.neutron_data_selector import NeutronDataSelectorModel
 from nova.trame.model.ornl.oncat_data_selector import ONCatDataSelectorModel, ONCatDataSelectorState
+from nova.trame.utils.types import TrameTuple
 from nova.trame.view.layouts import GridLayout
 from nova.trame.view_model.ornl.neutron_data_selector import NeutronDataSelectorViewModel
 
@@ -47,6 +48,9 @@ class NeutronDataSelector(DataSelector):
         **kwargs: Any,
     ) -> None:
         """Constructor for DataSelector.
+
+        For all parameters, tuples have a special syntax. See :ref:`TrameTuple <api_trame_tuple>` for a description of
+        it.
 
         Parameters
         ----------
@@ -114,14 +118,7 @@ class NeutronDataSelector(DataSelector):
         self._data_source = data_source
         self._projection = projection
 
-        # This is passed to a v_if, which requires a Trame binding to function.
-        if isinstance(show_experiment_filters, bool):
-            if show_experiment_filters:
-                self._show_experiment_filters = ("true",)
-            else:
-                self._show_experiment_filters = ("false",)
-        else:
-            self._show_experiment_filters = show_experiment_filters
+        self._show_experiment_filters = TrameTuple.create(show_experiment_filters)
 
         self._state_name = f"nova__dataselector_{self._next_id}_state"
         self._facilities_name = f"nova__neutrondataselector_{self._next_id}_facilities"

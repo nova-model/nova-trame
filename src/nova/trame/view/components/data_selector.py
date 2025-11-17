@@ -13,6 +13,7 @@ from nova.mvvm._internal.utils import rgetdictvalue
 from nova.mvvm.trame_binding import TrameBinding
 from nova.trame._internal.utils import get_state_name, get_state_param, set_state_param
 from nova.trame.model.data_selector import DataSelectorModel, DataSelectorState
+from nova.trame.utils.types import TrameTuple
 from nova.trame.view.layouts import GridLayout, HBoxLayout, VBoxLayout
 from nova.trame.view_model.data_selector import DataSelectorViewModel
 
@@ -38,6 +39,9 @@ class DataSelector(datagrid.VGrid):
         **kwargs: Any,
     ) -> None:
         """Constructor for DataSelector.
+
+        For all parameters, tuples have a special syntax. See :ref:`TrameTuple <api_trame_tuple>` for a description of
+        it.
 
         Parameters
         ----------
@@ -112,13 +116,7 @@ class DataSelector(datagrid.VGrid):
         self._last_subdirectory = get_state_param(self.state, self._subdirectory)
         self._refresh_rate = refresh_rate
         self._select_strategy = select_strategy
-        if show_selected_files is True:
-            self._show_selected_files = "true"
-        elif show_selected_files is False:
-            self._show_selected_files = "false"
-        else:
-            assert isinstance(show_selected_files, tuple)
-            self._show_selected_files = show_selected_files[0]
+        self._show_selected_files = TrameTuple.create(show_selected_files)
 
         self._revogrid_id = f"nova__dataselector_{self._next_id}_rv"
         self._state_name = f"nova__dataselector_{self._next_id}_state"
