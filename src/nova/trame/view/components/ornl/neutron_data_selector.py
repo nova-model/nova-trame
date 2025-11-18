@@ -185,6 +185,7 @@ class NeutronDataSelector(DataSelector):
                         v_model=self._selected_facility_name,
                         items=(self._facilities_name,),
                         type="autocomplete",
+                        variant="outlined",
                         update_modelValue=(self.update_facility, "[$event]"),
                     )
                 if isinstance(self._instrument, tuple) or not self._instrument:
@@ -196,6 +197,7 @@ class NeutronDataSelector(DataSelector):
                         items=(self._instruments_name,),
                         item_value="name",
                         type="autocomplete",
+                        variant="outlined",
                         update_modelValue=(self.update_instrument, "[$event]"),
                     ):
                         with vuetify.Template(v_slot_chip="data"):
@@ -214,9 +216,12 @@ class NeutronDataSelector(DataSelector):
                     items=(self._experiments_name,),
                     item_value="title",
                     type="autocomplete",
+                    variant="outlined",
                     update_modelValue=(self.update_experiment, "[$event]"),
                 )
-                InputField(v_else=True, v_model=f"{self._state_name}.custom_directory", column_span=2)
+                InputField(
+                    v_else=True, v_model=f"{self._state_name}.custom_directory", column_span=2, variant="outlined"
+                )
 
     def _create_model(self) -> None:
         self._model: NeutronDataSelectorModel

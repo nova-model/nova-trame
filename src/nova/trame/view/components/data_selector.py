@@ -240,6 +240,7 @@ class DataSelector(datagrid.VGrid):
                 classes="flex-0-1 nova-readonly",
                 readonly=True,
                 type="select",
+                variant="outlined",
             ):
                 with vuetify.Template(raw_attrs=['v-slot:selection="{ item, index }"']):
                     vuetify.VChip("{{ item.title.split('/').reverse()[0] }}", v_if="index < 2")
