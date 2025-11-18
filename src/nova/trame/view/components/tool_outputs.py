@@ -39,26 +39,24 @@ class ToolOutputWindows:
         self.view_model = ToolOutputsViewModel(id, binding)
 
     def create_ui(self) -> None:
-        with HBoxLayout(classes="d-flex", width="100%"):
+        with HBoxLayout(stretch=True):
             with vuetify.VTabs(v_model=(f"{self.id}_active_output_tab", "1"), direction="vertical"):
                 vuetify.VTab("Console output", value=1)
                 vuetify.VTab("Console error", value=2)
-            with HBoxLayout(classes="flex-grow-1"):
+            with HBoxLayout(stretch=True):
                 InputField(
                     v_show=f"{self.id}_active_output_tab === '1'",
                     v_model=f"{self.id}.stdout",
                     id=f"{self.id}_outputs",
                     type="autoscroll",
-                    auto_grow=True,
+                    no_resize=True,
                     readonly=True,
-                    max_rows="30",
                 )
                 InputField(
                     v_show=f"{self.id}_active_output_tab === '2'",
                     v_model=f"{self.id}.stderr",
                     id=f"{self.id}_errors",
                     type="autoscroll",
-                    auto_grow=True,
+                    no_resize=True,
                     readonly=True,
-                    max_rows="30",
                 )

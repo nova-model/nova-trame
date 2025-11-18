@@ -291,7 +291,7 @@ class InputField(AbstractElement):
         if input.v_model:
             if "id" not in input._py_attr or input.id is None:
                 input.id = f"nova__{input._id}"
-                input.scroll = f"window.nova__autoscroll('{input.id}');"
+            input.scroll = f"window.nova__autoscroll('{input.id}');"
 
             with state:
                 if state["nova_scroll_position"] is None:
