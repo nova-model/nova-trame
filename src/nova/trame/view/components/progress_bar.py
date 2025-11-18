@@ -39,7 +39,7 @@ class ProgressBar:
         self.view_model = ProgressBarViewModel(id, binding)
 
     def create_ui(self) -> None:
-        with VBoxLayout(v_if=f"{self.id}.show_progress || {self.id}.show_ok || {self.id}.show_failed", height=25):
+        with VBoxLayout(v_show=f"{self.id}.show_progress || {self.id}.show_ok || {self.id}.show_failed", height=25):
             with vuetify.VProgressLinear(
                 height="25",
                 model_value=(f"{self.id}.progress", "0"),
