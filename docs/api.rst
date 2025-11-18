@@ -2,6 +2,16 @@
 nova-trame API
 ================
 
+--------------
+Typing Classes
+--------------
+
+.. _api_types:
+
+.. _api_trame_tuple:
+.. autoclass:: nova.trame.utils.types.TrameTuple
+    :members:
+
 ---------------
 Theme Component
 ---------------

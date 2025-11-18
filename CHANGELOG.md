@@ -1,3 +1,7 @@
+### nova-trame, 1.2.1
+
+* Fixes a vertical alignment issue with NeutronDataSelector when the component is placed in a relatively low-width container (thanks to John Duggan).
+
 ### nova-trame, 1.2.0
 
 * Adds a show_experiment_filters parameter to NeutronDataSelector to allow hiding the facility/instrument/experiment selection widgets (thanks to John Duggan).

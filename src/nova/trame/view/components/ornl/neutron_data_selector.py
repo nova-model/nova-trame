@@ -16,6 +16,7 @@ from nova.trame.model.ornl.analysis_data_selector import (
 )
 from nova.trame.model.ornl.neutron_data_selector import NeutronDataSelectorModel
 from nova.trame.model.ornl.oncat_data_selector import ONCatDataSelectorModel, ONCatDataSelectorState
+from nova.trame.utils.types import TrameTuple
 from nova.trame.view.layouts import GridLayout
 from nova.trame.view_model.ornl.neutron_data_selector import NeutronDataSelectorViewModel
 
@@ -38,6 +39,7 @@ class NeutronDataSelector(DataSelector):
         instrument: Union[str, Tuple] = "",
         experiment: Union[str, Tuple] = "",
         show_experiment_filters: Union[bool, Tuple] = True,
+        show_selected_files: Union[bool, Tuple] = True,
         extensions: Union[List[str], Tuple, None] = None,
         projection: Union[List[str], Tuple, None] = None,
         subdirectory: Union[str, Tuple] = "",
@@ -46,6 +48,9 @@ class NeutronDataSelector(DataSelector):
         **kwargs: Any,
     ) -> None:
         """Constructor for DataSelector.
+
+        For all parameters, tuples have a special syntax. See :ref:`TrameTuple <api_trame_tuple>` for a description of
+        it.
 
         Parameters
         ----------
@@ -71,6 +76,9 @@ class NeutronDataSelector(DataSelector):
         show_experiment_filters : Union[bool, Tuple], optional
             If false, then the facility, instrument, and experiment selection widgets will be hidden from the user. This
             is only intended to be used when all of these parameters are fixed or controlled by external widgets.
+        show_selected_files : Union[bool, Tuple], optional
+            If true, then the currently selected files will be shown to the user below the directory and file selection
+            widgets.
         extensions : Union[List[str], Tuple], optional
             A list of file extensions to restrict selection to. If unset, then all files will be shown.
         projection : Union[List[str], Tuple], optional
@@ -110,14 +118,7 @@ class NeutronDataSelector(DataSelector):
         self._data_source = data_source
         self._projection = projection
 
-        # This is passed to a v_if, which requires a Trame binding to function.
-        if isinstance(show_experiment_filters, bool):
-            if show_experiment_filters:
-                self._show_experiment_filters = ("true",)
-            else:
-                self._show_experiment_filters = ("false",)
-        else:
-            self._show_experiment_filters = show_experiment_filters
+        self._show_experiment_filters = TrameTuple.create(show_experiment_filters)
 
         self._state_name = f"nova__dataselector_{self._next_id}_state"
         self._facilities_name = f"nova__neutrondataselector_{self._next_id}_facilities"
@@ -141,6 +142,7 @@ class NeutronDataSelector(DataSelector):
             subdirectory=subdirectory if data_source == "filesystem" else "oncat",
             refresh_rate=refresh_rate,
             select_strategy=select_strategy,
+            show_selected_files=show_selected_files,
             **kwargs,
         )
 
@@ -183,6 +185,7 @@ class NeutronDataSelector(DataSelector):
                         v_model=self._selected_facility_name,
                         items=(self._facilities_name,),
                         type="autocomplete",
+                        variant="outlined",
                         update_modelValue=(self.update_facility, "[$event]"),
                     )
                 if isinstance(self._instrument, tuple) or not self._instrument:
@@ -194,6 +197,7 @@ class NeutronDataSelector(DataSelector):
                         items=(self._instruments_name,),
                         item_value="name",
                         type="autocomplete",
+                        variant="outlined",
                         update_modelValue=(self.update_instrument, "[$event]"),
                     ):
                         with vuetify.Template(v_slot_chip="data"):
@@ -212,9 +216,12 @@ class NeutronDataSelector(DataSelector):
                     items=(self._experiments_name,),
                     item_value="title",
                     type="autocomplete",
+                    variant="outlined",
                     update_modelValue=(self.update_experiment, "[$event]"),
                 )
-                InputField(v_else=True, v_model=f"{self._state_name}.custom_directory", column_span=2)
+                InputField(
+                    v_else=True, v_model=f"{self._state_name}.custom_directory", column_span=2, variant="outlined"
+                )
 
     def _create_model(self) -> None:
         self._model: NeutronDataSelectorModel

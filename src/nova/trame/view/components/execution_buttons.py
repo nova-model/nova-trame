@@ -20,6 +20,9 @@ class ExecutionButtons:
     def __init__(self, id: str, stop_btn: Union[bool, Tuple] = False, download_btn: Union[bool, Tuple] = False) -> None:
         """Constructor for ExecutionButtons.
 
+        For all parameters, tuples have a special syntax. See :ref:`TrameTuple <api_trame_tuple>` for a description of
+        it.
+
         Parameters
         ----------
         id : str

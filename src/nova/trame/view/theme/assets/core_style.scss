@@ -32,6 +32,12 @@ html {
 }
 
 .nova-data-selector {
+    .v-autocomplete .v-field .v-field__input {
+        input {
+            min-width: 0;
+        }
+    }
+
     .v-list-group {
         --prepend-width: 12px !important;
     }

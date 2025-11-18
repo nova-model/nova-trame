@@ -1,7 +1,7 @@
 """View Implementation for DataSelector."""
 
 from asyncio import ensure_future, sleep
-from typing import Any, List, Tuple, Union, cast
+from typing import Any, List, Tuple, Union
 from warnings import warn
 
 from trame.app import get_server
@@ -13,6 +13,7 @@ from nova.mvvm._internal.utils import rgetdictvalue
 from nova.mvvm.trame_binding import TrameBinding
 from nova.trame._internal.utils import get_state_name, get_state_param, set_state_param
 from nova.trame.model.data_selector import DataSelectorModel, DataSelectorState
+from nova.trame.utils.types import TrameTuple
 from nova.trame.view.layouts import GridLayout, HBoxLayout, VBoxLayout
 from nova.trame.view_model.data_selector import DataSelectorViewModel
 
@@ -34,9 +35,13 @@ class DataSelector(datagrid.VGrid):
         subdirectory: Union[str, Tuple] = "",
         refresh_rate: Union[int, Tuple] = 30,
         select_strategy: Union[str, Tuple] = "all",
+        show_selected_files: Union[bool, Tuple] = True,
         **kwargs: Any,
     ) -> None:
         """Constructor for DataSelector.
+
+        For all parameters, tuples have a special syntax. See :ref:`TrameTuple <api_trame_tuple>` for a description of
+        it.
 
         Parameters
         ----------
@@ -61,6 +66,9 @@ class DataSelector(datagrid.VGrid):
         select_strategy : Union[str, Tuple], optional
             The selection strategy to pass to the `VDataTable component <https://trame.readthedocs.io/en/latest/trame.widgets.vuetify3.html#trame.widgets.vuetify3.VDataTable>`__.
             If unset, the `all` strategy will be used.
+        show_selected_files : Union[bool, str], optional
+            If true, then the currently selected files will be shown to the user below the directory and file selection
+            widgets.
         **kwargs
             All other arguments will be passed to the underlying
             `VDataTable component <https://trame.readthedocs.io/en/latest/trame.widgets.vuetify3.html#trame.widgets.vuetify3.VDataTable>`_.
@@ -108,6 +116,7 @@ class DataSelector(datagrid.VGrid):
         self._last_subdirectory = get_state_param(self.state, self._subdirectory)
         self._refresh_rate = refresh_rate
         self._select_strategy = select_strategy
+        self._show_selected_files = TrameTuple.create(show_selected_files)
 
         self._revogrid_id = f"nova__dataselector_{self._next_id}_rv"
         self._state_name = f"nova__dataselector_{self._next_id}_state"
@@ -225,14 +234,13 @@ class DataSelector(datagrid.VGrid):
                             )
                         )
 
-            with cast(
-                vuetify.VSelect,
-                InputField(
-                    v_model=self._v_model,
-                    classes="flex-0-1 nova-readonly",
-                    readonly=True,
-                    type="select",
-                ),
+            with InputField(
+                v_if=self._show_selected_files,
+                v_model=self._v_model,
+                classes="flex-0-1 nova-readonly",
+                readonly=True,
+                type="select",
+                variant="outlined",
             ):
                 with vuetify.Template(raw_attrs=['v-slot:selection="{ item, index }"']):
                     vuetify.VChip("{{ item.title.split('/').reverse()[0] }}", v_if="index < 2")

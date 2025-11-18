@@ -139,6 +139,9 @@ class InputField(AbstractElement):
     ) -> AbstractElement:
         """Constructor for InputField.
 
+        For all parameters, tuples have a special syntax. See :ref:`TrameTuple <api_trame_tuple>` for a description of
+        it.
+
         Parameters
         ----------
         v_model : Union[str, Tuple], optional
@@ -288,7 +291,7 @@ class InputField(AbstractElement):
         if input.v_model:
             if "id" not in input._py_attr or input.id is None:
                 input.id = f"nova__{input._id}"
-                input.scroll = f"window.nova__autoscroll('{input.id}');"
+            input.scroll = f"window.nova__autoscroll('{input.id}');"
 
             with state:
                 if state["nova_scroll_position"] is None:

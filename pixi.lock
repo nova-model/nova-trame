@@ -1729,8 +1729,8 @@ packages:
   requires_python: '>=3.10,<4.0'
 - pypi: ./
   name: nova-trame
-  version: 1.2.0
-  sha256: d8ded4ad9b2144b2ea52b73b3a19170228ece9f51c7339f2e425af0b4f9ccdf5
+  version: 1.2.1
+  sha256: 661261ded2c0e7f5b8a1d9032086bf87c7c4603a622b79c5306faeb608c00634
   requires_dist:
   - altair
   - libsass

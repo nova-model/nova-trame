@@ -5,6 +5,7 @@ from trame.widgets import vuetify3 as vuetify
 from trame_client.widgets import html
 
 from nova.mvvm.trame_binding import TrameBinding
+from nova.trame.view.layouts import VBoxLayout
 from nova.trame.view_model.progress_bar import ProgressBarViewModel
 
 
@@ -38,49 +39,50 @@ class ProgressBar:
         self.view_model = ProgressBarViewModel(id, binding)
 
     def create_ui(self) -> None:
-        with vuetify.VProgressLinear(
-            height="25",
-            model_value=(f"{self.id}.progress", "0"),
-            striped=True,
-            id=f"{self.id}_show_progress",
-            v_show=(f"{self.id}.show_progress",),
-        ):
-            html.H5(v_text=f"{self.id}.details")
-            with vuetify.VMenu(
-                max_width=900,
-                location="bottom",
-                no_click_animation=True,
-                close_on_content_click=False,
-                open_on_hover=True,
-                v_show=False,
+        with VBoxLayout(v_show=f"{self.id}.show_progress || {self.id}.show_ok || {self.id}.show_failed", height=25):
+            with vuetify.VProgressLinear(
+                height="25",
+                model_value=(f"{self.id}.progress", "0"),
+                striped=True,
+                id=f"{self.id}_show_progress",
+                v_show=(f"{self.id}.show_progress",),
             ):
-                with vuetify.Template(v_slot_activator="{ props }"):
-                    vuetify.VIcon(
-                        "mdi-information",
-                        v_show=f"{self.id}.show_full_details",
-                        v_bind="props",
-                        classes="ml-2",
-                        color="primary",
-                    )
+                html.H5(v_text=f"{self.id}.details")
+                with vuetify.VMenu(
+                    max_width=900,
+                    location="bottom",
+                    no_click_animation=True,
+                    close_on_content_click=False,
+                    open_on_hover=True,
+                    v_show=False,
+                ):
+                    with vuetify.Template(v_slot_activator="{ props }"):
+                        vuetify.VIcon(
+                            "mdi-information",
+                            v_show=f"{self.id}.show_full_details",
+                            v_bind="props",
+                            classes="ml-2",
+                            color="primary",
+                        )
 
-                with vuetify.VCard(classes="bg-grey"):
-                    vuetify.VCardText(f"{{{{ {self.id}.full_details }}}}", classes="display-linebreaks")
+                    with vuetify.VCard(classes="bg-grey"):
+                        vuetify.VCardText(f"{{{{ {self.id}.full_details }}}}", classes="display-linebreaks")
 
-        with vuetify.VProgressLinear(
-            height="25",
-            model_value="100",
-            striped=False,
-            color="error",
-            id=f"{self.id}_show_failed",
-            v_show=(f"{self.id}.show_failed",),
-        ):
-            html.H5(v_text=f"{self.id}.details", classes="text-white")
-        with vuetify.VProgressLinear(
-            height="25",
-            model_value="100",
-            striped=False,
-            color="primary",
-            id=f"{self.id}_show_ok",
-            v_show=(f"{self.id}.show_ok",),
-        ):
-            html.H5(v_text=f"{self.id}.details", classes="text-white")
+            with vuetify.VProgressLinear(
+                height="25",
+                model_value="100",
+                striped=False,
+                color="error",
+                id=f"{self.id}_show_failed",
+                v_show=(f"{self.id}.show_failed",),
+            ):
+                html.H5(v_text=f"{self.id}.details", classes="text-white")
+            with vuetify.VProgressLinear(
+                height="25",
+                model_value="100",
+                striped=False,
+                color="primary",
+                id=f"{self.id}_show_ok",
+                v_show=(f"{self.id}.show_ok",),
+            ):
+                html.H5(v_text=f"{self.id}.details", classes="text-white")
