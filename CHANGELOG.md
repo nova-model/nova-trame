@@ -1,3 +1,7 @@
+### nova-trame, 1.2.2
+
+* Fixes a DataSelector rendering bug in Safari (thanks to John Duggan).
+
 ### nova-trame, 1.2.1
 
 * Fixes a vertical alignment issue with NeutronDataSelector when the component is placed in a relatively low-width container (thanks to John Duggan).

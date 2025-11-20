@@ -133,7 +133,7 @@ class RevoGrid {
             extensions_text = ` (${extensions.join(',')})`
         }
 
-        const header = createElement('div', {'class': 'd-flex'}, inputVNode, `Available Datafiles${extensions_text}`)
+        const header = createElement('div', {'class': 'align-center d-flex'}, inputVNode, `Available Datafiles${extensions_text}`)
 
         let controls = null
         if (availableData.length < 1) {
