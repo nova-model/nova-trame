@@ -55,7 +55,7 @@ def test_input_field() -> None:
     input_field = InputField(type="textarea")
     assert isinstance(input_field, vuetify.VTextarea)
 
-    input_field = InputField(type="number")
+    input_field = InputField(type="password")
     assert isinstance(input_field, vuetify.VTextField)
 
 
