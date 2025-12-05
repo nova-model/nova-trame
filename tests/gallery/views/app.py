@@ -350,8 +350,8 @@ class ComponentTab:
                     )
                     vuetify.VBtn("Add Line to Autoscroller", click=self.append_to_autoscroll)
                 InputField(type="checkbox", label="Checkbox")
+                InputField(type="radio", label="Radio Buttons", inline=True, items=("config.radio_items",))
                 InputField(type="file", label="File Upload")
-                InputField(type="radio", label="Radio Buttons", items=("config.radio_items",))
                 InputField(
                     type="select",
                     items="['Option 1', 'Option 2']",

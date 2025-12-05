@@ -1,3 +1,7 @@
+### nova-trame, 1.2.3
+
+* Makes `InputField(type="radio")` use a consistent compact style to other InputField types (thanks to John Duggan).
+
 ### nova-trame, 1.2.2
 
 * Fixes a DataSelector rendering bug in Safari (thanks to John Duggan).
