@@ -8,7 +8,8 @@ import sys
 from asyncio import create_task
 from functools import partial
 from pathlib import Path
-from typing import Optional
+from typing import Callable, Optional
+from warnings import warn
 
 import blinker
 import sass
@@ -72,6 +73,7 @@ class ThemedApp:
         """
         self.server = get_server(server, client_type="vue3")
         self.local_storage: Optional[LocalStorageManager] = None
+        self._download_file: Optional[Callable] = None
         if vuetify_config_overrides is None:
             vuetify_config_overrides = {}
 
@@ -114,6 +116,34 @@ class ThemedApp:
     @property
     def state(self) -> State:
         return self.server.state
+
+    def download_file(self, filename: str, mimetype: str, content: bytes) -> None:
+        """Attempts to download a file via the browser to the user's computer.
+
+        Note that this will do nothing if no client is connected to the Trame application when called.
+
+        Parameters
+        ----------
+        filename : str
+            The name of the file to be downloaded.
+        mimetype : str
+            The `MIME type <https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/MIME_types>`__ of the content.
+        content : bytes
+            The bytes to be included in the download.
+
+        Returns
+        -------
+        None
+        """
+        if not self._download_file:
+            warn(
+                "You must call create_ui on this instance before download_file can be used.",
+                stacklevel=1,
+            )
+
+            return
+
+        self._download_file([filename, mimetype, content])
 
     def init_lodash(self) -> None:
         js_path = (Path(__file__).parent / "assets" / "js").resolve()
@@ -217,6 +247,22 @@ class ThemedApp:
 
         with VAppLayout(self.server, vuetify_config=self.vuetify_config) as layout:
             self.local_storage = LocalStorageManager(self.server.controller)
+            self._download_file = client.JSEval(
+                exec=(
+                    "async ($event) => {"
+                    "  const [filename, mimetype, content] = $event;"
+                    "  const blob = new window.Blob([content], {type: mimetype});"
+                    "  const url = window.URL.createObjectURL(blob);"
+                    "  const anchor = window.document.createElement('a');"
+                    "  anchor.setAttribute('href', url);"
+                    "  anchor.setAttribute('download', filename);"
+                    "  window.document.body.appendChild(anchor);"
+                    "  anchor.click();"
+                    "  window.document.body.removeChild(anchor);"
+                    "  window.setTimeout(() => window.URL.revokeObjectURL(url), 1000);"
+                    "}"
+                )
+            ).exec
 
             client.ClientTriggers(mounted=self.init_theme)
             client.Style(self.css)
