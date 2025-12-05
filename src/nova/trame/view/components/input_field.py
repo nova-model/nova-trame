@@ -172,6 +172,7 @@ class InputField(AbstractElement):
                 add new items. Items can be automatically populated (see select option for details).
             - file
             - input
+            - number
             - otp
             - radio - Produces a radio button group. Note that this accepts an additional parameter items that expects \
                 a list of dictionaries with the following format: { title: 'Item 1', value: 'item_1' }.
@@ -245,6 +246,8 @@ class InputField(AbstractElement):
                 input = vuetify.VFileInput(**kwargs)
             case "input":
                 input = vuetify.VInput(**kwargs)
+            case "number":
+                input = vuetify.VNumberInput(**kwargs)
             case "otp":
                 input = vuetify.VOtpInput(**kwargs)
             case "radio":

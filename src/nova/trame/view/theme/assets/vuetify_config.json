@@ -173,6 +173,9 @@
                     "VFileInput": {
                         "variant": "outlined"
                     },
+                    "VNumberInput": {
+                        "variant": "outlined"
+                    },
                     "VSelect": {
                         "variant": "outlined"
                     },

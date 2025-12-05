@@ -1,3 +1,8 @@
+### nova-trame, 1.3.0
+
+* `InputField(type="number")` is now supported and produces a [Vuetify Number Input](https://vuetifyjs.com/en/components/number-inputs/) (thanks to John Duggan).
+* `InputField(type="radio")` uses a consistent compact style to other InputField types (thanks to John Duggan).
+
 ### nova-trame, 1.2.2
 
 * Fixes a DataSelector rendering bug in Safari (thanks to John Duggan).
