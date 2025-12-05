@@ -366,6 +366,7 @@ class ComponentTab:
                 InputField(v_model=("config.debounce_rate",))
                 InputField(v_model=("config.debounce",), debounce=("config.debounce_rate",))
                 InputField(v_model=("config.throttle",), throttle=1000)
+                InputField(type="number", label="Number Input")
                 RemoteFileInput(
                     v_model="selected_file",
                     base_paths=["/run"],

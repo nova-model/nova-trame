@@ -1,6 +1,7 @@
-### nova-trame, 1.2.3
+### nova-trame, 1.3.0
 
-* Makes `InputField(type="radio")` use a consistent compact style to other InputField types (thanks to John Duggan).
+* `InputField(type="number")` is now supported and produces a [Vuetify Number Input](https://vuetifyjs.com/en/components/number-inputs/) (thanks to John Duggan).
+* `InputField(type="radio")` uses a consistent compact style to other InputField types (thanks to John Duggan).
 
 ### nova-trame, 1.2.2
 

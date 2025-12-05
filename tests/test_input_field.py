@@ -31,6 +31,9 @@ def test_input_field() -> None:
     input_field = InputField(type="input")
     assert isinstance(input_field, vuetify.VInput)
 
+    input_field = InputField(type="number")
+    assert isinstance(input_field, vuetify.VNumberInput)
+
     input_field = InputField(type="otp")
     assert isinstance(input_field, vuetify.VOtpInput)
 
