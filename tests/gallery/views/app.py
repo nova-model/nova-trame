@@ -276,11 +276,15 @@ class ComponentTab:
                         vuetify.VBtn("Tooltip", v_bind="props")
 
             vuetify.VCardTitle("Navigation Components")
-            with GridLayout(classes="mb-4", columns=1, valign="center"):
+            with GridLayout(classes="mb-4", columns=2, valign="center"):
                 with vuetify.VTabs():
                     vuetify.VTab("Tab 1")
                     vuetify.VTab("Tab 2")
                     vuetify.VTab("Tab 3")
+
+                with vuetify.VTabs(direction="vertical"):
+                    vuetify.VTab("Tab 1")
+                    vuetify.VTab("Tab 2")
 
             vuetify.VCardTitle("Data Selection Widgets")
             with GridLayout(classes="mb-1", columns=2, valign="center"):
@@ -604,11 +608,10 @@ class App(ThemedApp):
             # [slot child example complete]
 
             with layout.pre_content:
-                with vuetify.VTabs(
-                    v_model="config.active_tab", classes="pl-6", update_modelValue="flushState('config');"
-                ):
-                    vuetify.VTab("Components", value=0)
-                    vuetify.VTab("Full-screen Layout", value=1)
+                with client.DeepReactive("config"):
+                    with vuetify.VTabs(v_model="config.active_tab", classes="pl-6"):
+                        vuetify.VTab("Components", value=0)
+                        vuetify.VTab("Full-screen Layout", value=1)
 
             with layout.content:
                 ComponentTab(self.state, self.local_storage, v_if="config.active_tab == 0")

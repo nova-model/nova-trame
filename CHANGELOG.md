@@ -1,3 +1,7 @@
+### nova-trame, 1.3.1
+
+* Fix vertical tabs not rendering properly in the compact theme (thanks to John Duggan).
+
 ### nova-trame, 1.3.0
 
 * `InputField(type="number")` is now supported and produces a [Vuetify Number Input](https://vuetifyjs.com/en/components/number-inputs/) (thanks to John Duggan).
