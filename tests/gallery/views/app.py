@@ -338,9 +338,10 @@ class ComponentTab:
             with GridLayout(columns=3, valign="center"):
                 FileUpload(
                     v_model="file_upload.file",
-                    base_paths=["/HFIR", "/SNS"],
-                    extensions=("file_upload.extensions",),
+                    base_paths=("/HFIR", "/SNS"),
+                    extensions="file_upload.extensions",
                     label="{{ file_upload.label }}",
+                    # show_server_files=False,
                 )
                 with html.Div():
                     InputField(

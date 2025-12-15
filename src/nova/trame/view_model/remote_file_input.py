@@ -84,6 +84,10 @@ class RemoteFileInputViewModel:
     def populate_file_list(self, filter: str = "") -> None:
         files = self.scan_current_path(filter)
         self.file_list_bind.update_in_view(files)
+        if filter:
+            for file in files:
+                if filter == f"{self.value}/{file['path']}":
+                    self.select_file(filter)
 
     def scan_current_path(self, filter: str) -> list[dict[str, Any]]:
         files, self.showing_base_paths = self.model.scan_current_path(self.value, self.showing_all_files, filter)
