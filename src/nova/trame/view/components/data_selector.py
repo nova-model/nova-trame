@@ -66,7 +66,7 @@ class DataSelector(datagrid.VGrid):
         select_strategy : Union[str, Tuple], optional
             The selection strategy to pass to the `VDataTable component <https://trame.readthedocs.io/en/latest/trame.widgets.vuetify3.html#trame.widgets.vuetify3.VDataTable>`__.
             If unset, the `all` strategy will be used.
-        show_selected_files : Union[bool, str], optional
+        show_selected_files : Union[bool, Tuple], optional
             If true, then the currently selected files will be shown to the user below the directory and file selection
             widgets.
         **kwargs
@@ -235,7 +235,7 @@ class DataSelector(datagrid.VGrid):
                         )
 
             with InputField(
-                v_if=self._show_selected_files,
+                v_if=self._show_selected_files.expression,
                 v_model=self._v_model,
                 classes="flex-0-1 nova-readonly",
                 readonly=True,

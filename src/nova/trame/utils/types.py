@@ -1,6 +1,6 @@
 """Custom types for nova-trame."""
 
-from typing import Any, Iterable, NamedTuple
+from typing import Any, NamedTuple
 
 from typing_extensions import Self
 
@@ -33,12 +33,21 @@ class TrameTuple(NamedTuple):
         initial_value: Any, optional
             The initial value to assign to expression. If set, expression must be a JavaScript variable.
         """
+        if (
+            isinstance(expression, tuple)
+            and len(expression) > 0
+            and len(expression) < 3
+            and isinstance(expression[0], str)
+        ):
+            # This looks like a Trame-style tuple, we should treat it accordingly.
+            if len(expression) == 2:
+                initial_value = expression[1]
+            expression = expression[0]
+
         if isinstance(expression, (bool, complex, float, int)):
             if expression:
                 return cls("true")
             else:
                 return cls("false")
-        if isinstance(expression, Iterable):
-            return cls(f"[{','.join(map(str, expression))}]")
 
         return cls(str(expression), initial_value)
