@@ -41,6 +41,7 @@ class RemoteFileInputModel:
         self, current_path: str, showing_all_files: bool, filter: str
     ) -> tuple[list[dict[str, Any]], bool]:
         failed = False
+        files = []
         filter = filter.split("/")[-1]
 
         try:
