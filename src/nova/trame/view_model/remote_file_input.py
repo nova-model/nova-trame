@@ -1,7 +1,7 @@
 """View model for RemoteFileInput."""
 
 import os
-from typing import Any, Union
+from typing import Any, Dict, List, Union
 
 from nova.mvvm.interface import BindingInterface
 from nova.trame.model.remote_file_input import RemoteFileInputModel
@@ -99,7 +99,7 @@ class RemoteFileInputViewModel:
                     if filter == file["path"] or filter == f"{self.value}/{file['path']}":
                         self.select_file(filter)
 
-    def scan_current_path(self, filter: str) -> list[dict[str, Any]]:
+    def scan_current_path(self, filter: str) -> List[Dict[str, Any]]:
         files, self.showing_base_paths = self.model.scan_current_path(self.value, self.showing_all_files, filter)
 
         return files

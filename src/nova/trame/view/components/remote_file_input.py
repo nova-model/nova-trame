@@ -178,6 +178,17 @@ class RemoteFileInput:
                                     prepend_icon=("file.directory ? 'mdi-folder' : 'mdi-file'",),
                                     click=(self.vm.select_file, "[file]"),
                                 )
+                                html.P(
+                                    (
+                                        "No files could be found, either because none exist or you lack permission to "
+                                        "read this directory. Select .. to return to the previous directory."
+                                    ),
+                                    v_if=(
+                                        f"{self.vm.get_file_list_state_name()}.length < 2 && "
+                                        f"{self.vm.get_file_list_state_name()}[0].path === '..'"
+                                    ),
+                                    classes="pa-4",
+                                )
 
                             vuetify.VSpacer()
 
