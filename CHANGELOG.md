@@ -1,6 +1,7 @@
 ### nova-trame, 1.3.2
 
 * Usability fixes for FileUpload and RemoteFileInput (thanks to John Duggan).
+* Improved documentation for binding to DataSelector parameters (thanks to John Duggan).
 
 ### nova-trame, 1.3.1
 
