@@ -2,7 +2,7 @@
 
 from functools import partial
 from tempfile import NamedTemporaryFile
-from typing import Any, List, Optional, Tuple, Union, cast
+from typing import Any, Iterable, Optional, Tuple, Union, cast
 
 from trame.app import get_server
 from trame.widgets import client, html
@@ -14,6 +14,7 @@ from nova.mvvm._internal.utils import rgetdictvalue
 from nova.mvvm.trame_binding import TrameBinding
 from nova.trame._internal.utils import get_state_name, get_state_param, set_state_param
 from nova.trame.model.remote_file_input import RemoteFileInputModel
+from nova.trame.view.layouts import VBoxLayout
 from nova.trame.view_model.remote_file_input import RemoteFileInputViewModel
 
 from .input_field import InputField
@@ -30,9 +31,9 @@ class RemoteFileInput:
         v_model: Union[str, Tuple],
         allow_files: Union[bool, Tuple] = True,
         allow_folders: Union[bool, Tuple] = False,
-        base_paths: Union[List[str], Tuple, None] = None,
+        base_paths: Union[Iterable[str], str, None] = None,
         dialog_props: Optional[dict[str, Any]] = None,
-        extensions: Union[List[str], Tuple, None] = None,
+        extensions: Union[Iterable[str], str, None] = None,
         input_props: Optional[dict[str, Any]] = None,
         return_contents: Union[bool, Tuple] = False,
         use_bytes: Union[bool, Tuple] = False,
@@ -51,12 +52,16 @@ class RemoteFileInput:
             If true, the user can save a file selection.
         allow_folders : Union[bool, Tuple], optional
             If true, the user can save a folder selection.
-        base_paths : Union[List[str], Tuple], optional
-            Only files under these paths will be shown.
+        base_paths : Union[Iterable[str], str], optional
+            Only files under these paths will be shown. Typical Trame binding syntax doesn't work here as tuples are
+            interpreted as literal extensions to filter with. Instead, you can pass a string with a JavaScript
+            expression to bind this parameter.
         dialog_props : Dict[str, typing.Any], optional
             Props to be passed to VDialog.
-        extensions : Union[List[str], Tuple], optional
+        extensions : Union[Iterable[str], str], optional
             Only files with these extensions will be shown by default. The user can still choose to view all files.
+            Typical Trame binding syntax doesn't work here as tuples are interpreted as literal extensions to filter
+            with. Instead, you can pass a string with a JavaScript expression to bind this parameter.
         input_props : Dict[str, typing.Any], optional
             Props to be passed to InputField.
         return_contents : Union[bool, Tuple], optional
@@ -118,16 +123,17 @@ class RemoteFileInput:
                     vuetify.VIcon("mdi-folder-open")
 
                     with vuetify.VDialog(
-                        v_model=self.vm.get_dialog_state_name(), activator="parent", **self.dialog_props
+                        v_model=self.vm.get_dialog_state_name(), activator="parent", height="100vh", **self.dialog_props
                     ):
                         with vuetify.VCard(classes="pa-4"):
-                            vuetify.VTextField(
-                                v_model=self.vm.get_filter_state_name(),
-                                classes="mb-4 px-4",
-                                label=input.label,
-                                variant="outlined",
-                                update_modelValue=(self.vm.filter_paths, "[$event]"),
-                            )
+                            with VBoxLayout():
+                                vuetify.VTextField(
+                                    v_model=self.vm.get_filter_state_name(),
+                                    classes="mb-4 px-4",
+                                    label=input.label,
+                                    variant="outlined",
+                                    update_modelValue=(self.vm.filter_paths, "[$event]"),
+                                )
 
                             if self.allow_files and self.extensions:
                                 with html.Div(v_if=(f"{self.vm.get_showing_all_state_name()}",)):
@@ -140,7 +146,12 @@ class RemoteFileInput:
                                     )
                                 with html.Div(v_else=True):
                                     vuetify.VListSubheader(
-                                        f"Available Files with Extensions: {', '.join(self.extensions)}"
+                                        "Available Files with Extensions: "
+                                        + ", ".join(
+                                            get_state_param(self.state, (self.extensions,))
+                                            if isinstance(self.extensions, str)
+                                            else self.extensions
+                                        )
                                     )
                                     vuetify.VBtn(
                                         "Show all",
@@ -167,6 +178,19 @@ class RemoteFileInput:
                                     prepend_icon=("file.directory ? 'mdi-folder' : 'mdi-file'",),
                                     click=(self.vm.select_file, "[file]"),
                                 )
+                                html.P(
+                                    (
+                                        "No files could be found, either because none exist or you lack permission to "
+                                        "read this directory. Select .. to return to the previous directory."
+                                    ),
+                                    v_if=(
+                                        f"{self.vm.get_file_list_state_name()}.length < 2 && "
+                                        f"{self.vm.get_file_list_state_name()}[0].path === '..'"
+                                    ),
+                                    classes="pa-4",
+                                )
+
+                            vuetify.VSpacer()
 
                             with html.Div(classes="text-center"):
                                 vuetify.VBtn(
@@ -212,16 +236,20 @@ class RemoteFileInput:
         # If the bindings were given initial values, write these to the state.
         self._last_allow_files = set_state_param(self.state, self.allow_files)
         self._last_allow_folders = set_state_param(self.state, self.allow_folders)
-        self._last_base_paths = set_state_param(self.state, self.base_paths)
-        self._last_extensions = set_state_param(self.state, self.extensions)
+        self._last_base_paths = (
+            get_state_param(self.state, (self.base_paths,)) if isinstance(self.base_paths, str) else self.base_paths
+        )
+        self._last_extensions = (
+            get_state_param(self.state, (self.extensions,)) if isinstance(self.extensions, str) else self.extensions
+        )
         self._last_return_contents = set_state_param(self.state, self.return_contents)
 
         # Now we need to propagate the state to this component's view model.
         self.vm.set_binding_parameters(
             allow_files=self.allow_files,
             allow_folders=self.allow_folders,
-            base_paths=self.base_paths,
-            extensions=self.extensions,
+            base_paths=self._last_base_paths,
+            extensions=self._last_extensions,
         )
         self._setup_update_binding(self._last_return_contents)
 
@@ -251,23 +279,23 @@ class RemoteFileInput:
                         allow_folders=set_state_param(self.state, self.allow_folders, allow_folders)
                     )
 
-        if isinstance(self.base_paths, tuple):
+        if isinstance(self.base_paths, str):
 
-            @self.state.change(get_state_name(self.base_paths[0]))
+            @self.state.change(get_state_name(self.base_paths))
             def on_base_paths_change(**kwargs: Any) -> None:
                 if isinstance(self.base_paths, bool):
                     return
-                base_paths = rgetdictvalue(kwargs, self.base_paths[0])
+                base_paths = rgetdictvalue(kwargs, self.base_paths)
                 if base_paths != self._last_base_paths:
                     self.vm.set_binding_parameters(base_paths=set_state_param(self.state, self.base_paths, base_paths))
 
-        if isinstance(self.extensions, tuple):
+        if isinstance(self.extensions, str):
 
-            @self.state.change(get_state_name(self.extensions[0]))
+            @self.state.change(get_state_name(self.extensions))
             def on_extensions_change(**kwargs: Any) -> None:
                 if isinstance(self.extensions, bool):
                     return
-                extensions = rgetdictvalue(kwargs, self.extensions[0])
+                extensions = rgetdictvalue(kwargs, self.extensions)
                 if extensions != self._last_extensions:
                     self.vm.set_binding_parameters(extensions=set_state_param(self.state, self.extensions, extensions))
 

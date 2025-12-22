@@ -177,7 +177,7 @@ class NeutronDataSelector(DataSelector):
             super().create_ui(**kwargs)
 
         with self._layout.filter:
-            with GridLayout(v_if=self._show_experiment_filters, columns=3):
+            with GridLayout(v_if=self._show_experiment_filters.expression, columns=3):
                 column_span = 3
                 if isinstance(self._facility, tuple) or not self._facility:
                     column_span -= 1

@@ -41,6 +41,7 @@ class RemoteFileInputModel:
         self, current_path: str, showing_all_files: bool, filter: str
     ) -> tuple[list[dict[str, Any]], bool]:
         failed = False
+        files = []
         filter = filter.split("/")[-1]
 
         try:
@@ -58,8 +59,9 @@ class RemoteFileInputModel:
                 if self.valid_entry(entry, showing_all_files) and (not filter or entry.name.startswith(filter)):
                     files.append({"path": entry.name, "directory": entry.is_dir()})
         except OSError:
-            files = self.get_base_paths()
-            failed = True
+            if not current_path or current_path == "/":
+                files = self.get_base_paths()
+                failed = True
 
         def _sort_files(a: dict[str, Any], b: dict[str, Any]) -> int:
             if a["directory"] and not b["directory"]:

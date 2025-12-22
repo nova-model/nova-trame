@@ -315,7 +315,7 @@ class ComponentTab:
                     instrument=("nds_params.instrument", "TOPAZ"),
                     experiment=("nds_params.experiment", "IPTS-12132"),
                     show_experiment_filters=False,
-                    show_selected_files=False,
+                    show_selected_files=("false",),
                     allow_custom_directories=("nds_params.allow_custom_directories", True),
                     chips=True,
                 )
@@ -338,9 +338,10 @@ class ComponentTab:
             with GridLayout(columns=3, valign="center"):
                 FileUpload(
                     v_model="file_upload.file",
-                    base_paths=["/HFIR", "/SNS"],
-                    extensions=("file_upload.extensions",),
+                    base_paths=("/HFIR", "/SNS"),
+                    extensions="file_upload.extensions",
                     label="{{ file_upload.label }}",
+                    # show_server_files=False,
                 )
                 with html.Div():
                     InputField(
