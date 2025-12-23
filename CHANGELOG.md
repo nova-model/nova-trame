@@ -1,3 +1,7 @@
+### nova-trame, 1.3.3
+
+* Add missing dependencies for pyoncat v2.3 (thanks to John Duggan).
+
 ### nova-trame, 1.3.2
 
 * Usability fixes for FileUpload and RemoteFileInput (thanks to John Duggan).
