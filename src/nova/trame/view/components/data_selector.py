@@ -235,7 +235,7 @@ class DataSelector(datagrid.VGrid):
                         )
 
             with InputField(
-                v_if=self._show_selected_files.expression,
+                v_show=self._show_selected_files.expression,
                 v_model=self._v_model,
                 classes="flex-0-1 nova-readonly",
                 readonly=True,

@@ -1,6 +1,10 @@
+### nova-trame, 1.3.5
+
+* Fixes same issue as 1.3.4 for certain parameter combinations (thanks to John Duggan).
+
 ### nova-trame, 1.3.4
 
-* Fix issue where programmatic update of DataSelector-based components would not re-render immediately (thank to John Duggan).
+* Fix issue where programmatic update of DataSelector-based components would not re-render immediately (thanks to John Duggan).
 
 ### nova-trame, 1.3.3
 
