@@ -1,3 +1,7 @@
+### nova-trame, 1.3.4
+
+* Fix issue where programmatic update of DataSelector-based components would not re-render immediately (thank to John Duggan).
+
 ### nova-trame, 1.3.3
 
 * Add missing dependencies for pyoncat v2.3 (thanks to John Duggan).

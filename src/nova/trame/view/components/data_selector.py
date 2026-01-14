@@ -300,6 +300,10 @@ class DataSelector(datagrid.VGrid):
             subdirectory=get_state_param(self.state, self._subdirectory),
         )
 
+        @self.state.change(self._v_model_name_in_state)
+        def on_v_model_change(**kwargs: Any) -> None:
+            self._reset_rv_grid()
+
         # The component used by this parameter will attempt to set the initial value itself, which will trigger the
         # below change listeners causing unpredictable behavior.
         if isinstance(self._subdirectory, tuple):
