@@ -164,7 +164,7 @@ class DataSelector(datagrid.VGrid):
                 if show_directories:
                     with VBoxLayout(stretch=True):
                         vuetify.VListSubheader("Available Directories", classes="flex-0-1 justify-start pl-4")
-                        vuetify.VTreeview(
+                        with vuetify.VTreeview(
                             v_if=(f"{self._directories_name}.length > 0",),
                             activatable=True,
                             active_strategy="single-independent",
@@ -174,7 +174,9 @@ class DataSelector(datagrid.VGrid):
                             items=(self._directories_name,),
                             click_open=(self._vm.expand_directory, "[$event.path]"),
                             update_activated=(self.set_subdirectory, "$event"),
-                        )
+                        ):
+                            with vuetify.Template(v_slot_title="{ item }"):
+                                html.Span("{{ item.title }}", title=("item.title",))
                         vuetify.VListItem("No directories found", classes="flex-0-1 pl-4 text-left", v_else=True)
 
                 with VBoxLayout(
