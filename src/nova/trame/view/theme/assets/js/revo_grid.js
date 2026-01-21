@@ -26,6 +26,29 @@ class RevoGrid {
         const availableData = _.get(trameState, this.dataKey)
         const selectAllCheckbox = this.grid.querySelector(".header-content input")
         const rowCheckboxes = this.grid.querySelectorAll(".rgCell:first-child")
+        const labels = this.grid.querySelectorAll(".rgCell label")
+        const rowContainer = this.grid.querySelector(".content-wrapper revogr-data")
+
+        // By default, RevoGrid captures and blocks event propagation for horizontal scrolling on this element.
+        // We do not want this to happen, since it interferes with our custom horizontal CSS scrolling to show
+        // full cell contents. To avoid this, I add my own event that does not call event.stopPropagation. This
+        // forces the event to bubble and enables our horizontal scrolling.
+        this.grid.querySelector('.vertical-inner').addEventListener('wheel', () => {})
+
+        let maxWidth = this.grid.clientWidth
+        labels.forEach((label) => {
+            if (label.clientWidth > maxWidth) {
+                maxWidth = label.clientWidth
+            }
+        })
+        if (maxWidth === this.grid.clientWidth) {
+            // No labels stretch beyond the original width, we need to remove the row padding to prevent unnecessary scrollbar rendering.
+            maxWidth -= 32
+        } else {
+            // A label has stretched beyond the original width, we need to add the row padding to maintain some whitespace at maximum scroll.
+            maxWidth += 32
+        }
+        rowContainer.style.width = `${maxWidth}px`
 
         if (selectAllCheckbox === null) {
             return
@@ -104,7 +127,7 @@ class RevoGrid {
             },
         })
 
-        const spanNode = createElement('span', {'class': 'cursor-pointer rv-row-text'}, props.model[props.prop])
+        const spanNode = createElement('span', {'class': 'cursor-pointer rv-row-text'}, "thequickbrownfoxjumpedoverthelazydogthequickbrownfoxjumpedoverthelazydogthequickbrownfoxjumpedoverthelazydogthequickbrownfoxjumpedoverthelazydogthequickbrownfoxjumpedoverthelazydog")
 
         return createElement('label', { 'title': props.model[props.prop] }, inputVNode, spanNode)
     }

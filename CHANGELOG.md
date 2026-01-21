@@ -1,3 +1,7 @@
+### nova-trame, 1.3.7
+
+* Fixes horizontal scrolling in the DataSelector (thanks to John Duggan).
+
 ### nova-trame, 1.3.6
 
 * Display full directory names on hover in DataSelector-based components (thanks to John Duggan).
