@@ -46,6 +46,7 @@ html {
 
     .v-treeview.v-list {
         --indent-padding: 0px !important;
+        overflow-x: auto;
 
         & > .v-list-group > .v-list-item {
             padding-left: 0 !important;
@@ -107,6 +108,10 @@ html {
 
     .inner-content-table {
         width: 100% !important;
+
+        .header-rgRow {
+            overflow-x: clip;
+        }
     }
 }
 
