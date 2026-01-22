@@ -124,9 +124,7 @@ class DataSelector(datagrid.VGrid):
         self._datafiles_name = f"nova__dataselector_{self._next_id}_datafiles"
 
         self._flush_state = f"flushState('{self._v_model_name_in_state}');"
-        self._reset_rv_grid = client.JSEval(
-            exec=f"window.grid_manager.get('{self._revogrid_id}').updateCheckboxes()"
-        ).exec
+        self._reset_rv_grid = client.JSEval(exec=f"window.grid_manager.get('{self._revogrid_id}').updateUI()").exec
         self._reset_state = client.JSEval(exec=f"{self._v_model} = []; {self._flush_state}").exec
 
         self._create_model()

@@ -9,28 +9,65 @@ class RevoGrid {
 
         this.grid = document.querySelector(`#${this.id}`)
         this.grid.addEventListener('viewportscroll', () => {
-            this.updateCheckboxes()
+            this.updateUI()
         })
 
         this.initShiftKeyListeners()
     }
 
-    updateCheckboxes() {
+    updateUI() {
         // Wait for the DOM to update after the Trame state is updated.
-        setTimeout(this._updateCheckboxes.bind(this), 10)
+        setTimeout(this._updateUI.bind(this), 10)
     }
 
-    _updateCheckboxes() {
+    _updateUI() {
         const trameState = window.trame.state.state
         const modelValue = _.get(trameState, this.modelKey)
         const availableData = _.get(trameState, this.dataKey)
-        const selectAllCheckbox = this.grid.querySelector(".header-content input")
-        const rowCheckboxes = this.grid.querySelectorAll(".rgCell:first-child")
+        const selectAllCheckbox = this.grid.querySelector('.header-content input')
+        const rowCheckboxes = this.grid.querySelectorAll('.rgCell:first-child')
+        const labels = this.grid.querySelectorAll('.rgCell label')
+        const rowContainer = this.grid.querySelector('.content-wrapper revogr-data')
+        const header = this.grid.querySelector('.header-rgRow')
+
+        // When no data is present the header needs more space as that's the only place we can inject no data
+        // text. RevoGrid sets the header to a fixed height that needs to be overridden.
+        if (labels.length === 0) {
+            console.log(header)
+            header.style.height = '90px'
+        } else {
+            header.style.height = '45px'
+        }
+
+        // By default, RevoGrid captures and blocks event propagation for horizontal scrolling on this element.
+        // We do not want this to happen, since it interferes with our custom horizontal CSS scrolling to show
+        // full cell contents. To avoid this, I add my own event that does not call event.stopPropagation. This
+        // forces the event to bubble and enables our horizontal scrolling.
+        this.grid.querySelector('.vertical-inner').addEventListener('wheel', () => {})
+
+        let maxWidth = this.grid.clientWidth
+        labels.forEach((label) => {
+            if (label.clientWidth > maxWidth) {
+                maxWidth = label.clientWidth
+            }
+        })
+        if (maxWidth === this.grid.clientWidth) {
+            // No labels stretch beyond the original width, we need to remove the row padding to prevent unnecessary scrollbar rendering.
+            maxWidth -= 32
+        } else {
+            // A label has stretched beyond the original width, we need to add the row padding to maintain some whitespace at maximum scroll.
+            maxWidth += 32
+        }
+        rowContainer.style.width = `${maxWidth}px`
 
         if (selectAllCheckbox === null) {
             return
         }
 
+        // RevoGrid doesn't have a notion of v-model. Since we allow programmatic file selection,
+        // we need to programmatically check if checkboxes need to be visually checked. This is
+        // inexpensive as the data table is virtually rendered so there are a few dozen checkboxes
+        // to process at any time.
         let allSelected = null
         rowCheckboxes.forEach((element) => {
             const input = element.querySelector('input')
@@ -99,7 +136,7 @@ class RevoGrid {
                 }
 
                 // Update the UI
-                this.updateCheckboxes(this.modelKey, this.dataKey)
+                this.updateUI(this.modelKey, this.dataKey)
                 window.trame.state.dirty(this.stateKey)
             },
         })
@@ -123,7 +160,7 @@ class RevoGrid {
                 }
 
                 // Update the UI
-                this.updateCheckboxes(this.modelKey, this.dataKey)
+                this.updateUI(this.modelKey, this.dataKey)
                 window.trame.state.dirty(this.stateKey)
             },
         })

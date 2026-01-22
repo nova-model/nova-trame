@@ -46,9 +46,18 @@ html {
 
     .v-treeview.v-list {
         --indent-padding: 0px !important;
+        overflow-x: auto;
 
         & > .v-list-group > .v-list-item {
             padding-left: 0 !important;
+        }
+
+        .v-list-item__content, .v-list-item-title {
+            overflow: visible;
+        }
+
+        .v-list-item-title span {
+            padding-right: 1em;
         }
     }
 }
@@ -74,14 +83,21 @@ html {
         }
     }
 
-    .rgCell label {
-        cursor: pointer;
+    .inner-content-table {
+        overflow-x: auto;
     }
 
-    .rv-row-text {
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
+    .vertical-inner, .content-wrapper, revogr-overlay-selection {
+        width: fit-content;
+    }
+
+    .rgCell {
+        width: fit-content !important;
+
+        label {
+            cursor: pointer;
+            width: fit-content;
+        }
     }
 
     .header-content {
@@ -92,6 +108,10 @@ html {
 
     .inner-content-table {
         width: 100% !important;
+
+        .header-rgRow {
+            overflow-x: clip;
+        }
     }
 }
 
