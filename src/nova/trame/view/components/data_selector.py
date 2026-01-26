@@ -5,13 +5,13 @@ from typing import Any, List, Tuple, Union
 from warnings import warn
 
 from trame.app import get_server
-from trame.widgets import client, datagrid, html
+from trame.widgets import client, html
 from trame.widgets import vuetify3 as vuetify
 from trame_server.core import State
 
 from nova.mvvm._internal.utils import rgetdictvalue
 from nova.mvvm.trame_binding import TrameBinding
-from nova.trame._internal.utils import get_state_name, get_state_param, set_state_param
+from nova.trame._internal.utils import get_state_param, set_state_param
 from nova.trame.model.data_selector import DataSelectorModel, DataSelectorState
 from nova.trame.utils.types import TrameTuple
 from nova.trame.view.layouts import GridLayout, HBoxLayout, VBoxLayout
@@ -22,7 +22,7 @@ from .input_field import InputField
 vuetify.enable_lab()
 
 
-class DataSelector(datagrid.VGrid):
+class DataSelector(vuetify.VDataTableVirtual):
     """Allows the user to select datafiles from the server."""
 
     def __init__(
@@ -118,13 +118,11 @@ class DataSelector(datagrid.VGrid):
         self._select_strategy = select_strategy
         self._show_selected_files = TrameTuple.create(show_selected_files)
 
-        self._revogrid_id = f"nova__dataselector_{self._next_id}_rv"
         self._state_name = f"nova__dataselector_{self._next_id}_state"
         self._directories_name = f"nova__dataselector_{self._next_id}_directories"
         self._datafiles_name = f"nova__dataselector_{self._next_id}_datafiles"
 
         self._flush_state = f"flushState('{self._v_model_name_in_state}');"
-        self._reset_rv_grid = client.JSEval(exec=f"window.grid_manager.get('{self._revogrid_id}').updateUI()").exec
         self._reset_state = client.JSEval(exec=f"{self._v_model} = []; {self._flush_state}").exec
 
         self._create_model()
@@ -166,10 +164,11 @@ class DataSelector(datagrid.VGrid):
                             v_if=(f"{self._directories_name}.length > 0",),
                             activatable=True,
                             active_strategy="single-independent",
-                            classes="flex-1-0 h-0 overflow-y-auto",
+                            classes="flex-1-0 h-0 overflow-y-auto pt-0",
                             fluid=True,
                             item_value="path",
                             items=(self._directories_name,),
+                            loading=True,
                             click_open=(self._vm.expand_directory, "[$event.path]"),
                             update_activated=(self.set_subdirectory, "$event"),
                         ):
@@ -180,59 +179,28 @@ class DataSelector(datagrid.VGrid):
                 with VBoxLayout(
                     classes="position-relative", column_span=1 if show_directories else 2, gap="0.5em", stretch=True
                 ):
-                    if isinstance(self._extensions, tuple):
-                        extensions_name = f"{get_state_name(self._extensions[0])}.extensions"
-                    else:
-                        extensions_name = f"{self._state_name}.extensions"
-
-                    if "columns" in kwargs:
-                        columns = kwargs.pop("columns")
-                    else:
-                        columns = (
-                            "[{"
-                            "    cellTemplate: (createElement, props) =>"
-                            f"       window.grid_manager.get('{self._revogrid_id}').cellTemplate(createElement, props),"
-                            "    columnTemplate: (createElement) =>"
-                            "        window.grid_manager.get("
-                            f"           '{self._revogrid_id}'"
-                            f"       ).columnTemplate(createElement, {extensions_name}),"
-                            "    sortable: true,"
-                            "    name: 'Available Datafiles',"
-                            "    prop: 'title',"
-                            "}]",
-                        )
-
+                    headers = kwargs.pop(
+                        "headers",
+                        ("[{ title: 'Available Datafiles', key: 'title' }]",),
+                    )
                     super().__init__(
+                        ref="test",
                         v_model=self._v_model,
-                        can_focus=False,
-                        columns=columns,
-                        frame_size=10,
-                        hide_attribution=True,
-                        id=self._revogrid_id,
-                        readonly=True,
-                        resize=True,
-                        stretch=True,
-                        source=(self._datafiles_name,),
-                        theme="compact",
+                        classes="h-100",
+                        headers=headers,
+                        items=(self._datafiles_name,),
+                        item_value="path",
+                        select_strategy="all",
+                        show_select=True,
                         **kwargs,
                     )
+                    with self:
+                        with vuetify.Template(v_slot_no_data=True):
+                            html.Span("No files to display.")
                     if self._label:
                         self.label = self._label
                     if "update_modelValue" not in kwargs:
                         self.update_modelValue = self._flush_state
-
-                    # Sets up some JavaScript event handlers when the component is mounted.
-                    with self:
-                        client.ClientTriggers(
-                            mounted=(
-                                "window.grid_manager.add("
-                                f"  '{self._revogrid_id}',"
-                                f"  '{self._v_model}',"
-                                f"  '{self._datafiles_name}',"
-                                f"  '{self._v_model_name_in_state}'"
-                                ")"
-                            )
-                        )
 
             with InputField(
                 v_show=self._show_selected_files.expression,
@@ -266,7 +234,6 @@ class DataSelector(datagrid.VGrid):
         self._vm.directories_bind.connect(self._directories_name)
         self._vm.datafiles_bind.connect(self._datafiles_name)
         self._vm.reset_bind.connect(self.reset)
-        self._vm.reset_grid_bind.connect(self._reset_rv_grid)
 
     def refresh_contents(self) -> None:
         self._vm.update_view(refresh_directories=True)
@@ -274,7 +241,6 @@ class DataSelector(datagrid.VGrid):
     def reset(self, _: Any = None) -> None:
         if bool(get_state_param(self.state, self._clear_selection)):
             self._reset_state()
-            self._reset_rv_grid()
 
     def set_subdirectory(self, subdirectory_path: str = "") -> None:
         set_state_param(self.state, self._subdirectory, subdirectory_path)
@@ -299,10 +265,6 @@ class DataSelector(datagrid.VGrid):
             extensions=get_state_param(self.state, self._extensions),
             subdirectory=get_state_param(self.state, self._subdirectory),
         )
-
-        @self.state.change(self._v_model_name_in_state)
-        def on_v_model_change(**kwargs: Any) -> None:
-            self._reset_rv_grid()
 
         # The component used by this parameter will attempt to set the initial value itself, which will trigger the
         # below change listeners causing unpredictable behavior.

@@ -60,57 +60,23 @@ html {
             padding-right: 1em;
         }
     }
-}
 
-.nova-data-selector revo-grid {
-    font-family: 'Roboto', sans-serif;
-    font-size: 0.75rem !important;
-    overflow-x: hidden;
+    .v-data-table {
+        user-select: none;
 
-    .header-content, .rgCell label {
-        align-items: center;
-        display: flex;
-
-        input {
-            cursor: pointer;
-            margin-right: 0.25em;
+        .v-data-table-rows-no-data td {
+            padding: 0 0.75em;
+            text-align: left;
         }
 
-        p {
-            line-height: 1;
-            margin-top: 1em;
-            white-space: normal;
+        .v-data-table__td {
+            overflow: visible;
+            padding-right: 1em;
         }
-    }
 
-    .inner-content-table {
-        overflow-x: auto;
-    }
-
-    .vertical-inner, .content-wrapper, revogr-overlay-selection {
-        width: fit-content;
-    }
-
-    .rgCell {
-        width: fit-content !important;
-
-        label {
-            cursor: pointer;
+        .v-table__wrapper {
+            min-width: 100%;
             width: fit-content;
-        }
-    }
-
-    .header-content {
-        flex-grow: 0;
-        font-weight: 500;
-        height: fit-content;
-    }
-
-    .inner-content-table {
-        width: 100% !important;
-
-        .header-rgRow {
-            overflow-x: clip;
         }
     }
 }
@@ -202,23 +168,6 @@ html {
         .v-list-subheader__text,
         .v-list-item-title {
             font-size: 0.75rem !important;
-        }
-
-        .v-data-table__td {
-            max-width: 100px;
-            overflow: hidden;
-            padding: 0 !important;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .v-data-table-footer {
-            justify-content: center;
-
-            .v-data-table-footer__items-per-page,
-            .v-data-table-footer__info {
-                display: none;
-            }
         }
     }
 

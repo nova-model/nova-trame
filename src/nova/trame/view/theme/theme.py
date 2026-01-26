@@ -149,11 +149,7 @@ class ThemedApp:
         js_path = (Path(__file__).parent / "assets" / "js").resolve()
         self.server.enable_module(
             {
-                "scripts": [
-                    "assets/js/lodash.min.js",
-                    "assets/js/delay_manager.js",
-                    "assets/js/revo_grid.js",
-                ],
+                "scripts": ["assets/js/lodash.min.js", "assets/js/delay_manager.js"],
                 "serve": {"assets/js": js_path},
             }
         )

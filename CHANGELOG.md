@@ -1,3 +1,7 @@
+### nova-trame, 1.4.0
+
+* Revert the DataSelector datafile list to use a Vuetify virtual data table (thanks to John Duggan).
+
 ### nova-trame, 1.3.7
 
 * Fixes horizontal scrolling in the DataSelector (thanks to John Duggan).

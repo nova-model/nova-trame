@@ -8,7 +8,6 @@ from trame.widgets import vuetify3 as vuetify
 
 from nova.mvvm._internal.utils import rgetdictvalue
 from nova.mvvm.trame_binding import TrameBinding
-from nova.trame._internal.utils import get_state_name
 from nova.trame.model.ornl.analysis_data_selector import (
     CUSTOM_DIRECTORIES_LABEL,
     AnalysisDataSelectorModel,
@@ -150,31 +149,19 @@ class NeutronDataSelector(DataSelector):
         return key.split(".")[-1].replace("_", " ").title()
 
     def create_ui(self, **kwargs: Any) -> None:
-        if isinstance(self._extensions, tuple):
-            extensions_name = f"{get_state_name(self._extensions[0])}.extensions"
+        headers = kwargs.pop(
+            "headers",
+            None,
+        )
+        if self._projection and headers is None:
+            headers = "[{ title: 'Available Datafiles', key: 'title' },"
+            for key in self._projection:
+                headers += f"{{title: '{self.create_projection_column_title(key)}', key: '{key}'}},"
+            headers += "]"
         else:
-            extensions_name = f"{self._state_name}.extensions"
+            headers = "[{ title: 'Available Datafiles', key: 'title' }]"
 
-        if self._data_source == "oncat":
-            columns = (
-                "[{"
-                "    cellTemplate: (createElement, props) =>"
-                f"     window.grid_manager.get('{self._revogrid_id}').cellTemplate(createElement, props),"
-                "    columnTemplate: (createElement) =>"
-                f"     window.grid_manager.get('{self._revogrid_id}').columnTemplate(createElement, {extensions_name}),"
-                "    name: 'Available Datafiles',"
-                "    sortable: true,"
-                "    prop: 'title',"
-                "},"
-            )
-            if self._projection:
-                for key in self._projection:
-                    columns += f"{{name: '{self.create_projection_column_title(key)}', prop: '{key}', sortable: true}},"
-            columns += "]"
-
-            super().create_ui(columns=(columns,), **kwargs)
-        else:
-            super().create_ui(**kwargs)
+        super().create_ui(headers=(headers,), **kwargs)
 
         with self._layout.filter:
             with GridLayout(v_if=self._show_experiment_filters.expression, columns=3):
@@ -242,7 +229,6 @@ class NeutronDataSelector(DataSelector):
         self._vm.directories_bind.connect(self._directories_name)
         self._vm.datafiles_bind.connect(self._datafiles_name)
         self._vm.reset_bind.connect(self.reset)
-        self._vm.reset_grid_bind.connect(self._reset_rv_grid)
 
         self._vm.update_view()
 

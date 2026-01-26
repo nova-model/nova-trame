@@ -20,6 +20,16 @@ from nova.trame._internal.utils import set_state_param
 logger = logging.getLogger(__name__)
 
 
+def parse_v_model(v_model: Union[str, Tuple, None]) -> Tuple[str, str]:
+    if isinstance(v_model, str):
+        field = v_model
+    elif isinstance(v_model, tuple):
+        field = v_model[0]
+    else:
+        field = ""
+    return field, field.split(".")[0]
+
+
 class InputField(AbstractElement):
     """Factory class for generating Vuetify input components."""
 
@@ -39,11 +49,7 @@ class InputField(AbstractElement):
 
         if not v_model:
             return {}
-        if isinstance(v_model, tuple):
-            field = v_model[0]
-        else:
-            field = v_model
-        object_name_in_state = field.split(".")[0]
+        field, object_name_in_state = parse_v_model(v_model)
         field_info = None
         try:
             field_name = ".".join(field.split(".")[1:])
@@ -352,6 +358,17 @@ class InputField(AbstractElement):
     def _setup_ref(input: AbstractElement) -> None:
         if "ref" not in input._py_attr or input.ref is None:
             input.ref = f"nova__{input._id}"
+
+        if "v_model" in input._py_attr and input.v_model is not None:
+            with input:
+                _, object_name_in_state = parse_v_model(input.v_model)
+                client.ClientTriggers(
+                    mounted=(
+                        f"if (window.trame.state.state?.{object_name_in_state}?.pydantic_errors?.length > 0) {{"
+                        f"    window.setTimeout(() => {{ window.trame.refs['{input.ref}'].validate(); }}, 100);"
+                        "}"
+                    )
+                )
 
     @staticmethod
     def _setup_required_rule(input: AbstractElement) -> None:
