@@ -192,6 +192,9 @@ class DataSelector(vuetify.VDataTableVirtual):
                         item_value="path",
                         select_strategy="all",
                         show_select=True,
+                        raw_attrs=[
+                            '''@click:row="(event, node) => node.toggleSelect(node.internalItem, node.index, event)"'''
+                        ],
                         **kwargs,
                     )
                     with self:
