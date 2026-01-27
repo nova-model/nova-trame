@@ -2,6 +2,7 @@
 
 from typing import List
 
+import pytest
 from pydantic import BaseModel, Field
 from trame.app import get_server
 from trame_server.core import Server
@@ -11,7 +12,8 @@ from nova.trame.view.components import DataSelector
 from nova.trame.view.theme import ThemedApp
 
 
-def test_data_selector() -> None:
+@pytest.mark.asyncio
+async def test_data_selector() -> None:
     class MyTrameApp(ThemedApp):
         def __init__(self, server: Server = None) -> None:
             server = get_server(None, client_type="vue3")
