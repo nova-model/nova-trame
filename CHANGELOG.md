@@ -2,6 +2,7 @@
 
 * Revert the DataSelector datafile list to use a Vuetify virtual data table (thanks to John Duggan).
 * Errors in the UI are now preserved across refresh (thanks to John Duggan).
+* The original ModernTheme has been removed, leaving our scientific "CompactTheme" as the only supported theme (thanks to John Duggan).
 
 ### nova-trame, 1.3.7
 
