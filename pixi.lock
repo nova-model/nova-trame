@@ -96,7 +96,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/ef/82/7a9d0550484a62c6da82858ee9419f3dd1ccc9aa1c26a1e43da3ecd20b0d/natsort-8.4.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/88/b2/d0896bdcdc8d28a7fc5717c305f1a861c26e18c05047949fb371034d98bd/nodeenv-1.10.0-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/ff/0e/8e938edc6996b0b438bfb5a70eb39a4d6094380db9c66c6ebbf1bc1a18fa/nova_common-0.3.0-py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/7a/9f/b2bb9f983920c54089efda8f4ff83bcd79e931a6a1a6ec4af6322a32545a/nova_mvvm-0.14.0-py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/a0/a7/b913961967fef241d4d55078e5ec42b28b075dcd4193bac6fb0cb839648d/nova_mvvm-0.15.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/ba/87/d341e519956273b39d8d47969dd1eaa1af740615394fe67d06f1efa68773/numpy-2.4.1-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/be/9c/92789c596b8df838baa98fa71844d84283302f7604ed565dafe5a6b5041a/oauthlib-3.3.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/12/27/fb8d7338b4d551900fa3e580acbe7a0cf655d940e164cb5c00ec31961094/orderly_set-5.5.0-py3-none-any.whl
@@ -257,7 +257,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/ef/82/7a9d0550484a62c6da82858ee9419f3dd1ccc9aa1c26a1e43da3ecd20b0d/natsort-8.4.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/88/b2/d0896bdcdc8d28a7fc5717c305f1a861c26e18c05047949fb371034d98bd/nodeenv-1.10.0-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/ff/0e/8e938edc6996b0b438bfb5a70eb39a4d6094380db9c66c6ebbf1bc1a18fa/nova_common-0.3.0-py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/7a/9f/b2bb9f983920c54089efda8f4ff83bcd79e931a6a1a6ec4af6322a32545a/nova_mvvm-0.14.0-py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/a0/a7/b913961967fef241d4d55078e5ec42b28b075dcd4193bac6fb0cb839648d/nova_mvvm-0.15.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/04/68/732d4b7811c00775f3bd522a21e8dd5a23f77eb11acdeb663e4a4ebf0ef4/numpy-2.4.1-cp313-cp313-macosx_10_13_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/be/9c/92789c596b8df838baa98fa71844d84283302f7604ed565dafe5a6b5041a/oauthlib-3.3.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/12/27/fb8d7338b4d551900fa3e580acbe7a0cf655d940e164cb5c00ec31961094/orderly_set-5.5.0-py3-none-any.whl
@@ -421,7 +421,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/3d/2e/cf2ffeb386ac3763526151163ad7da9f1b586aac96d2b4f7de1eaebf0c61/narwhals-2.15.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/ef/82/7a9d0550484a62c6da82858ee9419f3dd1ccc9aa1c26a1e43da3ecd20b0d/natsort-8.4.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/ff/0e/8e938edc6996b0b438bfb5a70eb39a4d6094380db9c66c6ebbf1bc1a18fa/nova_common-0.3.0-py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/7a/9f/b2bb9f983920c54089efda8f4ff83bcd79e931a6a1a6ec4af6322a32545a/nova_mvvm-0.14.0-py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/a0/a7/b913961967fef241d4d55078e5ec42b28b075dcd4193bac6fb0cb839648d/nova_mvvm-0.15.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/ba/87/d341e519956273b39d8d47969dd1eaa1af740615394fe67d06f1efa68773/numpy-2.4.1-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/be/9c/92789c596b8df838baa98fa71844d84283302f7604ed565dafe5a6b5041a/oauthlib-3.3.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/12/27/fb8d7338b4d551900fa3e580acbe7a0cf655d940e164cb5c00ec31961094/orderly_set-5.5.0-py3-none-any.whl
@@ -537,7 +537,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/3d/2e/cf2ffeb386ac3763526151163ad7da9f1b586aac96d2b4f7de1eaebf0c61/narwhals-2.15.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/ef/82/7a9d0550484a62c6da82858ee9419f3dd1ccc9aa1c26a1e43da3ecd20b0d/natsort-8.4.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/ff/0e/8e938edc6996b0b438bfb5a70eb39a4d6094380db9c66c6ebbf1bc1a18fa/nova_common-0.3.0-py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/7a/9f/b2bb9f983920c54089efda8f4ff83bcd79e931a6a1a6ec4af6322a32545a/nova_mvvm-0.14.0-py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/a0/a7/b913961967fef241d4d55078e5ec42b28b075dcd4193bac6fb0cb839648d/nova_mvvm-0.15.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/04/68/732d4b7811c00775f3bd522a21e8dd5a23f77eb11acdeb663e4a4ebf0ef4/numpy-2.4.1-cp313-cp313-macosx_10_13_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/be/9c/92789c596b8df838baa98fa71844d84283302f7604ed565dafe5a6b5041a/oauthlib-3.3.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/12/27/fb8d7338b4d551900fa3e580acbe7a0cf655d940e164cb5c00ec31961094/orderly_set-5.5.0-py3-none-any.whl
@@ -1787,10 +1787,10 @@ packages:
   - blinker>=1.9.0,<2.0.0
   - pydantic>=2.11.4,<3.0.0
   requires_python: '>=3.10,<4.0'
-- pypi: https://files.pythonhosted.org/packages/7a/9f/b2bb9f983920c54089efda8f4ff83bcd79e931a6a1a6ec4af6322a32545a/nova_mvvm-0.14.0-py3-none-any.whl
+- pypi: https://files.pythonhosted.org/packages/a0/a7/b913961967fef241d4d55078e5ec42b28b075dcd4193bac6fb0cb839648d/nova_mvvm-0.15.1-py3-none-any.whl
   name: nova-mvvm
-  version: 0.14.0
-  sha256: 6bc0d71ff9eb1c34bcd7aed0e77cad9565843308c601177d6a377119a0d9f3c2
+  version: 0.15.1
+  sha256: 5107b1a0ed320dfcd7925a3efa303c46911f4f1c190b4d7434956392842febc7
   requires_dist:
   - deepdiff
   - pydantic
@@ -1801,8 +1801,8 @@ packages:
   requires_python: '>=3.10,<3.14'
 - pypi: ./
   name: nova-trame
-  version: 1.4.0.dev0
-  sha256: 9297d8dec51053107c4ee743ccfaac16ef775eebb6843dd4a19b7c08abb9d28d
+  version: 1.4.0
+  sha256: 1a12a2ea6c3a4f976900e64f563706088c971b3dbcb26129cca5904eb87abd0c
   requires_dist:
   - altair
   - libsass
@@ -1816,7 +1816,7 @@ packages:
   - trame-plotly
   - trame-vega
   - trame-vuetify
-  - nova-mvvm
+  - nova-mvvm>=0.15.1
   - oauthlib
   - pydantic
   - requests-oauthlib

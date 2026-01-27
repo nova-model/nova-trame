@@ -14,7 +14,7 @@ from trame_client.widgets.core import AbstractElement
 from trame_server.controller import Controller
 from trame_server.state import State
 
-from nova.mvvm.pydantic_utils import get_field_info
+from nova.mvvm.pydantic_utils import ERROR_FIELD_NAME, get_field_info
 from nova.trame._internal.utils import set_state_param
 
 logger = logging.getLogger(__name__)
@@ -364,7 +364,7 @@ class InputField(AbstractElement):
                 _, object_name_in_state = parse_v_model(input.v_model)
                 client.ClientTriggers(
                     mounted=(
-                        f"if (window.trame.state.state?.{object_name_in_state}?.pydantic_errors?.length > 0) {{"
+                        f"if (window.trame.state.state?.{object_name_in_state}?.{ERROR_FIELD_NAME}?.length > 0) {{"
                         f"    window.setTimeout(() => {{ window.trame.refs['{input.ref}'].validate(); }}, 100);"
                         "}"
                     )

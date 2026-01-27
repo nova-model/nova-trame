@@ -4,14 +4,13 @@ import json
 import logging
 from asyncio import create_task
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Optional
 
 import blinker
 import numpy as np
 from altair import Chart, X, Y, selection_interval
 from matplotlib.axes import Axes
 from matplotlib.figure import Figure
-from pydantic import BaseModel, Field, field_validator
 from trame.app import get_server
 from trame.decorators import TrameApp
 from trame.widgets import client, html
@@ -33,49 +32,13 @@ from nova.trame.view.components.visualization import Interactive2DPlot, Matplotl
 from nova.trame.view.layouts import GridLayout, HBoxLayout, VBoxLayout
 from nova.trame.view.theme.theme import LocalStorageManager
 
+from ..view_models.config import ConfigVM
 from ..view_models.data_selector import DataSelectorVM
 from ..view_models.file_upload import FileUploadVM
 from ..view_models.neutron_data_selector import NeutronDataSelectorVM
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
-
-
-class Config(BaseModel):
-    """Pydantic object for testing validation."""
-
-    active_tab: int = Field(default=0)
-    debounce_rate: int = Field(default=1000, title="Debounce Rate")
-    debounce: str = Field(
-        default="",
-        description="This field is debounced and will not update its state until you've stopped typing for 1 second.",
-        title="Debounced Field",
-    )
-    radio_items: List[Dict[str, Union[str, int]]] = Field(
-        default=[{"title": "Item 1", "value": 1}, {"title": "Item 2", "value": 2}]
-    )
-    throttle: str = Field(
-        default="",
-        description="This field is throttled and will only update its state every 1 second.",
-        title="Throttled Field",
-    )
-    value: int = Field(default=0, description="This field is validated via Pydantic.", title="Pydantic Field")
-
-    @field_validator("debounce", mode="after")
-    @classmethod
-    def on_debounce(cls, text: str) -> str:
-        if text:
-            print(f"received debounced update: {text}")
-
-        return text
-
-    @field_validator("throttle", mode="after")
-    @classmethod
-    def on_throttle(cls, text: str) -> str:
-        if text:
-            print(f"received throttled update: {text}")
-
-        return text
 
 
 class MplTest:
@@ -129,8 +92,8 @@ class MplTest:
 class ComponentTab:
     """Tab for holding the component gallery."""
 
-    def __init__(self, state: State, local_storage: Optional[LocalStorageManager], **kwargs: Any) -> None:
-        self.state = state
+    def __init__(self, view_model: ConfigVM, local_storage: Optional[LocalStorageManager], **kwargs: Any) -> None:
+        self.view_model = view_model
         self.local_storage = local_storage
 
         self.create_ui(**kwargs)
@@ -345,7 +308,7 @@ class ComponentTab:
                 )
                 with html.Div():
                     InputField(
-                        v_model="autoscroll",
+                        v_model="config.autoscroll",
                         auto_grow=True,
                         classes="mb-2",
                         label="Autoscroll Text Area",
@@ -373,22 +336,17 @@ class ComponentTab:
                 InputField(v_model=("config.throttle",), throttle=1000)
                 InputField(type="number", label="Number Input")
                 RemoteFileInput(
-                    v_model="selected_file",
+                    v_model="config.selected_file",
                     base_paths=["/run"],
                     extensions=[".pid", ".lock"],
                     input_props={"label": "File Selector"},
                 )
                 RemoteFileInput(
-                    v_model="selected_folder",
+                    v_model="config.selected_folder",
                     allow_files=False,
                     allow_folders=True,
                     base_paths=["/usr"],
                     input_props={"label": "Folder Selector"},
-                )
-                RemoteFileInput(
-                    v_model="nested.selected_file",
-                    base_paths=["/run"],
-                    input_props={"label": "Nested v_model File Selector"},
                 )
 
             vuetify.VCardTitle("Validation")
@@ -402,26 +360,18 @@ class ComponentTab:
                     )
                     InputField(
                         ref="gallery_select",
-                        v_model="select1",
+                        v_model="config.select1",
                         type="select",
                         items="['Option 1', 'Option 2']",
                         label="Required Select",
                         multiple=True,
-                        required=True,
                     )
                     InputField(
-                        v_model="select2",
+                        v_model="config.select2",
                         type="select",
                         items="['Option 1', 'Option 2']",
                         label="Cross-validated Select",
                         multiple=True,
-                        required=True,
-                        rules=(
-                            (
-                                "[(value) => value?.length === select1.length || 'Must have the same "
-                                "number of selections as the previous select']"
-                            ),
-                        ),
                     )
 
             vuetify.VCardTitle("Feedback Components")
@@ -451,7 +401,7 @@ class ComponentTab:
             vuetify.VCardTitle("Local Storage")
             with html.Div():
                 vuetify.VTextField(
-                    v_model="local_storage_test",
+                    v_model="config.local_storage_test",
                     classes="mb-2 mt-0 mx-auto",
                     id="local-storage-input",
                     label="Local Storage Test",
@@ -487,8 +437,7 @@ class ComponentTab:
 
     async def _read_local_storage(self) -> None:
         if self.local_storage:
-            with self.state:
-                self.state.local_storage_test = await self.local_storage.get("local_storage_test")
+            self.view_model.set_local_storage(await self.local_storage.get("local_storage_test"))
 
     def read_local_storage(self) -> None:
         create_task(self._read_local_storage())
@@ -499,10 +448,10 @@ class ComponentTab:
 
     def set_local_storage(self) -> None:
         if self.local_storage:
-            self.local_storage.set("local_storage_test", self.state.local_storage_test)
+            self.local_storage.set("local_storage_test", self.view_model.get_local_storage())
 
     def append_to_autoscroll(self) -> None:
-        self.state.autoscroll += "Line added by button\n"
+        self.view_model.append_to_autoscroll("Line added by button\n")
 
 
 class FullScreenTab:
@@ -580,26 +529,11 @@ class App(ThemedApp):
         self.file_upload_vm = FileUploadVM(binding)
         self.file_upload_vm.model_bind.connect("file_upload")
 
-        self.config = Config()
-        config_bind = binding.new_bind(self.config)
-        config_bind.connect("config")
-        config_bind.update_in_view(self.config)
-
-        self.state.autoscroll = ""
-        self.state.config["value"] = "test"
-        self.state.nova__menu = True
-        self.state.local_storage_test = ""
-        self.state.nested = {
-            "selected_file": "",
-        }
-        self.state.select1 = []
-        self.state.select2 = []
-        self.state.selected_file = ""
-        self.state.selected_folder = ""
-        self.state.snackbar = True
-        self.state.trame__title = "Widget Gallery"
+        self.config_vm = ConfigVM(binding)
+        self.config_vm.config_bind.connect("config")
 
     def create_ui(self) -> None:
+        self.state.trame__title = "Widget Gallery"
         with super().create_ui() as layout:
             layout.toolbar_title.set_text("Widget Gallery")
 
@@ -615,7 +549,7 @@ class App(ThemedApp):
                         vuetify.VTab("Full-screen Layout", value=1)
 
             with layout.content:
-                ComponentTab(self.state, self.local_storage, v_if="config.active_tab == 0")
+                ComponentTab(self.config_vm, self.local_storage, v_if="config.active_tab == 0")
                 FullScreenTab(v_if="config.active_tab == 1")
 
             with layout.post_content:

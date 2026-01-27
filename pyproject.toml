@@ -1,6 +1,6 @@
 [project]
 name = "nova-trame"
-version = "1.4.0-dev0"
+version = "1.4.0"
 description = "A Python Package for injecting curated themes and custom components into Trame applications"
 authors = [
     { name = "John Duggan", email = "dugganjw@ornl.gov" },
@@ -25,7 +25,7 @@ dependencies = [
     "trame-plotly",
     "trame-vega",
     "trame-vuetify",
-    "nova-mvvm",
+    "nova-mvvm>=0.15.1",
     "oauthlib",
     "pydantic",
     "requests-oauthlib",
