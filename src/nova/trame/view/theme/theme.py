@@ -57,7 +57,7 @@ class ThemedApp:
             that will override anything set in our default configuration. You should only use this if you don't want to
             use one of our predefined themes. If you just want to set your color palette without providing a full
             Vuetify configuration, then you can set use the following to only set the color palette used by our
-            :code:`ModernTheme`:
+            :code:`CompactTheme`:
 
             .. code-block:: json
 
@@ -100,7 +100,7 @@ class ThemedApp:
             logger.error(e)
         for shortcut in ["primary", "secondary", "accent"]:
             if shortcut in self.vuetify_config:
-                self.vuetify_config["theme"]["themes"]["ModernTheme"]["colors"][shortcut] = self.vuetify_config[
+                self.vuetify_config["theme"]["themes"]["CompactTheme"]["colors"][shortcut] = self.vuetify_config[
                     shortcut
                 ]
 
@@ -109,8 +109,8 @@ class ThemedApp:
         # Since this is only intended for theming Trame apps, I don't think we need to invoke the MVVM framework here,
         # and working directly with the Trame state makes this easier for me to manage.
         self.state.nova__menu = False
-        self.state.nova__defaults = self.vuetify_config["theme"]["themes"]["ModernTheme"].get("defaults", {})
-        self.state.nova__theme = "ModernTheme"
+        self.state.nova__defaults = self.vuetify_config["theme"]["themes"]["CompactTheme"].get("defaults", {})
+        self.state.nova__theme = "CompactTheme"
         self.state.trame__favicon = LocalFileManager(__file__).url("favicon", "./assets/favicon.png")
 
     @property
@@ -203,10 +203,11 @@ class ThemedApp:
         Parameters
         ----------
         theme : str, optional
-            The new theme to use. If the theme is not found, the default theme will be used. The available options are:
+            The new theme to use. If the theme is not found, the default theme will be used. We currently only support a
+            single theme:
 
-            1. ModernTheme (default) - Leverages ORNL brand colors and a typical Vuetify appearance.
-            2. CompactTheme - Similar to ModernTheme but with a smaller global font size and increased density.
+            1. CompactTheme - A scientific theme with a smaller global font size and increased density compared to
+            the default Vuetify theme.
         force : bool, optional
             If True, the theme will be set even if the theme selection menu is disabled.
 

@@ -117,34 +117,8 @@
         }
     },
     "theme": {
-        "defaultTheme": "ModernTheme",
+        "defaultTheme": "CompactTheme",
         "themes": {
-            "ModernTheme": {
-                "colors": {
-                    "background": "#f0f0f0",
-                    "primary": "#007833",
-                    "secondary": "#f48e5c"
-                },
-                "defaults": {
-                    "VCard": {
-                        "class": "pa-4",
-                        "VCard": {
-                            "class": "border-primary border-sm pa-4",
-                            "style": {
-                                "background-color": "rgba(var(--v-theme-primary), 0.1)"
-                            }
-                        },
-                        "VListItem": {
-                            "class": "border-primary border-sm",
-                            "style": {
-                                "background-color": "rgba(var(--v-theme-primary), 0.1)"
-                            }
-                        }
-                    }
-                },
-                "title": "Modern",
-                "value": "ModernTheme"
-            },
             "CompactTheme": {
                 "colors": {
                     "background": "#f0f0f0",
