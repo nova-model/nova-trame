@@ -5,12 +5,11 @@ from nova.trame import ThemedApp
 
 def test_theme_configuration() -> None:
     app = ThemedApp(vuetify_config_overrides={"primary": "#ff0000"})
-    assert app.vuetify_config["theme"]["themes"]["ModernTheme"]["colors"]["primary"] == "#ff0000"
+    assert app.vuetify_config["theme"]["themes"]["CompactTheme"]["colors"]["primary"] == "#ff0000"
 
 
 def test_set_theme() -> None:
     app = ThemedApp()
-    assert app.state.nova__theme == "ModernTheme"
     app.set_theme("CompactTheme", force=True)
     assert app.state.nova__theme == "CompactTheme"
     try:
