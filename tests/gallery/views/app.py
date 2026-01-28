@@ -330,7 +330,7 @@ class ComponentTab:
                 # [ InputField kwargs example start ]
                 InputField(type="textarea", auto_grow=True, label="Text Area")
                 # [ InputField kwargs example end ]
-                InputField(ref="pydantic-field", id="pydantic-field", v_model=("config.value", "test"))
+                InputField(ref="pydantic-field", id="pydantic-field", v_model="config.value")
                 InputField(v_model=("config.debounce_rate",))
                 InputField(v_model=("config.debounce",), debounce=("config.debounce_rate",))
                 InputField(v_model=("config.throttle",), throttle=1000)
@@ -400,7 +400,7 @@ class ComponentTab:
 
             vuetify.VCardTitle("Local Storage")
             with html.Div():
-                vuetify.VTextField(
+                InputField(
                     v_model="config.local_storage_test",
                     classes="mb-2 mt-0 mx-auto",
                     id="local-storage-input",

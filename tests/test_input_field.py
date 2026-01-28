@@ -6,6 +6,9 @@ from typing import cast
 
 from pydantic import BaseModel, Field
 from selenium.webdriver import Firefox
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions
+from selenium.webdriver.support.ui import WebDriverWait
 from trame.app import get_server
 from trame.widgets import vuetify3 as vuetify
 from trame_server import Server
@@ -88,7 +91,10 @@ def test_pydantic() -> None:
 
 def test_pydantic_validation(driver: Firefox) -> None:
     sleep(1)
-    driver.execute_script("window.trame.refs['pydantic-field'].validate();")
+    input_field = WebDriverWait(driver, 10).until(
+        expected_conditions.element_to_be_clickable((By.CSS_SELECTOR, "#pydantic-field"))
+    )
+    input_field.send_keys("test")
     sleep(1)
     error_message = driver.execute_script("""
         const messages_content = document.getElementById("pydantic-field-messages");
