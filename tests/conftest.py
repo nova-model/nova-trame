@@ -23,7 +23,7 @@ def _setup_selenium() -> Firefox:
     return driver
 
 
-@fixture(autouse=True, scope="session")
+@fixture(autouse=True, scope="function")
 def driver() -> Generator[Firefox, None, None]:
     server_process = Process(target=partial(main, open_browser=False))
     server_process.start()
