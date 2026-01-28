@@ -401,7 +401,7 @@ class ComponentTab:
             vuetify.VCardTitle("Local Storage")
             with html.Div():
                 InputField(
-                    v_model="config.local_storage_test",
+                    v_model="local_storage.value",
                     classes="mb-2 mt-0 mx-auto",
                     id="local-storage-input",
                     label="Local Storage Test",
@@ -531,6 +531,7 @@ class App(ThemedApp):
 
         self.config_vm = ConfigVM(binding)
         self.config_vm.config_bind.connect("config")
+        self.config_vm.local_storage_bind.connect("local_storage")
 
     def create_ui(self) -> None:
         self.state.trame__title = "Widget Gallery"

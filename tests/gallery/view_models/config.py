@@ -4,7 +4,7 @@ from typing import Optional
 
 from nova.mvvm.interface import BindingInterface
 
-from ..models.config import Config
+from ..models.config import Config, LocalStorageState
 
 
 class ConfigVM:
@@ -12,16 +12,19 @@ class ConfigVM:
 
     def __init__(self, binding: BindingInterface) -> None:
         self.config = Config()
+        self.local_storage_state = LocalStorageState()
+
         self.config_bind = binding.new_bind(self.config)
+        self.local_storage_bind = binding.new_bind(self.local_storage_state)
 
     def append_to_autoscroll(self, value: str) -> None:
         self.config.autoscroll += value
         self.config_bind.update_in_view(self.config)
 
     def get_local_storage(self) -> str:
-        return self.config.local_storage_test
+        return self.local_storage_state.value
 
     def set_local_storage(self, value: Optional[str]) -> None:
         if value is not None:
-            self.config.local_storage_test = value
-            self.config_bind.update_in_view(self.config)
+            self.local_storage_state.value = value
+            self.local_storage_bind.update_in_view(self.local_storage_state)

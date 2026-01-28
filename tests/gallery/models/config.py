@@ -9,7 +9,6 @@ class Config(BaseModel):
     """Pydantic model for testing validation."""
 
     autoscroll: str = Field(default="", title="Autoscroller")
-    local_storage_test: str = Field(default="", title="Local Storage")
     nested: Dict[str, str] = Field(default={"selected_file": ""})
     select1: List[str] = Field(default=[], title="Select")
     select2: List[str] = Field(default=[], title="Select")
@@ -48,3 +47,9 @@ class Config(BaseModel):
             print(f"received throttled update: {text}")
 
         return text
+
+
+class LocalStorageState(BaseModel):
+    """Separate Pydantic model to hold local storage state which can leak in unit tests."""
+
+    value: str = Field(default="", title="Local Storage")
