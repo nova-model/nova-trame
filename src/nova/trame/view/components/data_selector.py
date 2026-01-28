@@ -186,7 +186,7 @@ class DataSelector(vuetify.VDataTableVirtual):
                     super().__init__(
                         ref="test",
                         v_model=self._v_model,
-                        classes="h-100",
+                        classes="h-100 " + kwargs.pop("classes", ""),
                         headers=headers,
                         items=(self._datafiles_name,),
                         item_value="path",
